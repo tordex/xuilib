@@ -1,0 +1,343 @@
+<!--
+  Comments here
+-->
+
+<!ENTITY % BOOL		"(true | false)" >
+<!ENTITY % ORIENT	"(horizontal | vertical)" >
+
+<!--================ core attributes =========================-->
+<!ENTITY % coreattrs
+ "id			ID				#IMPLIED
+  width			CDATA			#IMPLIED
+  height		CDATA			#IMPLIED
+  left			CDATA			#IMPLIED
+  top			CDATA			#IMPLIED
+  hFlex			CDATA			#IMPLIED
+  vFlex			CDATA			#IMPLIED
+  minwidth		CDATA			#IMPLIED
+  minheight		CDATA			#IMPLIED
+  maxwidth		CDATA			#IMPLIED
+  maxheight		CDATA			#IMPLIED
+  columns		CDATA			#IMPLIED
+  rows			CDATA			#IMPLIED
+  locid			CDATA			#IMPLIED
+  hidden		%BOOL;			#IMPLIED
+  disabled		%BOOL;			#IMPLIED
+  orient		%ORIENT;		#IMPLIED"
+  >
+
+<!ENTITY % label	"label		CDATA	#IMPLIED" >
+<!ENTITY % value	"value		CDATA	#IMPLIED" >
+
+
+<!ELEMENT dialog  ANY>
+<!ATTLIST dialog
+	%coreattrs; 
+	caption			CDATA			#IMPLIED
+	centerScreen	%BOOL;			#IMPLIED
+	contextHelp		%BOOL;			#IMPLIED
+	clipChildren	%BOOL;			#IMPLIED
+	clipSiblings	%BOOL;			#IMPLIED
+	border			(none | thin | resizing | dialogFrame)	#IMPLIED
+	>
+
+<!ELEMENT disabler  EMPTY>
+<!ATTLIST disabler
+	disable			%BOOL;			 #IMPLIED
+	type			(int | emptystring | nonemptystring)	#IMPLIED
+	intval			CDATA			#IMPLIED
+	applyto			CDATA			#REQUIRED
+	>
+
+<!ELEMENT openhelp  EMPTY>
+<!ATTLIST openhelp
+	topic			CDATA			#REQUIRED
+	>
+
+<!ELEMENT box  ANY>
+<!ATTLIST box
+	%coreattrs; >
+
+<!ELEMENT button  (selectfile | sendcmd | openhelp)*>
+<!ATTLIST button
+	%coreattrs;
+	%label;
+	dlgType		(button | accept | cancel | help | disclosure)		#IMPLIED
+	default		%BOOL;		#IMPLIED
+	>
+
+<!ELEMENT checkbox  (disabler*)>
+<!ATTLIST checkbox
+	%coreattrs; 
+	%label;
+	checked		%BOOL;		#IMPLIED
+	auto		%BOOL;		#IMPLIED
+	triState	%BOOL;		#IMPLIED
+	>
+
+<!ELEMENT groupbox  ANY>
+<!ATTLIST groupbox
+	%coreattrs; 
+	%label;
+	>
+
+<!ELEMENT label  EMPTY>
+<!ATTLIST label
+	%coreattrs; 
+	%value;
+	vcenter		%BOOL;				#IMPLIED
+	multiline	%BOOL;				#IMPLIED
+	textalign	(left|right|center)	#IMPLIED
+	>
+
+<!ELEMENT radio  (disabler*)>
+<!ATTLIST radio
+	%coreattrs; 
+	%label;
+	%value;
+	selected	%BOOL;							#IMPLIED
+	multiline	%BOOL;							#IMPLIED
+	vAlign		(default|top|bottom|center)		#IMPLIED
+	hAlign		(default|left|right|center)		#IMPLIED
+	>
+
+<!ELEMENT radiogroup  (radio|spacer)*>
+<!ATTLIST radiogroup
+	%coreattrs; 
+	>
+
+<!ELEMENT spacer  EMPTY>
+<!ATTLIST spacer
+	%coreattrs; 
+	>
+
+<!ELEMENT spin  EMPTY>
+<!ATTLIST spin
+	%coreattrs; 
+	buddyalign	(left|right)		#IMPLIED
+	upper		CDATA				#IMPLIED
+	lower		CDATA				#IMPLIED
+	pos			CDATA				#IMPLIED
+	>
+
+<!ELEMENT textbox  (spin | disabler)*>
+<!ATTLIST textbox
+	%coreattrs; 
+	readonly	%BOOL;				#IMPLIED
+	multiline	%BOOL;				#IMPLIED
+	maxlength	CDATA				#IMPLIED
+	textrows	CDATA				#IMPLIED
+	textcols	CDATA				#IMPLIED
+	size		CDATA				#IMPLIED
+	numberonly	%BOOL;				#IMPLIED
+	password	%BOOL;				#IMPLIED
+	textalign	(left|right)		#IMPLIED
+	>
+
+<!ELEMENT combobox  (listitem | disabler)*>
+<!ATTLIST combobox
+	%coreattrs; 
+	editable	%BOOL;					#IMPLIED
+	sorted		%BOOL;					#IMPLIED
+	hasstrings	%BOOL;					#IMPLIED
+	size		CDATA					#IMPLIED
+	ownerdraw	(no | fixed | variable) #IMPLIED
+	>
+
+<!ELEMENT listitem  EMPTY>
+<!ATTLIST listitem
+	locid		CDATA				#IMPLIED
+	selected	%BOOL;				#IMPLIED
+	%label;
+	%value;
+	>
+
+<!ELEMENT tabswitcher  (tab*)>
+<!ATTLIST tabswitcher
+	%coreattrs; 
+	imageSize		CDATA			#IMPLIED
+	imageAlign		(left | top)	#IMPLIED
+	showSwitcher	%BOOL;			#IMPLIED
+	showCaption		%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT tab  ANY>
+<!ATTLIST tab
+	%coreattrs; 
+	%label;
+	selected		%BOOL;			#IMPLIED
+	caption			CDATA			#IMPLIED
+	icon			CDATA			#IMPLIED
+	value			CDATA			#IMPLIED
+	helpTopic		CDATA			#IMPLIED
+	setFocus		%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT color  EMPTY>
+<!ATTLIST color
+	%coreattrs; 
+	enableNone		%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT slider  EMPTY>
+<!ATTLIST slider
+	%coreattrs; 
+	minValue		CDATA			#IMPLIED
+	maxValue		CDATA			#IMPLIED
+	pos				CDATA			#IMPLIED
+	ticFreq			CDATA			#IMPLIED
+	noTics			%BOOL;			#IMPLIED
+	autoTics		%BOOL;			#IMPLIED
+	type			%ORIENT;		#IMPLIED
+	invert			%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT hotkey  EMPTY>
+<!ATTLIST hotkey
+	%coreattrs; 
+	>
+
+<!ELEMENT picture  EMPTY>
+<!ATTLIST picture
+	%coreattrs; 
+	pic				CDATA			#REQUIRED
+	picWidth		CDATA			#REQUIRED
+	picHeight		CDATA			#REQUIRED
+	>
+
+<!ELEMENT listbox  (listitem | disabler)*>
+<!ATTLIST listbox
+	%coreattrs; 
+	multicolumn			%BOOL;									#IMPLIED
+	selection			(single | multiple | extended | none)	#IMPLIED
+	sort				%BOOL;									#IMPLIED
+	nointegralheight	%BOOL;									#IMPLIED
+	colWidth			CDATA									#IMPLIED
+	>
+
+<!ELEMENT line  EMPTY>
+<!ATTLIST line
+	%coreattrs; 
+	type			(EtchedHorz | EtchedVert)					#IMPLIED
+	>
+
+<!ELEMENT url  EMPTY>
+<!ATTLIST url
+	%coreattrs; 
+	textalign		(left | right)		#IMPLIED
+	text			CDATA				#REQUIRED
+	url				CDATA				#REQUIRED
+	>
+
+<!ELEMENT list  (listcol*)>
+<!ATTLIST list
+	%coreattrs; 
+	view				(icon | smallicon | list | report)		#IMPLIED
+	NoColHeader			%BOOL;									#IMPLIED
+	AutoArrange			%BOOL;									#IMPLIED
+	AlwaysShowSelection	%BOOL;									#IMPLIED
+	EditLabels			%BOOL;									#IMPLIED
+	NoSortHeader		%BOOL;									#IMPLIED
+	NoLabelWrap			%BOOL;									#IMPLIED
+	NoScroll			%BOOL;									#IMPLIED
+	SingleSelection		%BOOL;									#IMPLIED
+
+	CheckBoxes			%BOOL;									#IMPLIED
+	FullRowSelect		%BOOL;									#IMPLIED
+	GridLines			%BOOL;									#IMPLIED
+	HeaderDragDrop		%BOOL;									#IMPLIED
+	LabelTip			%BOOL;									#IMPLIED
+	>
+
+<!ELEMENT listcol  EMPTY>
+<!ATTLIST listcol
+	locid			CDATA				#IMPLIED
+	caption			CDATA				#REQUIRED
+	size			CDATA				#IMPLIED
+	flex			CDATA				#IMPLIED
+	>
+
+
+<!ELEMENT selectfile  (ext*)>
+<!ATTLIST selectfile
+	id					ID										#IMPLIED
+	locid				CDATA									#IMPLIED
+	title				CDATA									#REQUIRED
+	defExt				CDATA									#IMPLIED
+	type				(open | save)							#REQUIRED
+	allowMultiSelect	%BOOL;									#IMPLIED
+	dontAddRecent		%BOOL;									#IMPLIED
+	enableSizing		%BOOL;									#IMPLIED
+	explorer			%BOOL;									#IMPLIED
+	fileMustExist		%BOOL;									#IMPLIED
+	forceHidden			%BOOL;									#IMPLIED
+	hideReadOnly		%BOOL;									#IMPLIED
+	longNames			%BOOL;									#IMPLIED
+	noNetworkButton		%BOOL;									#IMPLIED
+	noReadOnlyReturn	%BOOL;									#IMPLIED
+	noTestFileCreate	%BOOL;									#IMPLIED
+	noValidate			%BOOL;									#IMPLIED
+	overwriteprompt		%BOOL;									#IMPLIED
+	pathmustexist		%BOOL;									#IMPLIED
+	readonly			%BOOL;									#IMPLIED
+	shareaware			%BOOL;									#IMPLIED
+	showhelp			%BOOL;									#IMPLIED
+	createprompt		%BOOL;									#IMPLIED
+	saveto				CDATA									#IMPLIED
+	>
+
+<!ELEMENT ext  EMPTY>
+<!ATTLIST ext
+	locid				CDATA									#IMPLIED
+	text				CDATA									#REQUIRED
+	extension			CDATA									#REQUIRED
+	>
+
+<!ELEMENT checkslist  (checkitem*)>
+<!ATTLIST checkslist
+	%coreattrs; 
+	visibleItems				CDATA							#IMPLIED
+	>
+
+<!ELEMENT checkitem  EMPTY>
+<!ATTLIST checkitem
+	locid				CDATA									#IMPLIED
+	label				CDATA									#REQUIRED
+	value				CDATA									#REQUIRED
+	>
+
+<!ELEMENT freedraw  EMPTY>
+<!ATTLIST freedraw
+	%coreattrs; 
+	>
+
+<!ELEMENT contexthelp (tip*)>
+<!ATTLIST contexthelp
+	>
+
+<!ELEMENT tip (#PCDATA)>
+<!ATTLIST tip
+	control		IDREF		#REQUIRED
+	img			CDATA		#IMPLIED
+	imgWidth	CDATA		#IMPLIED
+	imgHeight	CDATA		#IMPLIED
+	>
+
+<!ELEMENT sendcmd  EMPTY>
+<!ATTLIST sendcmd
+	cmd				CDATA			#IMPLIED
+	sendto			IDREF			#REQUIRED
+	>
+
+<!ELEMENT progress  EMPTY>
+<!ATTLIST progress
+	%coreattrs; 
+	marquee			%BOOL;			#IMPLIED
+	smooth			%BOOL;			#IMPLIED
+	smoothreverse	%BOOL;			#IMPLIED
+	vertical		%BOOL;			#IMPLIED
+	lowLimit		CDATA			#IMPLIED
+	highLimit		CDATA			#IMPLIED
+	pos				CDATA			#IMPLIED
+	>
+
