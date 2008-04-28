@@ -1,0 +1,106 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1251)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// XUILIB
+//
+
+TLBSETTINGS.XML         XUILIB                  "res\\tlbsettings.xml"
+TS_TOOLBAR.PNG          XUILIB                  "res\\ts_Toolbar.png"
+TS_FONTS.PNG            XUILIB                  "res\\ts_fonts.png"
+TS_GENERAL.PNG          XUILIB                  "res\\ts_General.png"
+TS_MENU.PNG             XUILIB                  "res\\ts_Menu.png"
+TS_MOUSE.PNG            XUILIB                  "res\\ts_Mouse.png"
+TS_COLORS.PNG           XUILIB                  "res\\ts_colors.png"
+TS_EFFECTS.PNG          XUILIB                  "res\\ts_effects.png"
+TS_TRANSPARENCY.PNG     XUILIB                  "res\\ts_transparency.png"
+TS_TIPS.PNG             XUILIB                  "res\\ts_tips.png"
+TS_CTXMENU.PNG          XUILIB                  "res\\ts_ctxmenu.png"
+TS_METRICS.PNG          XUILIB                  "res\\ts_metrics.png"
+TS_ICONSIZES.PNG        XUILIB                  "res\\ts_iconsizes.png"
+TS_AUTOSENSING.PNG      XUILIB                  "res\\ts_autosensing.png"
+TS_TOOLBARS.PNG         XUILIB                  "res\\ts_toolbars.png"
+TS_HOTKEY.PNG           XUILIB                  "res\\ts_hotkey.png"
+TS_SYSINFO.PNG          XUILIB                  "res\\ts_sysinfo.png"
+TS_ABOUT.PNG            XUILIB                  "res\\ts_about.png"
+TS_REGISTRATION.PNG     XUILIB                  "res\\ts_registration.png"
+TS_SKINS.PNG            XUILIB                  "res\\ts_skins.png"
+TLB-LOGO.PNG            XUILIB                  "res\\logo.png"
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
