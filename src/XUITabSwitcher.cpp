@@ -85,6 +85,25 @@ LRESULT CXUITabSwitcher::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM
 	{
 		switch(uMessage)
 		{
+		case WM_SETFOCUS:
+			{
+				HDC hdc = GetDC(hWnd);
+				pThis->drawFocusRect(hdc);
+				ReleaseDC(hWnd, hdc);
+			}
+			break;
+		case WM_KILLFOCUS:
+			{
+				HDC hdc = GetDC(hWnd);
+				pThis->drawFocusRect(hdc);
+				ReleaseDC(hWnd, hdc);
+			}
+			break;
+		case WM_GETDLGCODE:
+			return DLGC_WANTARROWS;
+		case WM_KEYDOWN:
+			pThis->OnKeyDown(wParam);
+			return 0;
 		case WM_ERASEBKGND:
 			return TRUE;
 		case WM_CREATE:
@@ -402,6 +421,11 @@ void CXUITabSwitcher::OnPaint( HDC hdc, LPRECT rcDraw )
 		{
 			tab->Draw(memDC, m_imageAlign, m_imageSize, (LPRECT) tab->rect());
 		}
+	}
+
+	if(GetFocus() == m_hWnd)
+	{
+		drawFocusRect(memDC);
 	}
 
 	BitBlt(hdc, rcClient.left, rcClient.top,
@@ -810,4 +834,56 @@ LPCWSTR CXUITabSwitcher::value_STR()
 		}
 	}
 	return NULL;
+}
+
+void CXUITabSwitcher::OnKeyDown( UINT vk )
+{
+	switch(vk)
+	{
+	case VK_UP:
+		{
+			CXUITab* oldTab = findSelectedTab();
+
+			onCmd(L"back");
+
+			CXUITab* newTab = findSelectedTab();
+			InvalidateRect(m_hWnd, (LPRECT) oldTab->rect(), TRUE);
+			InvalidateRect(m_hWnd, (LPRECT) newTab->rect(), TRUE);
+			if(m_hWndCaption)
+			{
+				InvalidateRect(m_hWndCaption, NULL, FALSE);
+			}
+		}
+		break;
+	case VK_DOWN:
+		{
+			CXUITab* oldTab = findSelectedTab();
+
+			onCmd(L"next");
+
+			CXUITab* newTab = findSelectedTab();
+			InvalidateRect(m_hWnd, (LPRECT) oldTab->rect(), TRUE);
+			InvalidateRect(m_hWnd, (LPRECT) newTab->rect(), TRUE);
+			if(m_hWndCaption)
+			{
+				InvalidateRect(m_hWndCaption, NULL, FALSE);
+			}
+		}
+		break;
+	}
+}
+
+void CXUITabSwitcher::drawFocusRect(HDC hdc)
+{
+	if(m_hWnd)
+	{
+		CXUITab* selTab = findSelectedTab();
+		if(selTab)
+		{
+			RECT rcDraw = *selTab->rect();
+			rcDraw.left  += 2;
+			rcDraw.right -= 2;
+			DrawFocusRect(hdc, &rcDraw);
+		}
+	}
 }
