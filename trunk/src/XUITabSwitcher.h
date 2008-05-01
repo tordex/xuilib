@@ -22,14 +22,15 @@ class CXUITabSwitcher :	public CXUIElement
 	BOOL	m_mouseTrackInstalled;
 
 	void trackMouseLeave(BOOL bInstall);
-	void DrawGradient(HDC dc, const RECT& rectClient, COLORREF m_clrStart, COLORREF m_clrEnd);
 	BOOL GetNonClientMetrics(NONCLIENTMETRICS* ncm);
+	void drawFocusRect(HDC hdc);
 
 	void OnPaint(HDC hdc, LPRECT rcDraw);
 	void OnPaintCaption(HDC hdc, LPRECT rcDraw);
 	void OnMouseMove(int x, int y);
 	void OnMouseLeave();
 	void OnLButtonDown(int x, int y);
+	void OnKeyDown(UINT vk);
 	
 	CXUITab* findTab(int x, int y);
 	CXUITab* findSelectedTab();
@@ -61,4 +62,6 @@ public:
 	void recalcLayout();
 	virtual void onCmd(LPWSTR cmd);
 	void reinitTabs();
+
+	static void DrawGradient(HDC dc, const RECT& rectClient, COLORREF m_clrStart, COLORREF m_clrEnd);
 };

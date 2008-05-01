@@ -91,34 +91,27 @@ void CXUITab::Draw( HDC hdc, int imageAlign, int imageSize, LPRECT rcItem )
 	{
 		textColor = GetSysColor(COLOR_HIGHLIGHTTEXT);
 
-		COLORREF bgColor = GetSysColor(COLOR_HIGHLIGHT);
-		COLORREF bdrColor = tswLightColor(bgColor, -50);
-		HBRUSH bgBrush = CreateSolidBrush(bgColor);
-		HPEN   bdrPen = CreatePen(PS_SOLID, 1, bdrColor);
+		COLORREF bgColor1 = tswLightColor(GetSysColor(COLOR_HIGHLIGHT), 20);
+		COLORREF bgColor2 = tswLightColor(GetSysColor(COLOR_HIGHLIGHT), -20);
 
-		HBRUSH oldBrush = (HBRUSH) SelectObject(hdc, bgBrush);
-		HPEN   oldPen	= (HPEN) SelectObject(hdc, bdrPen);
-		RoundRect(hdc, rcItem->left + DEF_MARGIN, rcItem->top, rcItem->right - DEF_MARGIN, rcItem->bottom, 2, 2);
-		SelectObject(hdc, oldBrush);
-		SelectObject(hdc, oldPen);
-		DeleteObject(bgBrush);
-		DeleteObject(bdrPen);
+		RECT rcDraw = *rcItem;
+		rcDraw.left		+= DEF_MARGIN;
+		rcDraw.right	-= DEF_MARGIN;
 
+		CXUITabSwitcher::DrawGradient(hdc, rcDraw, bgColor1, bgColor2);
 
 	} else if(m_hover)
 	{
 		COLORREF bgColor = tswLightColor(GetSysColor(COLOR_HIGHLIGHT), 50);
-		COLORREF bdrColor = tswLightColor(bgColor, -50);
-		HBRUSH bgBrush = CreateSolidBrush(bgColor);
-		HPEN   bdrPen = CreatePen(PS_SOLID, 1, bdrColor);
 
-		HBRUSH oldBrush = (HBRUSH) SelectObject(hdc, bgBrush);
-		HPEN   oldPen	= (HPEN) SelectObject(hdc, bdrPen);
-		RoundRect(hdc, rcItem->left + DEF_MARGIN, rcItem->top, rcItem->right - DEF_MARGIN, rcItem->bottom, 2, 2);
-		SelectObject(hdc, oldBrush);
-		SelectObject(hdc, oldPen);
-		DeleteObject(bgBrush);
-		DeleteObject(bdrPen);
+		COLORREF bgColor1 = tswLightColor(bgColor, 10);
+		COLORREF bgColor2 = tswLightColor(bgColor, -10);
+
+		RECT rcDraw = *rcItem;
+		rcDraw.left		+= DEF_MARGIN;
+		rcDraw.right	-= DEF_MARGIN;
+
+		CXUITabSwitcher::DrawGradient(hdc, rcDraw, bgColor1, bgColor2);
 	}
 
 	RECT	rcText	= *rcItem;
