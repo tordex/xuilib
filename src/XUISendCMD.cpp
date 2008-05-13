@@ -19,8 +19,9 @@ BOOL CXUISendCMD::loadDATA( IXMLDOMNode* node )
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	if(m_sendto)	delete m_sendto;
 	if(m_cmd)		delete m_cmd;
-	m_sendto	= xmlGetAttributeSTR(node,					TEXT("sendto"));
-	m_cmd		= xmlGetAttributeSTR(node,					TEXT("cmd"));
+	m_sendto		= xmlGetAttributeSTR		(node,	L"sendto");
+	m_cmd			= xmlGetAttributeSTR		(node,	L"cmd");
+	m_inViewerOnly	= xmlGetAttributeValueBOOL	(node,	L"inViewerOnly", FALSE);
 	return TRUE;
 }
 
@@ -28,10 +29,13 @@ void CXUISendCMD::doDefaultAction( CXUIElement* el )
 {
 	if(m_sendto && m_cmd)
 	{
-		CXUIElement* dstEl = get_root()->find(m_sendto);
-		if(dstEl)
+		if(!m_inViewerOnly || m_inViewerOnly && m_engine->isViewer())
 		{
-			dstEl->onCmd(m_cmd);
+			CXUIElement* dstEl = get_root()->find(m_sendto);
+			if(dstEl)
+			{
+				dstEl->onCmd(m_cmd);
+			}
 		}
 	}
 }

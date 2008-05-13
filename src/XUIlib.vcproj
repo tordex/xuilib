@@ -672,6 +672,10 @@
 			RelativePath=".\ReadMe.txt"
 			>
 		</File>
+		<File
+			RelativePath="..\xuilib.dtd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

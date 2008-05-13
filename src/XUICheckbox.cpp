@@ -61,7 +61,7 @@ void CXUICheckbox::Init()
 	{
 		DrawText(hdc, L"W", -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
 	}
-	RECT rcDlg = {0, 0, 1, 10};
+	RECT rcDlg = {0, 0, 7, 10};
 	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 	m_minHeight = rcDlg.bottom;
 	m_minWidth = rcDraw.right - rcDraw.left + m_minHeight + rcDlg.right;

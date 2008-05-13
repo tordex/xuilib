@@ -17,6 +17,11 @@ class CXUITextBox :	public CXUIElement
 	BOOL	m_numbers;
 	BOOL	m_password;
 	int		m_textAlign;
+	int		m_bWantReturn;
+	int		m_bAutoHScroll;
+	int		m_bAutoVScroll;
+	int		m_bHScroll;
+	int		m_bVScroll;
 
 	BOOL	m_bLockEvents;
 public:

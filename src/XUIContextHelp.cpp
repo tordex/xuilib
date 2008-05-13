@@ -72,7 +72,25 @@ void CXUIContextHelp::loadDATA( IXMLDOMNode* node )
 			m_items[m_count].img		= xmlGetAttributeSTR(child, TEXT("img"));
 			m_items[m_count].imgWidth	= xmlGetAttributeValueNonSTR<INT>(child, TEXT("imgWidth"), 0);
 			m_items[m_count].imgHeight	= xmlGetAttributeValueNonSTR<INT>(child, TEXT("imgHeight"), 0);
-			m_items[m_count].text		= xmlGetNodeText(child);
+			m_items[m_count].text		= NULL;
+
+			LPWSTR locStr = NULL;
+			LPWSTR locID = xmlGetAttributeSTR(child, TEXT("locid"));
+			if(locID)
+			{
+				locStr = m_engine->getString(locID, L"CDATA");
+				if(locStr)
+				{
+					m_items[m_count].text = new WCHAR[lstrlen(locStr) + 1];
+					lstrcpy(m_items[m_count].text, locStr);
+				}
+				delete locID;
+			}
+			if(!m_items[m_count].text)
+			{
+				m_items[m_count].text = xmlGetNodeText(child);
+			}
+
 			m_count++;
 		}
 		if(name)

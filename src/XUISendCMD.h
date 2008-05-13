@@ -5,6 +5,7 @@ class CXUISendCMD : public CXUIElement
 {
 	LPWSTR	m_sendto;
 	LPWSTR	m_cmd;
+	BOOL	m_inViewerOnly;
 public:
 	CXUISendCMD(CXUIElement* parent, CXUIEngine* engine);
 	virtual ~CXUISendCMD(void);
