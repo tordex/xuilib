@@ -236,3 +236,8 @@ void CXUIEngine::openHelpTopic( HWND hWnd, LPCWSTR topic, UINT flags )
 {
 
 }
+
+BOOL CXUIEngine::isViewer()
+{
+	return FALSE;
+}

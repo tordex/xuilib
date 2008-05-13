@@ -29,4 +29,5 @@ public:
 	virtual CXUIElement*	createXUIElement(LPCWSTR name, CXUIElement* parent);
 	virtual void			DrawImage(HDC hdc, int x, int y, int width, int height, LPWSTR imgUrl);
 	virtual void			openHelpTopic(HWND hWnd, LPCWSTR topic, UINT flags);
+	virtual BOOL			isViewer();
 };

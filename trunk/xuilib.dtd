@@ -38,6 +38,9 @@
 	contextHelp		%BOOL;			#IMPLIED
 	clipChildren	%BOOL;			#IMPLIED
 	clipSiblings	%BOOL;			#IMPLIED
+	minimizeBox		%BOOL;			#IMPLIED
+	maximizeBox		%BOOL;			#IMPLIED
+	sysMenu			%BOOL;			#IMPLIED
 	border			(none | thin | resizing | dialogFrame)	#IMPLIED
 	>
 
@@ -132,6 +135,11 @@
 	numberonly	%BOOL;				#IMPLIED
 	password	%BOOL;				#IMPLIED
 	textalign	(left|right)		#IMPLIED
+	wantReturn	%BOOL;				#IMPLIED
+	autoHScroll	%BOOL;				#IMPLIED
+	autoVScroll	%BOOL;				#IMPLIED
+	hScroll		%BOOL;				#IMPLIED
+	vScroll		%BOOL;				#IMPLIED
 	>
 
 <!ELEMENT combobox  (listitem | disabler)*>
@@ -327,6 +335,7 @@
 <!ATTLIST sendcmd
 	cmd				CDATA			#IMPLIED
 	sendto			IDREF			#REQUIRED
+	inViewerOnly	%BOOL;			#IMPLIED
 	>
 
 <!ELEMENT progress  EMPTY>

@@ -57,14 +57,17 @@ inline LPWSTR xmlGetAttributeSTR(IXMLDOMNode* item, LPCTSTR attrName)
 	CComVariant var;
 	CComQIPtr<IXMLDOMElement> spXMLChildElement;
 	spXMLChildElement = item;
-	HRESULT hr = spXMLChildElement->getAttribute(CComBSTR(attrName), &var);
-	if(hr == S_OK)
+	if(spXMLChildElement.p)
 	{
-		if(var.ChangeType(VT_BSTR) == S_OK)
+		HRESULT hr = spXMLChildElement->getAttribute(CComBSTR(attrName), &var);
+		if(hr == S_OK)
 		{
-			LPWSTR ret = new WCHAR[lstrlen(var.bstrVal) + 1];
-			lstrcpy(ret, var.bstrVal);
-			return ret;
+			if(var.ChangeType(VT_BSTR) == S_OK)
+			{
+				LPWSTR ret = new WCHAR[lstrlen(var.bstrVal) + 1];
+				lstrcpy(ret, var.bstrVal);
+				return ret;
+			}
 		}
 	}
 	return NULL;

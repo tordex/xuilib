@@ -19,15 +19,22 @@ BOOL CXUITextBox::loadDATA(IXMLDOMNode* node)
 	if(m_value) delete m_value;
 	m_value = xmlGetAttributeSTR(node, TEXT("value"));
 
-	m_readonly  =	xmlGetAttributeValueBOOL(node,	TEXT("readonly"),		VARIANT_FALSE);
-	m_multiline =	xmlGetAttributeValueBOOL(node,	TEXT("multiline"),		VARIANT_FALSE);
-	m_maxlength =	xmlGetAttributeValueNonSTR<int> (node,	TEXT("maxlength"),		0);
-	m_rows		=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("textrows"),		1);
-	m_cols		=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("textcols"),		10);
-	m_size		=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("size"),			10);
-	m_numbers	=	xmlGetAttributeValueBOOL(node,	TEXT("numberonly"),		VARIANT_FALSE);
-	m_password	=	xmlGetAttributeValueBOOL(node,	TEXT("password"),		VARIANT_FALSE);
-	m_textAlign	=	xmlGetAttributeValueSTRArray(node, TEXT("textalign"), XUI_TEXTBOX_ALIGN_LEFT, L"left\0right\0center\0");
+	m_readonly		=	xmlGetAttributeValueBOOL(node,	TEXT("readonly"),				VARIANT_FALSE);
+	m_multiline		=	xmlGetAttributeValueBOOL(node,	TEXT("multiline"),				VARIANT_FALSE);
+	m_maxlength		=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("maxlength"),		0);
+	m_rows			=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("textrows"),		1);
+	m_cols			=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("textcols"),		10);
+	m_size			=	xmlGetAttributeValueNonSTR<int> (node,	TEXT("size"),			10);
+	m_numbers		=	xmlGetAttributeValueBOOL(node,	TEXT("numberonly"),				VARIANT_FALSE);
+	m_password		=	xmlGetAttributeValueBOOL(node,	TEXT("password"),				VARIANT_FALSE);
+	m_textAlign		=	xmlGetAttributeValueSTRArray(node, TEXT("textalign"), XUI_TEXTBOX_ALIGN_LEFT, L"left\0right\0center\0");
+
+	m_bWantReturn	=	xmlGetAttributeValueBOOL(node,	TEXT("wantReturn"),		VARIANT_FALSE);
+	m_bAutoHScroll	=	xmlGetAttributeValueBOOL(node,	TEXT("autoHScroll"),	m_multiline ? VARIANT_FALSE : VARIANT_TRUE);
+	m_bAutoVScroll	=	xmlGetAttributeValueBOOL(node,	TEXT("autoVScroll"),	VARIANT_FALSE);
+	m_bHScroll		=	xmlGetAttributeValueBOOL(node,	TEXT("hScroll"),		VARIANT_FALSE);
+	m_bVScroll		=	xmlGetAttributeValueBOOL(node,	TEXT("vScroll"),		VARIANT_FALSE);
+
 	return TRUE;
 }
 
@@ -39,7 +46,11 @@ void CXUITextBox::Init()
 	if(!get_hidden())	wStyle |= WS_VISIBLE;
 	if(m_readonly)		wStyle |= ES_READONLY;
 	if(m_multiline)		wStyle |= ES_MULTILINE;
-	if(!m_multiline)	wStyle |= ES_AUTOHSCROLL;
+	if(m_bAutoHScroll)	wStyle |= ES_AUTOHSCROLL;
+	if(m_bAutoVScroll)	wStyle |= ES_AUTOVSCROLL;
+	if(m_bWantReturn)	wStyle |= ES_WANTRETURN;
+	if(m_bHScroll)		wStyle |= WS_HSCROLL;
+	if(m_bVScroll)		wStyle |= WS_VSCROLL;
 	if(m_numbers)		wStyle |= ES_NUMBER;
 	if(m_password)		wStyle |= ES_PASSWORD;
 	switch(m_textAlign)

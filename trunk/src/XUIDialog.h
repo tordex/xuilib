@@ -319,6 +319,9 @@ protected:
 	BOOL			m_bClipChildren;
 	BOOL			m_bClipSiblings;
 	UINT			m_border;
+	BOOL			m_bMinimizeBox;
+	BOOL			m_bMaximizeBox;
+	BOOL			m_bSysMenu;
 	CXUIContextHelp	m_contextHelp;
 	CXUIButton*		m_defButton;
 	INT				m_minWindowWidth;

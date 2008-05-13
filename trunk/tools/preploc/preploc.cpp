@@ -38,6 +38,7 @@ struct
 	{L"tab",			L"caption"		},
 	{L"url",			L"text"			},
 	{L"url",			L"url"			},
+	{L"tip",			L"CDATA"		},
 	{NULL,				NULL			}
 };
 
@@ -49,11 +50,23 @@ void processNode(IXMLDOMNode* root)
 	{
 		if(!lstrcmpi(tags[i].tag, nodeName))
 		{
-			LPTSTR val = xmlGetAttributeSTR(root, tags[i].attr);
+			LPTSTR val = NULL;
+			if(lstrcmp(tags[i].attr, L"CDATA"))
+			{
+				val = xmlGetAttributeSTR(root, tags[i].attr);
+			} else
+			{
+				val = xmlGetNodeText(root);
+			}
+			if(val && !lstrcmp(tags[i].tag, L"url") && !lstrcmp(tags[i].attr, L"url") && !lstrcmp(val, L":notify:"))
+			{
+				delete val;
+				val = NULL;
+			}
 			if(val)
 			{
 				LOC_STR locstr = {0};
-				
+
 				locstr.id				= xmlGetAttributeSTR(root, L"locid");
 				locstr.defString		= val;
 				locstr.node				= root;
@@ -73,7 +86,7 @@ void processNode(IXMLDOMNode* root)
 	}
 }
 
-void processFile(LPTSTR fileName, LPTSTR prefix)
+int processFile(LPTSTR fileName, LPTSTR prefix, int startIDX)
 {
 	CComPtr<IXMLDOMDocument> doc;
 	doc.CoCreateInstance(CLSID_DOMFreeThreadedDocument, NULL, CLSCTX_INPROC_SERVER);
@@ -95,7 +108,7 @@ void processFile(LPTSTR fileName, LPTSTR prefix)
 					gStrings[i].id	= xmlGetAttributeSTR(gStrings[i].node, L"locid");
 					if(!gStrings[i].id)
 					{
-						for(int key=1; true; key++)
+						for(int key=startIDX; true; key++)
 						{
 							TCHAR id[255];
 							wsprintf(id, L"%s-%X", prefix, key);
@@ -113,6 +126,7 @@ void processFile(LPTSTR fileName, LPTSTR prefix)
 							}
 							if(!found)
 							{
+								startIDX = key;
 								MAKE_STR(gStrings[i].id, id);
 								break;
 							}
@@ -133,6 +147,7 @@ void processFile(LPTSTR fileName, LPTSTR prefix)
 		}
 		doc->save(CComVariant(fileName));
 	}
+	return startIDX;
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -161,12 +176,18 @@ int _tmain(int argc, _TCHAR* argv[])
 					if(name)
 					{
 						LPTSTR prefix = xmlGetAttributeSTR(file, TEXT("prefix"));
+						int startIDX = xmlGetAttributeValueNonSTR<INT>(file, L"idx", 1);
 						TCHAR flName[MAX_PATH];
 						lstrcpy(flName, argv[1]);
 						PathRemoveFileSpec(flName);
 						PathAddBackslash(flName);
 						lstrcat(flName, name);
-						processFile(flName, prefix);
+						startIDX = processFile(flName, prefix, startIDX);
+
+						CComQIPtr<IXMLDOMElement> spXMLChildElement;
+						spXMLChildElement = file;
+						spXMLChildElement->setAttribute(L"idx",	CComVariant(startIDX));
+
 						delete name;
 						delete prefix;
 					}
@@ -201,6 +222,19 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							newNode->Release();
 						}
+					} else
+					{
+						LPWSTR oldStr = xmlGetAttributeSTR(nodeStr, L"text");
+						if(oldStr)
+						{
+							if(lstrcmp(oldStr, gStrings[i].defString))
+							{
+								CComQIPtr<IXMLDOMElement> spXMLChildElement;
+								spXMLChildElement = nodeStr;
+								spXMLChildElement->setAttribute(L"text",	CComVariant(gStrings[i].defString));
+							}
+						}
+						nodeStr->Release();
 					}
 				}
 				nodeStrings->Release();

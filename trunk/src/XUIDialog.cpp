@@ -201,11 +201,17 @@ BOOL CXUIDialog::loadDATA(IXMLDOMNode* node)
 	m_bContextHelp	= xmlGetAttributeValueBOOL(node,	TEXT("contextHelp"),	FALSE);
 	m_bClipChildren	= xmlGetAttributeValueBOOL(node,	TEXT("clipChildren"),	FALSE);
 	m_bClipSiblings	= xmlGetAttributeValueBOOL(node,	TEXT("clipSiblings"),	FALSE);
+	m_bMinimizeBox	= xmlGetAttributeValueBOOL(node,	TEXT("minimizeBox"),	FALSE);
+	m_bMaximizeBox	= xmlGetAttributeValueBOOL(node,	TEXT("maximizeBox"),	FALSE);
+	m_bSysMenu		= xmlGetAttributeValueBOOL(node,	TEXT("sysMenu"),		TRUE);
 	m_border		= xmlGetAttributeValueSTRArray(node, TEXT("border"), XUI_DLG_BORDER_DIALOGFRAME, L"none\0thin\0resizing\0dialogFrame\0");
-	m_style = WS_VISIBLE | DS_SETFONT | WS_POPUP | WS_SYSMENU;
+	m_style = WS_VISIBLE | DS_SETFONT | WS_POPUP;
 
 	if(m_bClipChildren)	m_style |= WS_CLIPCHILDREN;
 	if(m_bClipSiblings)	m_style |= WS_CLIPSIBLINGS;
+	if(m_bMaximizeBox)	m_style |= WS_MAXIMIZEBOX;
+	if(m_bMinimizeBox)	m_style |= WS_MINIMIZEBOX;
+	if(m_bSysMenu)		m_style |= WS_SYSMENU;
 
 	switch(m_border)
 	{
