@@ -174,6 +174,7 @@ void CXUIList::render( int x, int y, int width, int height )
 			}
 			ListView_SetColumnWidth(m_hWnd, i, colsWidth[i].width);
 		}
+		delete colsWidth;
 	}
 }
 

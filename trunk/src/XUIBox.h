@@ -12,4 +12,5 @@ public:
 
 	int		get_margin(int mgidx);
 	BOOL	loadDATA(IXMLDOMNode* node);
+	void	Init();
 };

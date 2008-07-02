@@ -545,6 +545,38 @@ BOOL CMainDialog::OnImport( LPWSTR fileName )
 
 			root->Release();
 		}
+	} else
+	{
+		FILE* fl = _tfopen(fileName, TEXT("rb"));
+		if(fl)
+		{
+			while(!feof(fl))
+			{
+				TCHAR locStr[1024];
+				if(_fgetts(locStr, 1024, fl))
+				{
+					locStr[lstrlen(locStr)-1] = 0;
+
+					TCHAR* p = _tcsstr(locStr, TEXT("="));
+					if(p)
+					{
+						TCHAR* enStr = new TCHAR[p - locStr + 1];
+						_tcsncpy(enStr, locStr, p - locStr);
+						enStr[p - locStr] = 0;
+						
+						for(int i=0; i < m_strings.GetCount(); i++)
+						{
+							if(!m_strings[i].locString && !lstrcmp(enStr, m_strings[i].defString))
+							{
+								updateString(i, p + 1);
+							}
+						}
+						delete enStr;
+					}
+				}
+			}
+			fclose(fl);
+		}
 	}
 	return TRUE;
 }

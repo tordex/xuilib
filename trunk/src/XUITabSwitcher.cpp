@@ -40,7 +40,7 @@ CXUITabSwitcher::CXUITabSwitcher(CXUIElement* parent, CXUIEngine* engine) : CXUI
 		wc.hInstance      = m_engine->get_hInstance();
 		wc.hIcon          = NULL;
 		wc.hCursor        = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground  = (HBRUSH) (COLOR_WINDOW + 1);
+		wc.hbrBackground  = NULL;
 		wc.lpszMenuName   = NULL;
 		wc.lpszClassName  = XUI_TAB_CAPTION;
 
@@ -226,6 +226,8 @@ LRESULT CXUITabSwitcher::WndProcCaption(HWND hWnd, UINT uMessage, WPARAM wParam,
 	{
 		switch(uMessage)
 		{
+		case WM_ERASEBKGND:
+			return TRUE;
 		case WM_CREATE:
 			{
 				LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
@@ -268,6 +270,15 @@ void CXUITabSwitcher::Init()
 	m_ctlsMarginX	= rcMargins.right;
 	m_ctlsMarginY	= rcMargins.top;
 	m_captionHeight	= rcMargins.bottom;
+	if(!m_bShowCaption)
+	{
+		m_captionHeight = 0;
+		m_ctlsMarginY	= 0;
+	}
+	if(!m_bShowSwitcher)
+	{
+		m_ctlsMarginX	= 0;
+	}
 
 	NONCLIENTMETRICS ncm;
 	ZeroMemory(&ncm, sizeof(ncm));
@@ -834,6 +845,23 @@ LPCWSTR CXUITabSwitcher::value_STR()
 		}
 	}
 	return NULL;
+}
+
+void CXUITabSwitcher::value_STR( LPCWSTR val )
+{
+	for(int i=0; i < m_childCount; i++)
+	{
+		CXUITab* tab = NULL;
+		m_childs[i]->QueryElement(L"tab", (LPVOID*) &tab);
+		if(tab)
+		{
+			if(!lstrcmp(tab->get_id(), val))
+			{
+				value_INT(tab->value_INT());
+				break;
+			}
+		}
+	}
 }
 
 void CXUITabSwitcher::OnKeyDown( UINT vk )

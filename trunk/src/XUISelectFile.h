@@ -28,7 +28,7 @@ class CXUISelectFile : public CXUIElement
 	LPWSTR	m_defExt;
 	LPWSTR	m_title;
 	LPWSTR	m_saveto;
-	LPTSTR	m_fileName;
+	LPWSTR	m_fileName;
 	UINT	m_type;
 public:
 	CXUISelectFile(CXUIElement* parent, CXUIEngine* engine);
