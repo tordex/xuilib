@@ -33,7 +33,7 @@ void CXUILine::Init()
 	{
 	case XUI_LINE_TYPE_ETCHED_HORZ:
 		{
-			RECT rcDlg = {0, 0, m_width ? m_width : 14, 2};
+			RECT rcDlg = {0, 0, m_width ? m_width : 14, 1};
 			MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 			m_minWidth  = rcDlg.right;
 			m_minHeight = rcDlg.bottom;
@@ -41,7 +41,7 @@ void CXUILine::Init()
 		break;
 	case XUI_LINE_TYPE_ETCHED_VERT:
 		{
-			RECT rcDlg = {0, 0, 2, m_height ? m_height : 14};
+			RECT rcDlg = {0, 0, 1, m_height ? m_height : 14};
 			MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 			m_minWidth  = rcDlg.right;
 			m_minHeight = rcDlg.bottom;
@@ -55,4 +55,28 @@ BOOL CXUILine::loadDATA( IXMLDOMNode* node )
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	m_type	= xmlGetAttributeValueSTRArray(node, TEXT("type"), XUI_LINE_TYPE_ETCHED_HORZ, L"EtchedHorz\0EtchedVert\0");
 	return TRUE;
+}
+
+void CXUILine::render( int x, int y, int width, int height )
+{
+	if(m_hWnd && m_parent)
+	{
+		switch(m_type)
+		{
+		case XUI_LINE_TYPE_ETCHED_HORZ:
+			{
+				int posX = x;
+				int posY = y + height / 2 - m_minHeight / 2;
+				SetWindowPos(m_hWnd, NULL, posX, posY, width, m_minHeight, SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS | SWP_DEFERERASE);
+			}
+			break;
+		case XUI_LINE_TYPE_ETCHED_VERT:
+			{
+				int posX = x + width / 2 - m_minWidth / 2;
+				int posY = y;
+				SetWindowPos(m_hWnd, NULL, posX, posY, m_minWidth, height, SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS | SWP_DEFERERASE);
+			}
+			break;
+		}
+	}
 }

@@ -59,7 +59,12 @@
 
 <!ELEMENT box  ANY>
 <!ATTLIST box
-	%coreattrs; >
+	%coreattrs; 
+	marginLeft		CDATA			#IMPLIED
+	marginRight		CDATA			#IMPLIED
+	marginTop		CDATA			#IMPLIED
+	marginBottom	CDATA			#IMPLIED
+	>
 
 <!ELEMENT button  (selectfile | sendcmd | openhelp)*>
 <!ATTLIST button
@@ -211,6 +216,9 @@
 	pic				CDATA			#REQUIRED
 	picWidth		CDATA			#REQUIRED
 	picHeight		CDATA			#REQUIRED
+	frames			CDATA			#IMPLIED
+	animInterval	CDATA			#IMPLIED
+	framesOrient	(vertical | horizontal)	#IMPLIED
 	>
 
 <!ELEMENT listbox  (listitem | disabler)*>

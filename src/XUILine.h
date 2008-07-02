@@ -13,6 +13,7 @@ public:
 
 	IMPLEMENT_INTERFACE(L"line")
 
-	void Init();
-	BOOL loadDATA(IXMLDOMNode* node);
+	virtual void Init();
+	virtual BOOL loadDATA(IXMLDOMNode* node);
+	virtual void render(int x, int y, int width, int height);
 };

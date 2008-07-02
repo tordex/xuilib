@@ -29,7 +29,7 @@ BOOL CXUIListBox::loadDATA( IXMLDOMNode* node )
 
 void CXUIListBox::Init()
 {
-	DWORD wStyle = WS_CHILD | WS_TABSTOP | LBS_NOTIFY;
+	DWORD wStyle = WS_CHILD | WS_TABSTOP | LBS_NOTIFY | WS_VSCROLL;
 
 	if(get_disabled())		wStyle |= WS_DISABLED;
 	if(!get_hidden())		wStyle |= WS_VISIBLE;

@@ -4,6 +4,7 @@
 
 CXUIPicture::CXUIPicture(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
+	m_curFrame		= NULL;
 	m_picture		= NULL;
 	m_picWidth		= NULL;
 	m_picHeight		= NULL;
@@ -18,8 +19,8 @@ CXUIPicture::CXUIPicture(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(
 		wc.cbWndExtra     = 0;
 		wc.hInstance      = m_engine->get_hInstance();
 		wc.hIcon          = NULL;
-		wc.hCursor        = LoadCursor(NULL, IDC_IBEAM);
-		wc.hbrBackground  = (HBRUSH)(COLOR_BTNFACE + 1);
+		wc.hCursor        = NULL;
+		wc.hbrBackground  = NULL;
 		wc.lpszMenuName   = NULL;
 		wc.lpszClassName  = XUI_PICTURE_CLASS;
 
@@ -44,6 +45,8 @@ LRESULT CALLBACK CXUIPicture::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, 
 	{
 		switch (uMessage)
 		{
+		case WM_ERASEBKGND:
+			return TRUE;
 		case WM_CREATE:
 			{
 				LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
@@ -63,6 +66,17 @@ LRESULT CALLBACK CXUIPicture::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, 
 				EndPaint(hWnd, &ps);
 			}
 			break;
+		case WM_TIMER:
+			{
+				pThis->m_curFrame++;
+				if(pThis->m_curFrame >= pThis->m_frames)
+				{
+					pThis->m_curFrame = 0;
+				}
+				InvalidateRect(hWnd, NULL, FALSE);
+				UpdateWindow(hWnd);
+			}
+			break;
 		}
 	}
 
@@ -71,7 +85,29 @@ LRESULT CALLBACK CXUIPicture::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, 
 
 void CXUIPicture::OnPaint( HDC hdc )
 {
-	m_engine->DrawImage(hdc, 0, 0, m_picWidth, m_picHeight, m_picture);
+	RECT rcClient;
+	GetClientRect(m_hWnd, &rcClient);
+	int width	= rcClient.right - rcClient.left;
+	int height	= rcClient.bottom - rcClient.top;
+
+	HBITMAP bmp		= CreateCompatibleBitmap(hdc, width, height);
+	HDC		memDC	= CreateCompatibleDC(hdc);
+	HBITMAP oldBmp	= (HBITMAP) SelectObject(memDC, bmp);
+
+	SendMessage(GetParent(m_hWnd), WM_ERASEBKGND, (WPARAM) memDC, NULL);
+
+	if(m_frames <= 1)
+	{
+		m_engine->DrawImage(memDC, 0, 0, m_picWidth, m_picHeight, m_picture);
+	} else
+	{
+		m_engine->DrawFrame(memDC, 0, 0, m_picWidth, m_picHeight, m_picture, m_frames, m_curFrame, m_framesAlign);
+	}
+
+	BitBlt(hdc, 0, 0, width, height, memDC, 0, 0, SRCCOPY);
+	SelectObject(memDC, oldBmp);
+	DeleteDC(memDC);
+	DeleteObject(bmp);
 }
 
 void CXUIPicture::Init()
@@ -83,6 +119,11 @@ void CXUIPicture::Init()
 
 	m_hWnd = CreateWindowEx(0, XUI_PICTURE_CLASS, TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), (LPVOID) this);
 
+	if(m_frames > 1)
+	{
+		SetTimer(m_hWnd, 1, m_animInterval, NULL);
+	}
+
 	m_minWidth  = m_picWidth;
 	m_minHeight = m_picHeight;
 }
@@ -91,8 +132,11 @@ BOOL CXUIPicture::loadDATA( IXMLDOMNode* node )
 {
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	if(m_picture) delete m_picture;
-	m_picture	= xmlGetAttributeSTR(node,				TEXT("pic"));
-	m_picWidth	= xmlGetAttributeValueNonSTR<int>(node,	TEXT("picWidth"),		0);
-	m_picHeight	= xmlGetAttributeValueNonSTR<int>(node,	TEXT("picHeight"),		0);
+	m_picture		= xmlGetAttributeSTR(node,				TEXT("pic"));
+	m_picWidth		= xmlGetAttributeValueNonSTR<int>(node,	TEXT("picWidth"),		0);
+	m_picHeight		= xmlGetAttributeValueNonSTR<int>(node,	TEXT("picHeight"),		0);
+	m_frames		= xmlGetAttributeValueNonSTR<int>(node,	TEXT("frames"),			1);
+	m_animInterval	= xmlGetAttributeValueNonSTR<int>(node,	TEXT("animInterval"),	0);
+	m_framesAlign	= xmlGetAttributeValueSTRArray(node, TEXT("framesOrient"), XUI_FRAMES_VALIGN, L"vertical\0horizontal\0");
 	return TRUE;
 }

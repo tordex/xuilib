@@ -50,17 +50,19 @@ public:
 
 	IMPLEMENT_INTERFACE(L"tabswitcher")
 
-	void Init();
-	void render(int x, int y, int width, int height);
-	void getMinSize(SIZE& minSize);
-	BOOL loadDATA(IXMLDOMNode* node);
-	HWND get_parentWnd();
-	void value_INT(INT val);
-	INT  value_INT();
-	LPCWSTR value_STR();
+	virtual void	Init();
+	virtual void	render(int x, int y, int width, int height);
+	virtual void	getMinSize(SIZE& minSize);
+	virtual BOOL	loadDATA(IXMLDOMNode* node);
+	virtual HWND	get_parentWnd();
+	virtual void	value_INT(INT val);
+	virtual INT		value_INT();
+	virtual LPCWSTR	value_STR();
+	virtual void	value_STR(LPCWSTR val);
 
-	void recalcLayout();
-	virtual void onCmd(LPWSTR cmd);
+	virtual void	recalcLayout();
+	virtual void	onCmd(LPWSTR cmd);
+	
 	void reinitTabs();
 
 	static void DrawGradient(HDC dc, const RECT& rectClient, COLORREF m_clrStart, COLORREF m_clrEnd);

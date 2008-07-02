@@ -241,3 +241,8 @@ BOOL CXUIEngine::isViewer()
 {
 	return FALSE;
 }
+
+void CXUIEngine::DrawFrame( HDC hdc, int x, int y, int width, int height, LPWSTR imgUrl, int frames, int frame, int framesOrient )
+{
+
+}
