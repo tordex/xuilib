@@ -332,6 +332,8 @@ void CXUIHotkey::Init()
 	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 	m_minWidth  = rcDlg.right;
 	m_minHeight = rcDlg.bottom;
+
+	CXUIElement::Init();
 }
 
 INT CXUIHotkey::value_INT()

@@ -337,6 +337,8 @@
 	img			CDATA		#IMPLIED
 	imgWidth	CDATA		#IMPLIED
 	imgHeight	CDATA		#IMPLIED
+	tag			CDATA		#IMPLIED
+	locid		CDATA		#IMPLIED
 	>
 
 <!ELEMENT sendcmd  EMPTY>

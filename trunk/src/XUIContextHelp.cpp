@@ -70,6 +70,7 @@ void CXUIContextHelp::loadDATA( IXMLDOMNode* node )
 			
 			m_items[m_count].control	= xmlGetAttributeSTR(child, TEXT("control"));
 			m_items[m_count].img		= xmlGetAttributeSTR(child, TEXT("img"));
+			m_items[m_count].tag		= xmlGetAttributeSTR(child, TEXT("tag"));
 			m_items[m_count].imgWidth	= xmlGetAttributeValueNonSTR<INT>(child, TEXT("imgWidth"), 0);
 			m_items[m_count].imgHeight	= xmlGetAttributeValueNonSTR<INT>(child, TEXT("imgHeight"), 0);
 			m_items[m_count].text		= NULL;
@@ -111,6 +112,7 @@ void CXUIContextHelp::Clear()
 		if(m_items[i].control)	delete m_items[i].control;
 		if(m_items[i].text)		delete m_items[i].text;
 		if(m_items[i].img)		delete m_items[i].img;
+		if(m_items[i].tag)		delete m_items[i].tag;
 	}
 	if(m_items)
 	{
@@ -120,7 +122,7 @@ void CXUIContextHelp::Clear()
 	m_count = NULL;
 }
 
-void CXUIContextHelp::show( LPCWSTR control, HWND hWndCtl )
+void CXUIContextHelp::show( LPCWSTR control, HWND hWndCtl, LPCWSTR tag )
 {
 	if(m_hWnd)
 	{
@@ -129,10 +131,23 @@ void CXUIContextHelp::show( LPCWSTR control, HWND hWndCtl )
 	m_curItem = -1;
 	for(int i=0; i < m_count; i++)
 	{
-		if(!lstrcmpi(m_items[i].control, control))
+		if(tag)
 		{
-			m_curItem = i;
-			break;
+			if(m_items[i].tag)
+			{
+				if(!lstrcmpi(m_items[i].control, control) && !lstrcmpi(m_items[i].tag, tag))
+				{
+					m_curItem = i;
+					break;
+				}
+			}
+		} else
+		{
+			if(!lstrcmpi(m_items[i].control, control) && !m_items[i].tag)
+			{
+				m_curItem = i;
+				break;
+			}
 		}
 	}
 	if(m_curItem >= 0)

@@ -67,6 +67,12 @@ void CXUITextBox::Init()
 	}
 
 	m_hWnd = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), m_value, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
+
+	if(m_maxlength)
+	{
+		SendMessage(m_hWnd, EM_LIMITTEXT, m_maxlength, NULL);
+	}
+
 	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
 	HDC hdc = GetDC(m_hWnd);
 	HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));

@@ -161,8 +161,19 @@ void CXUIElement::addChild(CXUIElement* child)
 
 void CXUIElement::Init()
 {
-	if(m_parent) m_cellSpaceX = m_parent->m_cellSpaceX;
-	if(m_parent) m_cellSpaceY = m_parent->m_cellSpaceY;
+	if(m_parent)
+	{
+		m_cellSpaceX = m_parent->m_cellSpaceX;
+		m_cellSpaceY = m_parent->m_cellSpaceY;
+
+		RECT rcDlg = {0, 0, 0, 0};
+		rcDlg.right		= m_maxWidth;
+		rcDlg.bottom	= m_maxHeight;
+		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+		m_maxHeight = rcDlg.bottom;
+		m_maxWidth	= rcDlg.right;
+	}
+
 	for(int i=0; i < m_childCount; i++)
 	{
 		m_childs[i]->Init();
@@ -262,7 +273,17 @@ void CXUIElement::render( int x, int y, int width, int height )
 {
 	if(m_hWnd && m_parent)
 	{
-		SetWindowPos(m_hWnd, NULL, x, y, width, height, SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS | SWP_DEFERERASE);
+		int w = width;
+		int h = height;
+		if(m_maxWidth > 0 && width > m_maxWidth)
+		{
+			w = m_maxWidth;
+		}
+		if(m_maxHeight > 0 && height > m_maxHeight)
+		{
+			h = m_maxHeight;
+		}
+		SetWindowPos(m_hWnd, NULL, x, y, w, h, SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS | SWP_DEFERERASE);
 	}
 	if(m_childCount)
 	{

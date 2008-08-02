@@ -8,6 +8,7 @@ struct CONTEXT_HELP_ITEM
 	LPWSTR	control;
 	LPWSTR	text;
 	LPWSTR	img;
+	LPWSTR	tag;
 	int		imgWidth;
 	int		imgHeight;
 };
@@ -31,7 +32,7 @@ public:
 
 	void Clear();
 	void loadDATA(IXMLDOMNode* node);
-	void show(LPCWSTR control, HWND hWndCtl);
+	void show(LPCWSTR control, HWND hWndCtl, LPCWSTR tag = NULL);
 
 	// CHTMLProgress
 	virtual void LinkClicked(TCHAR *szLink);
