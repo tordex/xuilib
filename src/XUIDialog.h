@@ -346,6 +346,7 @@ public:
 	virtual int	getSavedWidth(int defWidth);
 	virtual int	getSavedHeight(int defHeight);
 	virtual void saveSizes(int width, int height);
+	virtual void showTipMessage(LPCWSTR elID, LPCWSTR tag);
 	
 	BOOL loadDATA(IXMLDOMNode* node);
 	UINT DoModal(HWND hWndParent);

@@ -782,3 +782,12 @@ void CXUIDialog::saveSizes( int width, int height )
 {
 
 }
+
+void CXUIDialog::showTipMessage( LPCWSTR elID, LPCWSTR tag )
+{
+	CXUIElement* el = find((LPTSTR) elID);
+	if(el)
+	{
+		m_contextHelp.show(elID, el->get_wnd(), tag);
+	}
+}
