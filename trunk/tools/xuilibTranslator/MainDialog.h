@@ -92,6 +92,9 @@ protected:
 	BOOL OnOpen();
 	BOOL OnSave();
 	BOOL OnImport(LPWSTR fileName);
+
+	LPWSTR clearStringForImport( LPWSTR src );
+	void importString( LPWSTR src, LPWSTR dst );
 	BOOL OnFindChanged();
 	BOOL OnTestDlg();
 	BOOL OnUrlTranslated();

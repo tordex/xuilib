@@ -19,9 +19,10 @@ public:
 
 	IMPLEMENT_INTERFACE(L"button")
 
-	virtual BOOL loadDATA(IXMLDOMNode* node);
-	virtual void Init();
-	virtual BOOL onCommnd(UINT code, UINT id, HWND hWnd);
+	virtual BOOL	loadDATA(IXMLDOMNode* node);
+	virtual void	Init();
+	virtual BOOL	onCommnd(UINT code, UINT id, HWND hWnd);
+	virtual void	value_STR(LPCWSTR val);
 
 	void set_default(BOOL isDefault);
 };

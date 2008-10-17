@@ -523,17 +523,12 @@ BOOL CMainDialog::OnImport( LPWSTR fileName )
 				{
 					LPWSTR src = xmlGetNodeText(nodeSRC);
 					LPWSTR dst = xmlGetNodeText(nodeDST);
-
+					
 					if(src && dst)
 					{
-						for(int i=0; i < m_strings.GetCount(); i++)
-						{
-							if(!m_strings[i].locString && !lstrcmp(src, m_strings[i].defString))
-							{
-								updateString(i, dst);
-							}
-						}
+						importString(src, dst);
 					}
+
 					FREE_CLEAR_STR(src);
 					FREE_CLEAR_STR(dst);
 				}
@@ -800,4 +795,38 @@ void CMainDialog::getStringInfo( int idx, STR_INFO* info )
 			}
 		}
 	}
+}
+
+void CMainDialog::importString( LPWSTR src, LPWSTR dst )
+{
+	if(src && dst)
+	{
+		for(int i=0; i < m_strings.GetCount(); i++)
+		{
+			LPWSTR strClear1 = clearStringForImport(src);
+			LPWSTR strClear2 = clearStringForImport(m_strings[i].defString);
+
+			if(!m_strings[i].locString && !lstrcmp(strClear1, strClear2))
+			{
+				updateString(i, dst);
+			}
+			delete strClear1;
+			delete strClear2;
+		}
+	}
+}
+
+LPWSTR CMainDialog::clearStringForImport( LPWSTR src )
+{
+	LPWSTR strNoAmp = new WCHAR[lstrlen(src) + 1];
+	int ii = 0;
+	for(int i=0; src[i] && src[i] != L'\t'; i++)
+	{
+		if(src[i] != L'&')
+		{
+			strNoAmp[ii++] = src[i];
+		}
+	}
+	strNoAmp[ii] = 0;
+	return strNoAmp;
 }

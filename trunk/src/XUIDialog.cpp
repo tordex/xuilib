@@ -632,6 +632,24 @@ void CXUIDialog::loadMapItem( DATA_MAP_ITEM* item, CXUIElement* parent )
 				}
 			}
 			break;
+		case BIND_TYPE_BYTE:
+			if(item->byteVal)
+			{
+				if(!item->isChoice)
+				{
+					el->value_INT(*(item->byteVal));
+				} else
+				{
+					if(*(item->byteVal) == item->intTrueVal)
+					{
+						el->value_INT(TRUE);
+					} else
+					{
+						el->value_INT(FALSE);
+					}
+				}
+			}
+			break;
 		case BIND_TYPE_PSTR:
 			if(item->pstrVal && *(item->pstrVal))
 			{
@@ -687,6 +705,24 @@ void CXUIDialog::saveMapItem( DATA_MAP_ITEM* item )
 					} else
 					{
 						*item->wordVal = (WORD) item->intFalseVal;
+					}
+				}
+			}
+			break;
+		case BIND_TYPE_BYTE:
+			if(item->byteVal)
+			{
+				if(!item->isChoice)
+				{
+					*item->byteVal = (BYTE) el->value_INT();
+				} else
+				{
+					if(el->value_INT())
+					{
+						*item->byteVal = (BYTE) item->intTrueVal;
+					} else
+					{
+						*item->byteVal = (BYTE) item->intFalseVal;
 					}
 				}
 			}
@@ -790,4 +826,20 @@ void CXUIDialog::showTipMessage( LPCWSTR elID, LPCWSTR tag )
 	{
 		m_contextHelp.show(elID, el->get_wnd(), tag);
 	}
+}
+
+HWND CXUIDialog::Create( HWND hWndParent )
+{
+	if(loadFile(m_fileName, TEXT("dialog"), m_engine->get_hInstance()))
+	{
+		if(!m_hDlg)
+		{
+			m_hDlg = createDialog(m_left, m_top, m_width, m_height);
+		}
+		if(m_hDlg)
+		{
+			return CreateDialogIndirectParam(m_engine->get_hInstance(), m_hDlg, hWndParent, (DLGPROC) CXUIDialog::WndProc, (LPARAM)this); 
+		}
+	}
+	return NULL;
 }
