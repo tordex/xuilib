@@ -328,6 +328,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\XUIDatePicker.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\XUIDialog.cpp"
 				>
 			</File>
@@ -515,6 +519,10 @@
 			</File>
 			<File
 				RelativePath=".\XUIContextHelp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XUIDatePicker.h"
 				>
 			</File>
 			<File

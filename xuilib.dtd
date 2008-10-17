@@ -109,7 +109,7 @@
 	hAlign		(default|left|right|center)		#IMPLIED
 	>
 
-<!ELEMENT radiogroup  (radio|spacer)*>
+<!ELEMENT radiogroup  ANY>
 <!ATTLIST radiogroup
 	%coreattrs; 
 	>
@@ -358,5 +358,13 @@
 	lowLimit		CDATA			#IMPLIED
 	highLimit		CDATA			#IMPLIED
 	pos				CDATA			#IMPLIED
+	>
+
+<!ELEMENT datepicker  EMPTY>
+<!ATTLIST datepicker
+	%coreattrs; 
+	format			(shortDate | longDate | time)	#IMPLIED
+	showNone		%BOOL;							#IMPLIED
+	useSpin			%BOOL;							#IMPLIED
 	>
 

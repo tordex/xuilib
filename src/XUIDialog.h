@@ -7,6 +7,7 @@
 #define BIND_TYPE_PSTR	1
 #define BIND_TYPE_STR	2
 #define BIND_TYPE_WORD	3
+#define BIND_TYPE_BYTE	4
 
 //////////////////////////////////////////////////////////////////////////
 //						DATA EXCHANGE MAP								//
@@ -27,6 +28,15 @@
 
 #define XUI_DATA_MAP_WORD( elID, val)	item.id = elID; item.isChoice = FALSE; item.type = BIND_TYPE_WORD; item.wordVal = (LPWORD) &(val); \
 									if(bSave) \
+									{ \
+										saveMapItem(&item); \
+									} else \
+									{ \
+										loadMapItem(&item, parent); \
+									}
+
+#define XUI_DATA_MAP_BYTE( elID, val)	item.id = elID; item.isChoice = FALSE; item.type = BIND_TYPE_BYTE; item.byteVal = (LPBYTE) &(val); \
+	if(bSave) \
 									{ \
 										saveMapItem(&item); \
 									} else \
@@ -293,6 +303,7 @@ struct DATA_MAP_ITEM
 	{
 		LPINT		intVal;
 		LPWORD		wordVal;
+		LPBYTE		byteVal;
 		LPWSTR*		pstrVal;
 		LPWSTR		strVal;
 	};
@@ -350,6 +361,7 @@ public:
 	
 	BOOL loadDATA(IXMLDOMNode* node);
 	UINT DoModal(HWND hWndParent);
+	HWND Create(HWND hWndParent);
 	virtual void dataExchange(BOOL bSave, CXUIElement* parent);
 	virtual void bindControls();
 	virtual BOOL ProcessNotify(UINT uMsg, CXUIElement* el, WPARAM wParam, LPARAM lParam);

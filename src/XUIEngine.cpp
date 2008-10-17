@@ -143,6 +143,9 @@ CXUIElement* CXUIEngine::createXUIElement( LPCWSTR name, CXUIElement* parent )
 	} else if(!StrCmpI(name, TEXT("openhelp")))
 	{
 		ret = new CXUIOpenHelp(parent, this);
+	} else if(!StrCmpI(name, TEXT("datepicker")))
+	{
+		ret = new CXUIDatePicker(parent, this);
 	}
 	return ret;
 }

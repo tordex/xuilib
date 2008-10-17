@@ -12,6 +12,7 @@ class CXUIListBox : public CXUIElement
 	int		m_colWidth;
 	UINT	m_selection;
 	BOOL	m_bSort;
+	BOOL	m_listRows;
 	BOOL	m_bNoIntegralHeight;
 public:
 	CXUIListBox(CXUIElement* parent, CXUIEngine* engine);

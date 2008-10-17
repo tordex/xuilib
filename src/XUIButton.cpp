@@ -86,3 +86,14 @@ void CXUIButton::set_default( BOOL isDefault )
 		SendMessage(m_hWnd, BM_SETSTYLE, (WPARAM) 0, (LPARAM) TRUE);
 	}
 }
+
+void CXUIButton::value_STR( LPCWSTR val )
+{
+	if(val)
+	{
+		SetWindowText(m_hWnd, val);
+	} else
+	{
+		SetWindowText(m_hWnd, TEXT(""));
+	}
+}

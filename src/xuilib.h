@@ -43,6 +43,7 @@
 #include "XUISendCMD.h"
 #include "XUIProgress.h"
 #include "XUIOpenHelp.h"
+#include "XUIDatePicker.h"
 
 
 // standard events

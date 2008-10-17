@@ -24,6 +24,7 @@ BOOL CXUIListBox::loadDATA( IXMLDOMNode* node )
 	m_bSort				= xmlGetAttributeValueBOOL(node,	TEXT("sort"),				FALSE);
 	m_bNoIntegralHeight	= xmlGetAttributeValueBOOL(node,	TEXT("nointegralheight"),	TRUE);
 	m_colWidth			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("colWidth"),	0);
+	m_listRows			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("listRows"),	0);
 	return TRUE;
 }
 
@@ -35,6 +36,7 @@ void CXUIListBox::Init()
 	if(!get_hidden())		wStyle |= WS_VISIBLE;
 	if(m_bSort)				wStyle |= LBS_SORT;
 	if(m_bNoIntegralHeight)	wStyle |= LBS_NOINTEGRALHEIGHT;
+	if(m_bMulticolumn)		wStyle |= LBS_MULTICOLUMN;
 
 	switch(m_selection)
 	{
@@ -57,19 +59,70 @@ void CXUIListBox::Init()
 
 	HDC hdc = GetDC(NULL);
 	HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
-	for(int i=0; i < m_childCount; i++)
+	if(!m_bMulticolumn)
 	{
-		CXUIListItem* cbi = NULL;
-		if(m_childs[i]->QueryElement(L"listitem", (LPVOID*) &cbi))
+		for(int i=0; i < m_childCount; i++)
 		{
-			int idx = (int) SendMessage(m_hWnd, LB_ADDSTRING, NULL, (LPARAM) cbi->get_label());
-			SendMessage(m_hWnd, LB_SETITEMDATA, idx, (LPARAM) cbi->get_value());
+			CXUIListItem* cbi = NULL;
+			if(m_childs[i]->QueryElement(L"listitem", (LPVOID*) &cbi))
+			{
+				int idx = (int) SendMessage(m_hWnd, LB_ADDSTRING, NULL, (LPARAM) cbi->get_label());
+				SendMessage(m_hWnd, LB_SETITEMDATA, idx, (LPARAM) cbi->get_value());
 
-			RECT rcDraw = {0, 0, 3, 3};
-			DrawText(hdc, cbi->get_label(), -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
-			if(m_minWidth < rcDraw.right) m_minWidth = rcDraw.right;
-			m_minHeight += rcDraw.bottom;
+				RECT rcDraw = {0, 0, 3, 3};
+				DrawText(hdc, cbi->get_label(), -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+				if(m_minWidth < rcDraw.right) m_minWidth = rcDraw.right;
+				m_minHeight += rcDraw.bottom;
+			}
 		}
+	} else
+	{
+		int itemHeight = 0;
+		if(!m_colWidth)
+		{
+			for(int i=0; i < m_childCount; i++)
+			{
+				CXUIListItem* cbi = NULL;
+				if(m_childs[i]->QueryElement(L"listitem", (LPVOID*) &cbi))
+				{
+					int idx = (int) SendMessage(m_hWnd, LB_ADDSTRING, NULL, (LPARAM) cbi->get_label());
+					SendMessage(m_hWnd, LB_SETITEMDATA, idx, (LPARAM) cbi->get_value());
+
+					RECT rcDraw = {0, 0, 3, 3};
+					DrawText(hdc, cbi->get_label(), -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+					if(m_colWidth < rcDraw.right - rcDraw.left + 4)
+					{
+						m_colWidth = rcDraw.right - rcDraw.left + 4;
+					}
+				}
+			}
+			RECT rcDraw = {0, 0, 3, 3};
+			DrawText(hdc, L"Wq", -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+			itemHeight = rcDraw.bottom - rcDraw.top;
+		} else
+		{
+			RECT rcDraw = {0, 0, 3, 3};
+			DrawText(hdc, L"Wq", -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+			itemHeight = rcDraw.bottom - rcDraw.top;
+		}
+		if(!m_cols && !m_rows)
+		{
+			m_cols = 3;
+		}
+		if(m_cols)
+		{
+			int rows = m_childCount / m_cols;
+			if(rows + m_cols < m_childCount) rows++;
+			m_minWidth	= m_cols * m_colWidth;
+			m_minHeight	= rows * itemHeight;
+		} else if(m_rows)
+		{
+			int cols = m_childCount / m_rows;
+			if(cols + m_rows < m_childCount) cols++;
+			m_minWidth	= cols * m_colWidth;
+			m_minHeight	= m_rows * itemHeight;
+		}
+		SendMessage(m_hWnd, LB_SETCOLUMNWIDTH, m_colWidth, NULL);
 	}
 	SelectObject(hdc, oldFont);
 	ReleaseDC(NULL, hdc);
