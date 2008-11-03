@@ -35,24 +35,52 @@
 	%coreattrs; 
 	caption			CDATA			#IMPLIED
 	centerScreen	%BOOL;			#IMPLIED
+	contextHelp		%BOOL;			#IMPLIED
+	clipChildren	%BOOL;			#IMPLIED
+	clipSiblings	%BOOL;			#IMPLIED
+	minimizeBox		%BOOL;			#IMPLIED
+	maximizeBox		%BOOL;			#IMPLIED
+	sysMenu			%BOOL;			#IMPLIED
+	border			(none | thin | resizing | dialogFrame)	#IMPLIED
+	>
+
+<!ELEMENT disabler  EMPTY>
+<!ATTLIST disabler
+	disable			%BOOL;			 #IMPLIED
+	type			(int | emptystring | nonemptystring)	#IMPLIED
+	intval			CDATA			#IMPLIED
+	applyto			CDATA			#REQUIRED
+	>
+
+<!ELEMENT openhelp  EMPTY>
+<!ATTLIST openhelp
+	topic			CDATA			#REQUIRED
 	>
 
 <!ELEMENT box  ANY>
 <!ATTLIST box
-	%coreattrs; >
+	%coreattrs; 
+	marginLeft		CDATA			#IMPLIED
+	marginRight		CDATA			#IMPLIED
+	marginTop		CDATA			#IMPLIED
+	marginBottom	CDATA			#IMPLIED
+	>
 
-<!ELEMENT button  (selectfile*)>
+<!ELEMENT button  (selectfile | sendcmd | openhelp)*>
 <!ATTLIST button
 	%coreattrs;
 	%label;
 	dlgType		(button | accept | cancel | help | disclosure)		#IMPLIED
+	default		%BOOL;		#IMPLIED
 	>
 
-<!ELEMENT checkbox  EMPTY>
+<!ELEMENT checkbox  (disabler*)>
 <!ATTLIST checkbox
 	%coreattrs; 
 	%label;
 	checked		%BOOL;		#IMPLIED
+	auto		%BOOL;		#IMPLIED
+	triState	%BOOL;		#IMPLIED
 	>
 
 <!ELEMENT groupbox  ANY>
@@ -66,18 +94,22 @@
 	%coreattrs; 
 	%value;
 	vcenter		%BOOL;				#IMPLIED
+	multiline	%BOOL;				#IMPLIED
 	textalign	(left|right|center)	#IMPLIED
 	>
 
-<!ELEMENT radio  EMPTY>
+<!ELEMENT radio  (disabler*)>
 <!ATTLIST radio
 	%coreattrs; 
 	%label;
 	%value;
-	selected	%BOOL;		#IMPLIED
+	selected	%BOOL;							#IMPLIED
+	multiline	%BOOL;							#IMPLIED
+	vAlign		(default|top|bottom|center)		#IMPLIED
+	hAlign		(default|left|right|center)		#IMPLIED
 	>
 
-<!ELEMENT radiogroup  (radio*)>
+<!ELEMENT radiogroup  ANY>
 <!ATTLIST radiogroup
 	%coreattrs; 
 	>
@@ -96,7 +128,7 @@
 	pos			CDATA				#IMPLIED
 	>
 
-<!ELEMENT textbox  (spin*)>
+<!ELEMENT textbox  (spin | disabler)*>
 <!ATTLIST textbox
 	%coreattrs; 
 	readonly	%BOOL;				#IMPLIED
@@ -108,9 +140,14 @@
 	numberonly	%BOOL;				#IMPLIED
 	password	%BOOL;				#IMPLIED
 	textalign	(left|right)		#IMPLIED
+	wantReturn	%BOOL;				#IMPLIED
+	autoHScroll	%BOOL;				#IMPLIED
+	autoVScroll	%BOOL;				#IMPLIED
+	hScroll		%BOOL;				#IMPLIED
+	vScroll		%BOOL;				#IMPLIED
 	>
 
-<!ELEMENT combobox  (listitem*)>
+<!ELEMENT combobox  (listitem | disabler)*>
 <!ATTLIST combobox
 	%coreattrs; 
 	editable	%BOOL;					#IMPLIED
@@ -133,6 +170,8 @@
 	%coreattrs; 
 	imageSize		CDATA			#IMPLIED
 	imageAlign		(left | top)	#IMPLIED
+	showSwitcher	%BOOL;			#IMPLIED
+	showCaption		%BOOL;			#IMPLIED
 	>
 
 <!ELEMENT tab  ANY>
@@ -142,6 +181,9 @@
 	selected		%BOOL;			#IMPLIED
 	caption			CDATA			#IMPLIED
 	icon			CDATA			#IMPLIED
+	value			CDATA			#IMPLIED
+	helpTopic		CDATA			#IMPLIED
+	setFocus		%BOOL;			#IMPLIED
 	>
 
 <!ELEMENT color  EMPTY>
@@ -160,6 +202,7 @@
 	noTics			%BOOL;			#IMPLIED
 	autoTics		%BOOL;			#IMPLIED
 	type			%ORIENT;		#IMPLIED
+	invert			%BOOL;			#IMPLIED
 	>
 
 <!ELEMENT hotkey  EMPTY>
@@ -173,9 +216,12 @@
 	pic				CDATA			#REQUIRED
 	picWidth		CDATA			#REQUIRED
 	picHeight		CDATA			#REQUIRED
+	frames			CDATA			#IMPLIED
+	animInterval	CDATA			#IMPLIED
+	framesOrient	(vertical | horizontal)	#IMPLIED
 	>
 
-<!ELEMENT listbox  (listitem*)>
+<!ELEMENT listbox  (listitem | disabler)*>
 <!ATTLIST listbox
 	%coreattrs; 
 	multicolumn			%BOOL;									#IMPLIED
@@ -233,6 +279,7 @@
 	id					ID										#IMPLIED
 	locid				CDATA									#IMPLIED
 	title				CDATA									#REQUIRED
+	defExt				CDATA									#IMPLIED
 	type				(open | save)							#REQUIRED
 	allowMultiSelect	%BOOL;									#IMPLIED
 	dontAddRecent		%BOOL;									#IMPLIED
@@ -252,7 +299,7 @@
 	shareaware			%BOOL;									#IMPLIED
 	showhelp			%BOOL;									#IMPLIED
 	createprompt		%BOOL;									#IMPLIED
-	saveto				CDATA									#REQUIRED
+	saveto				CDATA									#IMPLIED
 	>
 
 <!ELEMENT ext  EMPTY>
@@ -279,3 +326,45 @@
 <!ATTLIST freedraw
 	%coreattrs; 
 	>
+
+<!ELEMENT contexthelp (tip*)>
+<!ATTLIST contexthelp
+	>
+
+<!ELEMENT tip (#PCDATA)>
+<!ATTLIST tip
+	control		IDREF		#REQUIRED
+	img			CDATA		#IMPLIED
+	imgWidth	CDATA		#IMPLIED
+	imgHeight	CDATA		#IMPLIED
+	tag			CDATA		#IMPLIED
+	locid		CDATA		#IMPLIED
+	>
+
+<!ELEMENT sendcmd  EMPTY>
+<!ATTLIST sendcmd
+	cmd				CDATA			#IMPLIED
+	sendto			IDREF			#REQUIRED
+	inViewerOnly	%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT progress  EMPTY>
+<!ATTLIST progress
+	%coreattrs; 
+	marquee			%BOOL;			#IMPLIED
+	smooth			%BOOL;			#IMPLIED
+	smoothreverse	%BOOL;			#IMPLIED
+	vertical		%BOOL;			#IMPLIED
+	lowLimit		CDATA			#IMPLIED
+	highLimit		CDATA			#IMPLIED
+	pos				CDATA			#IMPLIED
+	>
+
+<!ELEMENT datepicker  EMPTY>
+<!ATTLIST datepicker
+	%coreattrs; 
+	format			(shortDate | longDate | time)	#IMPLIED
+	showNone		%BOOL;							#IMPLIED
+	useSpin			%BOOL;							#IMPLIED
+	>
+

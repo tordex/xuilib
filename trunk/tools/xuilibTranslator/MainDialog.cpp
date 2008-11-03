@@ -830,3 +830,24 @@ LPWSTR CMainDialog::clearStringForImport( LPWSTR src )
 	strNoAmp[ii] = 0;
 	return strNoAmp;
 }
+
+BOOL CMainDialog::OnExport( LPWSTR fileName )
+{
+	HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if(hFile != INVALID_HANDLE_VALUE)
+	{
+		for(int i=0; i < m_strings.GetCount(); i++)
+		{
+			int len = lstrlen(m_strings[i].defString);
+			LPSTR strA = new CHAR[len + 1];
+			WideCharToMultiByte(CP_ACP, 0, m_strings[i].defString, -1, strA, len + 1, NULL, NULL);
+			DWORD cbWrite = 0;
+			WriteFile(hFile, strA, len, &cbWrite, NULL);
+			LPSTR eol = "\r\n";
+			WriteFile(hFile, eol, 2, &cbWrite, NULL);
+			delete strA;
+		}
+		CloseHandle(hFile);
+	}
+	return TRUE;
+}
