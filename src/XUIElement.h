@@ -25,6 +25,8 @@
 		return FALSE;\
 	}
 
+class CRenderData;
+
 class CXUIElement
 {
 	friend class CXUIDialog;
@@ -33,11 +35,18 @@ class CXUIElement
 	friend class CXUIEngine;
 protected:
 
+/*
 	struct cell_info
 	{
-		int	size;
-		int flex;
+		int		cx;
+		int		cy;
+		int		row;
+		int		col;
+		int		hFlex;
+		int		vFlex;
+		int 	span;
 	};
+*/
 
 	// data members
 	CXUIElement*	m_parent;
@@ -63,6 +72,7 @@ protected:
 	int				m_rows;
 	HWND			m_hWnd;
 	LPWSTR			m_lockid;
+	int				m_span;
 
 	int				m_marginLeft;
 	int				m_marginRight;
@@ -79,9 +89,10 @@ protected:
 	int				m_childCount;
 protected:
 	// internal functions
-	void RowsColsSize( cell_info* cinf, int cols, cell_info* rinf, int rows );
-	void ProcessFlex(cell_info* cinf, int count, int size, int cellSpace);
+	//void RowsColsSize( cell_info* cinf, int cols, cell_info* rinf, int rows );
+	//void ProcessFlex(cell_info* cinf, int count, int size, int cellSpace);
 	LPWSTR getLocalizedString(IXMLDOMNode* item, LPCTSTR attrName);
+	CRenderData* getRenderData();
 public:
 	CXUIElement(CXUIElement* parent, CXUIEngine* engine);
 	virtual ~CXUIElement(void);
@@ -94,6 +105,7 @@ public:
 
 	virtual void getMinSize(SIZE& minSize);
 	virtual void render(int x, int y, int width, int height);
+
 	virtual BOOL loadDATA(IXMLDOMNode* node);
 	virtual BOOL loadFile(LPCTSTR fileName, LPCTSTR defNode, HINSTANCE hInst = NULL);
 	virtual void addChild(CXUIElement* child);

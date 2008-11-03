@@ -292,6 +292,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RenderData.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\XUIBox.cpp"
 				>
 			</File>
@@ -483,6 +487,10 @@
 			</File>
 			<File
 				RelativePath=".\html\htmlviewer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RenderData.h"
 				>
 			</File>
 			<File

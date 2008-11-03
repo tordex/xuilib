@@ -49,6 +49,7 @@ TS_ABOUT.PNG            XUILIB                  "res\\ts_about.png"
 TS_REGISTRATION.PNG     XUILIB                  "res\\ts_registration.png"
 TS_SKINS.PNG            XUILIB                  "res\\ts_skins.png"
 TLB-LOGO.PNG            XUILIB                  "res\\logo.png"
+span.xml                XUILIB                  "res\\span.xml"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 

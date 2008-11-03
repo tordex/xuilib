@@ -67,6 +67,7 @@ BOOL CXUISelectFile::loadDATA( IXMLDOMNode* node )
 	m_shareaware		= xmlGetAttributeValueBOOL(node,	TEXT("shareaware"),			FALSE);
 	m_showhelp			= xmlGetAttributeValueBOOL(node,	TEXT("showhelp"),			FALSE);
 	m_createprompt		= xmlGetAttributeValueBOOL(node,	TEXT("createprompt"),		TRUE);
+	m_bQuoteSpaces		= xmlGetAttributeValueBOOL(node,	TEXT("quoteSpaces"),		FALSE);
 
 	return TRUE;
 }
@@ -164,6 +165,10 @@ void CXUISelectFile::doDefaultAction( CXUIElement* el )
 
 	if(fileName[0] && m_saveto && ret)
 	{
+		if(m_bQuoteSpaces)
+		{
+			PathQuoteSpaces(fileName);
+		}
 		CXUIElement* root = get_root();
 		CXUIElement* txt = root->find(m_saveto);
 		if(txt)

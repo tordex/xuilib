@@ -1,11 +1,13 @@
 #include "xuilib.h"
 #include "xmltools.h"
+#include "RenderData.h"
 
 CXUIElement::CXUIElement(CXUIElement* parent, CXUIEngine* engine)
 {
 	m_cols			= 0;
 	m_rows			= 0;
 
+	m_span			= 1;
 	m_lockid		= NULL;
 	m_engine		= engine;
 	m_id			= 0;
@@ -51,6 +53,7 @@ BOOL CXUIElement::loadDATA(IXMLDOMNode* node)
 	m_maxHeight		= xmlGetAttributeValueNonSTR<int>(node,	TEXT("maxheight"),	0);
 	m_cols			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("columns"),	0);
 	m_rows			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("rows"),		0);
+	m_span			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("span"),		1);
 	m_hidden		= xmlGetAttributeValueBOOL(node,	TEXT("hidden"),		FALSE);
 	m_disabled		= xmlGetAttributeValueBOOL(node,	TEXT("disabled"),	FALSE);
 	m_orient		= xmlGetAttributeValueSTRArray(node, TEXT("orient"), XUI_ORIENT_HORIZONTAL, L"horizontal\0vertical\0");
@@ -213,56 +216,23 @@ void CXUIElement::getMinSize( SIZE& minSize )
 
 	if(m_childCount)
 	{
-		if(m_orient == XUI_ORIENT_HORIZONTAL)
+		CRenderData* rd = getRenderData();
+		if(rd)
 		{
-			int cols = m_cols;
-			if(!cols) cols = m_childCount;
-
-			int rows = m_childCount / cols;
-			if(m_childCount % cols) rows++;
-
-			cell_info* cinf = new cell_info[cols];
-			cell_info* rinf = new cell_info[rows];
-
-			RowsColsSize(cinf, cols, rinf, rows);
-
+			rd->normalize(m_cellSpaceX, m_cellSpaceY);
+			int cols = rd->getCols();
+			int rows = rd->getRows();
 			for(int i=0; i < cols; i++)
 			{
-				width += cinf[i].size;
+				width += rd->getColWidth(i);
 				if(i) width += m_cellSpaceX;
 			}
 			for(int i=0; i < rows; i++)
 			{
-				height += rinf[i].size;
+				height += rd->getRowHeight(i);
 				if(i) height += m_cellSpaceY;
 			}
-			delete cinf;
-			delete rinf;
-		} else
-		{
-			int rows = m_rows;
-			if(!rows) rows = m_childCount;
-
-			int cols = m_childCount / rows;
-			if(m_childCount % rows) cols++;
-
-			cell_info* cinf = new cell_info[cols];
-			cell_info* rinf = new cell_info[rows];
-
-			RowsColsSize(cinf, cols, rinf, rows);
-
-			for(int i=0; i < cols; i++)
-			{
-				width += cinf[i].size;
-				if(i) width += m_cellSpaceX;
-			}
-			for(int i=0; i < rows; i++)
-			{
-				height += rinf[i].size;
-				if(i) height += m_cellSpaceY;
-			}
-			delete cinf;
-			delete rinf;
+			delete rd;
 		}
 	}
 	minSize.cx = max(m_minWidth, width) + m_marginLeft + m_marginRight;
@@ -289,132 +259,82 @@ void CXUIElement::render( int x, int y, int width, int height )
 	{
 		if(m_orient == XUI_ORIENT_HORIZONTAL)
 		{
-			int cols = m_cols;
-			if(!cols) cols = m_childCount;
-
-			int rows = m_childCount / cols;
-			if(m_childCount % cols) rows++;
-
-			cell_info* cinf = new cell_info[cols];
-			cell_info* rinf = new cell_info[rows];
-
-			RowsColsSize(cinf, cols, rinf, rows);
-			ProcessFlex(cinf, cols, 
-				width - m_marginLeft - m_marginRight,
-				m_cellSpaceX);
-			ProcessFlex(rinf, rows, 
-				height - m_marginTop - m_marginBottom,
-				m_cellSpaceY);
+			CRenderData* rd = getRenderData();
+			rd->normalize(m_cellSpaceX, m_cellSpaceY);
+			rd->processFlex(width - m_marginLeft - m_marginRight, 
+							height - m_marginTop - m_marginBottom,
+							m_cellSpaceX, m_cellSpaceY);
 
 			// recalc height
+			for(int i=0; i < m_childCount; i++)
 			{
-				int col = 0;
-				int row = 0;
-				for(int i=0; i < m_childCount; i++)
-				{
-					m_childs[i]->recalcHeight(cinf[col].size);
-					col++;
-					if(col >= cols)
-					{
-						col = 0;
-						row++;
-					}
-				}
+				m_childs[i]->recalcHeight(rd->get(i)->cx);
 			}
+			delete rd;
 
-			RowsColsSize(cinf, cols, rinf, rows);
-			ProcessFlex(cinf, cols, 
-				width - m_marginLeft - m_marginRight,
-				m_cellSpaceX);
-			ProcessFlex(rinf, rows, 
+			rd = getRenderData();
+			rd->normalize(m_cellSpaceX, m_cellSpaceY);
+			rd->processFlex(width - m_marginLeft - m_marginRight, 
 				height - m_marginTop - m_marginBottom,
-				m_cellSpaceY);
+				m_cellSpaceX, m_cellSpaceY);
 
-			int col = 0;
 			int row = 0;
 			int left = x + m_marginLeft;
 			int top  = y + m_marginTop;
 			for(int i=0; i < m_childCount; i++)
 			{
-				m_childs[i]->render(left, top, cinf[col].size, rinf[row].size);
-				left += cinf[col].size + m_cellSpaceX;
-				col++;
-				if(col >= cols)
+				if(row != rd->get(i)->row)
 				{
 					left = x + m_marginLeft;
-					top += rinf[row].size + m_cellSpaceY; 
-					col = 0;
-					row++;
+					top += rd->getRowHeight(row) + m_cellSpaceY; 
+					row = rd->get(i)->row;
 				}
+				m_childs[i]->render(left, top, rd->get(i)->cx, rd->get(i)->cy);
+				left += rd->get(i)->cx + m_cellSpaceX;
 			}
-			delete cinf;
-			delete rinf;
+			delete rd;
 		} else
 		{
-			int rows = m_rows;
-			if(!rows) rows = m_childCount;
-
-			int cols = m_childCount / rows;
-			if(m_childCount % rows) cols++;
-
-			cell_info* cinf = new cell_info[cols];
-			cell_info* rinf = new cell_info[rows];
-
-			RowsColsSize(cinf, cols, rinf, rows);
-			ProcessFlex(rinf, rows, 
+			CRenderData* rd = getRenderData();
+			rd->normalize(m_cellSpaceX, m_cellSpaceY);
+			rd->processFlex(width - m_marginLeft - m_marginRight, 
 				height - m_marginTop - m_marginBottom,
-				m_cellSpaceY);
-			ProcessFlex(cinf, cols, 
-				width - m_marginLeft - m_marginRight,
-				m_cellSpaceX);
+				m_cellSpaceX, m_cellSpaceY);
 
 			// recalc height
+			for(int i=0; i < m_childCount; i++)
 			{
-				int col = 0;
-				int row = 0;
-				for(int i=0; i < m_childCount; i++)
-				{
-					m_childs[i]->recalcHeight(cinf[col].size);
-					row++;
-					if(row >= rows)
-					{
-						row = 0;
-						col++;
-					}
-				}
+				m_childs[i]->recalcHeight(rd->get(i)->cx);
 			}
+			delete rd;
 
-			RowsColsSize(cinf, cols, rinf, rows);
-			ProcessFlex(rinf, rows, 
+			rd = getRenderData();
+			rd->normalize(m_cellSpaceX, m_cellSpaceY);
+			rd->processFlex(width - m_marginLeft - m_marginRight, 
 				height - m_marginTop - m_marginBottom,
-				m_cellSpaceY);
-			ProcessFlex(cinf, cols, 
-				width - m_marginLeft - m_marginRight,
-				m_cellSpaceX);
+				m_cellSpaceX, m_cellSpaceY);
 
 			int col = 0;
-			int row = 0;
 			int left = x + m_marginLeft;
 			int top  = y + m_marginTop;
 			for(int i=0; i < m_childCount; i++)
 			{
-				m_childs[i]->render(left, top, cinf[col].size, rinf[row].size);
-				top += rinf[row].size + m_cellSpaceY;
-				row++;
-				if(row >= rows)
+				if(col != rd->get(i)->col)
 				{
-					top = y + m_marginTop;
-					left += cinf[col].size + m_cellSpaceX; 
-					row = 0;
-					col++;
+					top		= y + m_marginTop;
+					left	+= rd->getColWidth(col) + m_cellSpaceX; 
+					col		= rd->get(i)->col;
 				}
+
+				m_childs[i]->render(left, top, rd->get(i)->cx, rd->get(i)->cy);
+				top += rd->get(i)->cy + m_cellSpaceY;
 			}
-			delete cinf;
-			delete rinf;
+			delete rd;
 		}
 	}
 }
 
+/*
 void CXUIElement::RowsColsSize( cell_info* cinf, int cols, cell_info* rinf, int rows )
 {
 	int col			= 0;
@@ -428,6 +348,14 @@ void CXUIElement::RowsColsSize( cell_info* cinf, int cols, cell_info* rinf, int 
 			if(!cinf[col].flex) cinf[col].flex = m_childs[i]->m_hFlex;
 			if(!rinf[row].flex) rinf[row].flex = m_childs[i]->m_vFlex;
 
+			// new row if the span found
+			if(m_childs[i]->m_span && col)
+			{
+				col = 0;
+				row++;
+			}
+			rinf[row].span = m_childs[i]->m_span;
+
 			SIZE sz;
 			sz.cx = 0;
 			sz.cy = 0;
@@ -437,7 +365,7 @@ void CXUIElement::RowsColsSize( cell_info* cinf, int cols, cell_info* rinf, int 
 			if(rinf[row].size < sz.cy) rinf[row].size = sz.cy;
 
 			col++;
-			if(col >= cols)
+			if(col >= cols || rinf[row].span)
 			{
 				col = 0;
 				row++;
@@ -467,6 +395,7 @@ void CXUIElement::RowsColsSize( cell_info* cinf, int cols, cell_info* rinf, int 
 		}
 	}
 }
+*/
 
 void CXUIElement::set_disabled( int disable )
 {
@@ -474,6 +403,7 @@ void CXUIElement::set_disabled( int disable )
 	updateDisabledState();
 }
 
+/*
 void CXUIElement::ProcessFlex( cell_info* cinf, int count, int size, int cellSpace )
 {
 	int sz = size - (count - 1) * cellSpace;
@@ -499,6 +429,7 @@ void CXUIElement::ProcessFlex( cell_info* cinf, int count, int size, int cellSpa
 		}
 	}
 }
+*/
 
 int CXUIElement::get_disabled()
 {
@@ -724,4 +655,87 @@ BOOL CXUIElement::set_TabStopFocus()
 void CXUIElement::recalcHeight( int width )
 {
 
+}
+
+CRenderData* CXUIElement::getRenderData()
+{
+	if(!m_childCount) return NULL;
+
+	CRenderData* retData = new CRenderData(m_childCount);
+
+	if(m_orient == XUI_ORIENT_HORIZONTAL)
+	{
+		int cols = m_cols;
+		if(!cols) cols = m_childCount;
+
+		int col = 0;
+		int row = 0;
+
+		for(int i=0; i < m_childCount; i++)
+		{
+			retData->get(i)->col		= col;
+			retData->get(i)->row		= row;
+			retData->get(i)->colSpan	= m_childs[i]->m_span;
+			retData->get(i)->rowSpan	= 1;
+			if(col + m_childs[i]->m_span > cols)
+			{
+				retData->get(i)->colSpan = cols - col;
+			}
+
+			retData->get(i)->hFlex	= m_childs[i]->m_hFlex;
+			retData->get(i)->vFlex	= m_childs[i]->m_vFlex;
+
+			SIZE sz;
+			sz.cx = 0;
+			sz.cy = 0;
+			m_childs[i]->getMinSize(sz);
+			retData->get(i)->cx = sz.cx;
+			retData->get(i)->cy = sz.cy;
+
+			col += m_childs[i]->m_span;
+			if(col >= cols)
+			{
+				row++;
+				col = 0;
+			}
+		}
+	} else
+	{
+		int rows = m_rows;
+		if(!rows) rows = m_childCount;
+
+		int col = 0;
+		int row = 0;
+
+		for(int i=0; i < m_childCount; i++)
+		{
+			retData->get(i)->col		= col;
+			retData->get(i)->row		= row;
+			retData->get(i)->rowSpan	= m_childs[i]->m_span;
+			retData->get(i)->colSpan	= 1;
+			if(row + m_childs[i]->m_span > rows)
+			{
+				retData->get(i)->rowSpan = rows - row;
+			}
+
+			retData->get(i)->hFlex	= m_childs[i]->m_hFlex;
+			retData->get(i)->vFlex	= m_childs[i]->m_vFlex;
+
+			SIZE sz;
+			sz.cx = 0;
+			sz.cy = 0;
+			m_childs[i]->getMinSize(sz);
+			retData->get(i)->cx = sz.cx;
+			retData->get(i)->cy = sz.cy;
+
+			row += m_childs[i]->m_span;
+			if(row >= rows)
+			{
+				col++;
+				row = 0;
+			}
+		}
+	}
+
+	return retData;
 }

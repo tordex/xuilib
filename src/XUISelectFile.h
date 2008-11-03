@@ -24,6 +24,7 @@ class CXUISelectFile : public CXUIElement
 	BOOL	m_shareaware;
 	BOOL	m_showhelp;
 	BOOL	m_createprompt;
+	BOOL	m_bQuoteSpaces;
 
 	LPWSTR	m_defExt;
 	LPWSTR	m_title;

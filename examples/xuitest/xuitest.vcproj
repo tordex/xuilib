@@ -284,6 +284,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\res\span.xml"
+			>
+		</File>
+		<File
 			RelativePath=".\res\tlbsettings-ru.xml"
 			>
 		</File>

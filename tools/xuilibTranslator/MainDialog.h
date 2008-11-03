@@ -74,6 +74,7 @@ public:
 		XUI_HANDLE_LST_DBLCLK		(L"lstStrings",		OnTranslate)
 		XUI_HANDLE_LST_ITEMCHANGED	(L"lstStrings",		OnListSelected)
 		XUI_HANDLE_FSSELECTED		(L"import",			OnImport)
+		XUI_HANDLE_FSSELECTED		(L"export",			OnExport)
 		XUI_HANDLE_CHANGED			(L"find",			OnFindChanged)
 		XUI_HANDLE_CHANGED			(L"dialog",			OnFindChanged)
 		XUI_HANDLE_CLICKED			(L"urlTranslated",	OnUrlTranslated)
@@ -92,6 +93,7 @@ protected:
 	BOOL OnOpen();
 	BOOL OnSave();
 	BOOL OnImport(LPWSTR fileName);
+	BOOL OnExport(LPWSTR fileName);
 
 	LPWSTR clearStringForImport( LPWSTR src );
 	void importString( LPWSTR src, LPWSTR dst );

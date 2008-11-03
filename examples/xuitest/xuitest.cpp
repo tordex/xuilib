@@ -288,6 +288,23 @@ void CTlbSettingsDlg::fillFonts()
 	fonts.Clear();
 }
 
+class CSpanTestDlg : public CXUIDialog
+{
+public:
+	CSpanTestDlg(CXUIEngine* engine);
+	~CSpanTestDlg();
+};
+
+CSpanTestDlg::CSpanTestDlg(CXUIEngine* engine) : CXUIDialog(L"res:span.xml", engine)
+{
+
+}
+
+CSpanTestDlg::~CSpanTestDlg()
+{
+
+}
+
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
@@ -299,6 +316,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	
 	MyXUIEngine engine(hInstance);
 	//engine.loadStrings(TEXT("res\\tlbsettings-ru.xml"));
+
 	CTlbSettingsDlg dlg(&engine);
 	dlg.m_pwd1					= NULL;
 	lstrcpy(dlg.m_pwd2, L"hello");
@@ -311,6 +329,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	lstrcpy(dlg.m_TitlesFont,	L"Tahoma");
 	lstrcpy(dlg.m_CaptionFont,	L"Verdana");
 	lstrcpy(dlg.m_MenuFont,		L"Arial");
+
+//	CSpanTestDlg dlg(&engine);
 
 	dlg.DoModal(NULL);
 
