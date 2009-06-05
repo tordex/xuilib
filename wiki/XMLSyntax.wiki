@@ -1,13 +1,9 @@
-#summary One-sentence summary of this page.
+#Basic attributes
 
-= Introduction =
+= Basic attributes =
 
-Add your content here.
-
+Description of the basic attributes applied to the most elements
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Most elements have the common attributes
