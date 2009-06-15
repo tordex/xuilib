@@ -3,7 +3,8 @@
 
 class CXUIChecksList : public CXUIElement
 {
-	int	m_visibleItems;
+	int		m_visibleItems;
+	BOOL	m_lockChanged;
 public:
 	CXUIChecksList(CXUIElement* parent, CXUIEngine* engine);
 	virtual ~CXUIChecksList(void);
@@ -21,4 +22,7 @@ public:
 	int  getCount();
 	int  getItemValue(int idx);
 	int  getSelected();
+	void addItem(LPWSTR text, int data);
+	void clearItems();
+	virtual BOOL onNotify(int idCtrl, LPNMHDR pnmh);
 };

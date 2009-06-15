@@ -96,13 +96,31 @@ void COpenDlg::OnInitDialog()
 			}
 		}
 	}
-	m_ctlLangs->value_INT(GetUserDefaultLCID());
-
 	for(int i=0; i < m_projects.GetCount(); i++)
 	{
 		m_ctlProjects->addItem(i, m_projects[i].name);
 	}
 	m_ctlProjects->value_INT(0);
+
+	TCHAR iniPath[MAX_PATH];
+	GetModuleFileName(m_engine->get_hInstance(), iniPath, MAX_PATH);
+	PathRemoveFileSpec(iniPath);
+	PathAddBackslash(iniPath);
+	lstrcat(iniPath, TEXT("settings.ini"));
+
+	int lastLang = GetPrivateProfileInt(L"settings", L"lastlanguage", GetUserDefaultLCID(), iniPath);
+	TCHAR lastProj[MAX_PATH];
+	GetPrivateProfileString(L"settings", L"lastProject", L"", lastProj, MAX_PATH, iniPath);
+
+	m_ctlLangs->value_INT(lastLang);
+	for(int i=0; i < m_projects.GetCount(); i++)
+	{
+		if(!lstrcmpi(m_projects[i].dst, lastProj))
+		{
+			m_ctlProjects->value_INT(i);
+			break;
+		}
+	}
 }
 
 BOOL COpenDlg::OnEndDialog( UINT code )
@@ -130,6 +148,13 @@ BOOL COpenDlg::OnEndDialog( UINT code )
 			TCHAR outPath[MAX_PATH];
 			outPath[0] = 0;
 			GetPrivateProfileString(L"settings", L"outpath", L"", outPath, MAX_PATH, iniPath);
+
+			TCHAR strLCID[50];
+			wsprintf(strLCID, L"%d", m_lcid);
+
+			WritePrivateProfileString(L"settings", L"lastProject", m_projects[idx].dst, iniPath);
+			WritePrivateProfileString(L"settings", L"lastlanguage", strLCID, iniPath);
+
 			if(!outPath[0])
 			{
 				lstrcpy(outPath, path);

@@ -4,7 +4,8 @@
 
 CXUIComboBox::CXUIComboBox(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
-	m_string = NULL;
+	m_string				= NULL;
+	m_autoCompleteTXT[0]	= 0;
 }
 
 CXUIComboBox::~CXUIComboBox(void)
@@ -19,6 +20,7 @@ BOOL CXUIComboBox::loadDATA(IXMLDOMNode* node)
 	m_editable		=	xmlGetAttributeValueBOOL(node,			TEXT("editable"),		VARIANT_FALSE);
 	m_sorted		=	xmlGetAttributeValueBOOL(node,			TEXT("sorted"),			VARIANT_FALSE);
 	m_bHasStrings	=	xmlGetAttributeValueBOOL(node,			TEXT("hasstrings"),		VARIANT_TRUE);
+	m_bAutoComplete	=	xmlGetAttributeValueBOOL(node,			TEXT("autoComplete"),	FALSE);
 	m_size			=	xmlGetAttributeValueNonSTR<int>(node,	TEXT("size"),			10);
 	m_ownerDraw		=	xmlGetAttributeValueSTRArray(node,		TEXT("ownerdraw"), XUI_COMBO_OWNERDRAW_NO, L"no\0fixed\0variable\0");
 
@@ -172,6 +174,7 @@ void CXUIComboBox::value_STR( LPCWSTR val )
 	{
 		if(m_string) delete m_string;
 		m_string = NULL;
+		SendMessage(m_hWnd, CB_SETCURSEL, -1, NULL);
 		if(val)
 		{
 			SendMessage(m_hWnd, WM_SETTEXT, 0, (LPARAM) val);
@@ -222,6 +225,22 @@ void CXUIComboBox::render( int x, int y, int width, int height )
 
 BOOL CXUIComboBox::onCommnd( UINT code, UINT id, HWND hWnd )
 {
+	if(code == CBN_EDITCHANGE && m_bAutoComplete && m_editable)
+	{
+		TCHAR txt[255];
+		GetWindowText(m_hWnd, txt, 255);
+		if(lstrcmpi(txt, m_autoCompleteTXT))
+		{
+			int newIDX = SendMessage(m_hWnd, CB_FINDSTRING, -1, (LPARAM) txt);
+			if(newIDX >= 0)
+			{
+				SendMessage(m_hWnd, CB_SETCURSEL, newIDX, 0);
+				SendMessage(m_hWnd, CB_SETEDITSEL, 0, MAKELONG(lstrlen(txt), -1));
+			}
+			lstrcpy(m_autoCompleteTXT, txt);
+		}
+	}
+
 	if(code == CBN_EDITCHANGE || code == CBN_SELCHANGE)
 	{
 		processDefaultAction();

@@ -9,8 +9,11 @@ public:
 	IMPLEMENT_INTERFACE(L"tabbox")
 
 	void selectTab(int tabID);
-	BOOL onNotify(int idCtrl, LPNMHDR pnmh);
-
-	void Init();
-	HWND get_parentWnd();
+	virtual BOOL	onNotify(int idCtrl, LPNMHDR pnmh);
+	virtual void	getMinSize(SIZE& minSize);
+	virtual void	render(int x, int y, int width, int height);
+	virtual void	Init();
+	virtual HWND	get_parentWnd();
+	virtual void	value_INT(INT val);
+	virtual INT		value_INT();
 };

@@ -204,6 +204,7 @@ BOOL CXUIDialog::loadDATA(IXMLDOMNode* node)
 	m_bMinimizeBox	= xmlGetAttributeValueBOOL(node,	TEXT("minimizeBox"),	FALSE);
 	m_bMaximizeBox	= xmlGetAttributeValueBOOL(node,	TEXT("maximizeBox"),	FALSE);
 	m_bSysMenu		= xmlGetAttributeValueBOOL(node,	TEXT("sysMenu"),		TRUE);
+	m_bTitleBar		= xmlGetAttributeValueBOOL(node,	TEXT("titleBar"),		TRUE);
 	m_border		= xmlGetAttributeValueSTRArray(node, TEXT("border"), XUI_DLG_BORDER_DIALOGFRAME, L"none\0thin\0resizing\0dialogFrame\0");
 	m_style = WS_VISIBLE | DS_SETFONT | WS_POPUP;
 
@@ -215,19 +216,20 @@ BOOL CXUIDialog::loadDATA(IXMLDOMNode* node)
 
 	switch(m_border)
 	{
-	case XUI_DLG_BORDER_THIN:
-		m_style |= WS_CAPTION;
-		break;
 	case XUI_DLG_BORDER_RESIZING:
-		m_style |= WS_THICKFRAME | WS_CAPTION;
+		m_style |= WS_THICKFRAME;
 		break;
 	case XUI_DLG_BORDER_DIALOGFRAME:
-		m_style |= DS_MODALFRAME | WS_CAPTION;
+		m_style |= DS_MODALFRAME;
 		break;
 	}
 	if(m_bContextHelp)
 	{
 		m_style |= DS_CONTEXTHELP;
+	}
+	if(m_bTitleBar)
+	{
+		m_style |= WS_CAPTION;
 	}
 
 	IXMLDOMNode* ctxHelp = xmlOpenNode(node, L"contexthelp");
@@ -326,6 +328,19 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 				}
 			}
 			return 0;
+		case WM_CONTEXTMENU:
+			if(wParam)
+			{
+				CXUIElement* el = pThis->find((HWND) wParam);
+				if(el)
+				{
+					if(el->raiseEvent(XUI_EVENT_CONTEXTMENU, wParam, lParam))
+					{
+						return TRUE;
+					}
+				}
+			}
+			return 0;
 		case WM_DRAWITEM:
 			{
 				if(wParam)
@@ -333,7 +348,10 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 					CXUIElement* el = pThis->find((UINT) wParam);
 					if(el)
 					{
-						el->raiseEvent(XUI_EVENT_DRAWITEM, wParam, lParam);
+						if(el->raiseEvent(XUI_EVENT_DRAWITEM, wParam, lParam))
+						{
+							return TRUE;
+						}
 					}
 				}
 			}
@@ -345,7 +363,10 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 					CXUIElement* el = pThis->find((UINT) wParam);
 					if(el)
 					{
-						el->raiseEvent(XUI_EVENT_MEASUREITEM, wParam, lParam);
+						if(el->raiseEvent(XUI_EVENT_MEASUREITEM, wParam, lParam))
+						{
+							return TRUE;
+						}
 					}
 				}
 			}
@@ -373,7 +394,19 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 		case WM_NOTIFY:
 			{
 				LPNMHDR pnmh = (LPNMHDR) lParam;
-				CXUIElement* el = pThis->find(pnmh->hwndFrom);
+				HWND hWndFrom = pnmh->hwndFrom;
+				WCHAR className[255];
+				GetClassName(hWndFrom, className, 255);
+				if(!StrCmpI(className, WC_HEADER))
+				{
+					HWND hwndList = GetParent(hWndFrom);
+					GetClassName(hwndList, className, 255);
+					if(!StrCmpI(className, WC_LISTVIEW))
+					{
+						hWndFrom = hwndList;
+					}
+				}
+				CXUIElement* el = pThis->find(hWndFrom);
 				BOOL processed = FALSE;
 				if(el)
 				{
@@ -390,33 +423,18 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 			return TRUE;
 		case WM_COMMAND:
 			{
-				if(LOWORD(wParam) == IDCANCEL)
+				HWND hCtl	= (HWND) lParam;
+				CXUIElement* el = pThis->find(hCtl);
+				BOOL processed = FALSE;
+				if(el)
 				{
-					if(pThis->OnEndDialog(IDCANCEL))
-					{
-						EndDialog(pThis->m_hWnd, IDCANCEL);
-					}
-				} else if(LOWORD(wParam) == IDOK)
+					processed = el->onCommnd(HIWORD(wParam), LOWORD(wParam), hCtl);
+				}
+				if(!processed)
 				{
-					if(pThis->OnEndDialog(IDOK))
+					if(!pThis->ProcessNotify(WM_COMMAND, el, wParam, lParam))
 					{
-						EndDialog(pThis->m_hWnd, IDOK);
-					}
-				} else
-				{
-					HWND hCtl	= (HWND) lParam;
-					CXUIElement* el = pThis->find(hCtl);
-					BOOL processed = FALSE;
-					if(el)
-					{
-						processed = el->onCommnd(HIWORD(wParam), LOWORD(wParam), hCtl);
-					}
-					if(!processed)
-					{
-						if(!pThis->ProcessNotify(WM_COMMAND, el, wParam, lParam))
-						{
-							pThis->OnCommand(el, HIWORD(wParam), LOWORD(wParam), (HWND) lParam);
-						}
+						pThis->OnCommand(el, HIWORD(wParam), LOWORD(wParam), (HWND) lParam);
 					}
 				}
 			}
@@ -503,13 +521,13 @@ void CXUIDialog::OnInitDialog()
 	SIZE sz = {0, 0};
 
 	getMinSize(sz);
-	if(m_width)		sz.cx = rcDlgSize.right;
-	if(m_height)	sz.cy = rcDlgSize.bottom;
+	if(rcDlgSize.right)		sz.cx = rcDlgSize.right;
+	if(rcDlgSize.bottom)	sz.cy = rcDlgSize.bottom;
 	render(rcClient.left, rcClient.top, sz.cx, sz.cy);
 
 	getMinSize(sz);
-	if(m_width)		sz.cx = rcDlgSize.right;
-	if(m_height)	sz.cy = rcDlgSize.bottom;
+	if(rcDlgSize.right)		sz.cx = rcDlgSize.right;
+	if(rcDlgSize.bottom)	sz.cy = rcDlgSize.bottom;
 	render(rcClient.left, rcClient.top, sz.cx, sz.cy);
 
 	RECT rcWindow;
@@ -575,6 +593,21 @@ void CXUIDialog::OnNotify( CXUIElement* el, int idCtrl, LPNMHDR pnmh )
 
 BOOL CXUIDialog::OnCommand( CXUIElement* el, UINT code, UINT id, HWND hWnd )
 {
+	if(id == IDCANCEL)
+	{
+		if(OnEndDialog(IDCANCEL))
+		{
+			EndDialog(m_hWnd, IDCANCEL);
+			return TRUE;
+		}
+	} else if(id == IDOK)
+	{
+		if(OnEndDialog(IDOK))
+		{
+			EndDialog(m_hWnd, IDOK);
+			return TRUE;
+		}
+	}
 	return FALSE;
 }
 
@@ -611,6 +644,33 @@ void CXUIDialog::loadMapItem( DATA_MAP_ITEM* item, CXUIElement* parent )
 					{
 						el->value_INT(FALSE);
 					}
+				}
+			}
+			break;
+		case BIND_TYPE_BIT:
+			if(item->intVal)
+			{
+				if(((*(item->intVal)) & item->intTrueVal) == item->intTrueVal)
+				{
+					el->value_INT(TRUE);
+				} else
+				{
+					el->value_INT(FALSE);
+				}
+			}
+			break;
+		case BIND_TYPE_INTMASK:
+			if(item->intVal)
+			{
+				el->value_INT((*(item->intVal)) & item->intTrueVal);
+			}
+			break;
+		case BIND_TYPE_INTUNIT:
+			if(item->intVal)
+			{
+				if(item->intTrueVal)
+				{
+					el->value_INT(*(item->intVal) / item->intTrueVal);
 				}
 			}
 			break;
@@ -689,6 +749,31 @@ void CXUIDialog::saveMapItem( DATA_MAP_ITEM* item )
 						*item->intVal = item->intFalseVal;
 					}
 				}
+			}
+			break;
+		case BIND_TYPE_BIT:
+			if(item->intVal)
+			{
+				if(el->value_INT())
+				{
+					*item->intVal |= item->intTrueVal;
+				} else
+				{
+					*item->intVal &= ~item->intTrueVal;
+				}
+			}
+			break;
+		case BIND_TYPE_INTMASK:
+			if(item->intVal)
+			{
+				*item->intVal &= ~item->intTrueVal;
+				*item->intVal |= el->value_INT() & item->intTrueVal;
+			}
+			break;
+		case BIND_TYPE_INTUNIT:
+			if(item->intVal)
+			{
+				*item->intVal = el->value_INT() * item->intTrueVal;
 			}
 			break;
 		case BIND_TYPE_WORD:
@@ -830,6 +915,7 @@ void CXUIDialog::showTipMessage( LPCWSTR elID, LPCWSTR tag )
 
 HWND CXUIDialog::Create( HWND hWndParent )
 {
+	clearChilds();
 	if(loadFile(m_fileName, TEXT("dialog"), m_engine->get_hInstance()))
 	{
 		if(!m_hDlg)

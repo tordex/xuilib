@@ -29,8 +29,28 @@ void CXUITabBox::Init()
 			tci.lParam = (LPARAM) tp;
 			tci.pszText = (LPWSTR) tp->get_label();
 			TabCtrl_InsertItem(m_hWnd, i, &tci);
+			if(!i)
+			{
+				tp->set_hidden(FALSE);
+			} else
+			{
+				tp->set_hidden(TRUE);
+			}
 		}
 	}
+
+	RECT rcDisplay;
+	rcDisplay.left		= 0;
+	rcDisplay.top		= 0;
+	rcDisplay.right		= 500;
+	rcDisplay.bottom	= 500;
+	TabCtrl_AdjustRect(m_hWnd, FALSE, &rcDisplay);
+
+	m_marginLeft	= rcDisplay.left;
+	m_marginTop		= rcDisplay.top;
+	m_marginRight	= 500 - rcDisplay.right;
+	m_marginBottom	= 500 - rcDisplay.bottom;
+
 	m_minHeight = 0;
 	m_minWidth = 0;
 
@@ -45,7 +65,6 @@ HWND CXUITabBox::get_parentWnd()
 
 void CXUITabBox::selectTab(int tabID)
 {
-	get_childIDX(tabID)->set_hidden(FALSE);
 	for(int i=0; i < get_childsCount(); i++)
 	{
 		if(i != tabID)
@@ -53,6 +72,7 @@ void CXUITabBox::selectTab(int tabID)
 			get_childIDX(i)->set_hidden(TRUE);
 		}
 	}
+	get_childIDX(tabID)->set_hidden(FALSE);
 }
 
 BOOL CXUITabBox::onNotify(int idCtrl, LPNMHDR pnmh)
@@ -67,4 +87,58 @@ BOOL CXUITabBox::onNotify(int idCtrl, LPNMHDR pnmh)
 		}
 	}
 	return CXUIElement::onNotify(idCtrl, pnmh);
+}
+
+void CXUITabBox::getMinSize( SIZE& minSize )
+{
+	int width	= 0;
+	int height	= 0;
+	for(int i=0; i < m_childCount; i++)
+	{
+		SIZE sz = {0};
+		m_childs[i]->getMinSize(sz);
+		height = max(height, sz.cy);
+		width  = max(width,  sz.cx);
+	}
+	RECT rcDisplay;
+	rcDisplay.left		= 0;
+	rcDisplay.top		= 0;
+	rcDisplay.right		= width;
+	rcDisplay.bottom	= height;
+	TabCtrl_AdjustRect(m_hWnd, TRUE, &rcDisplay);
+	minSize.cx = rcDisplay.right - rcDisplay.left;
+	minSize.cy = rcDisplay.bottom - rcDisplay.top;
+}
+
+void CXUITabBox::render( int x, int y, int width, int height )
+{
+	if(m_hWnd)
+	{
+		SetWindowPos(m_hWnd, NULL, x, y, width, height, SWP_NOOWNERZORDER | SWP_NOZORDER);
+	}
+	RECT rcDisplay;
+	rcDisplay.left		= x;
+	rcDisplay.top		= y;
+	rcDisplay.right		= x + width;
+	rcDisplay.bottom	= y + height;
+	TabCtrl_AdjustRect(m_hWnd, FALSE, &rcDisplay);
+
+	for(int i=0; i < m_childCount; i++)
+	{
+		m_childs[i]->render(rcDisplay.left, 
+			rcDisplay.top, 
+			rcDisplay.right - rcDisplay.left, 
+			rcDisplay.bottom - rcDisplay.top);
+	}
+}
+
+void CXUITabBox::value_INT( INT val )
+{
+	TabCtrl_SetCurSel(m_hWnd, val);
+	selectTab(val);
+}
+
+INT CXUITabBox::value_INT()
+{
+	return TabCtrl_GetCurSel(m_hWnd);
 }

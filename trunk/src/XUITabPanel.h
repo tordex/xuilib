@@ -13,5 +13,6 @@ public:
 	void OnInitDialog();
 	void set_hidden(int hide);
 	void Init();
+	void render(int x, int y, int width, int height);
 	LPCWSTR get_label() { return m_label; }
 };

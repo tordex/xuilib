@@ -18,10 +18,14 @@
   minheight		CDATA			#IMPLIED
   maxwidth		CDATA			#IMPLIED
   maxheight		CDATA			#IMPLIED
+  cellSpaceX	CDATA			#IMPLIED
+  cellSpaceY	CDATA			#IMPLIED
+  maxheight		CDATA			#IMPLIED
   columns		CDATA			#IMPLIED
   rows			CDATA			#IMPLIED
   span			CDATA			#IMPLIED
   locid			CDATA			#IMPLIED
+  noloc			CDATA			#IMPLIED
   hidden		%BOOL;			#IMPLIED
   disabled		%BOOL;			#IMPLIED
   orient		%ORIENT;		#IMPLIED"
@@ -42,6 +46,7 @@
 	minimizeBox		%BOOL;			#IMPLIED
 	maximizeBox		%BOOL;			#IMPLIED
 	sysMenu			%BOOL;			#IMPLIED
+	titleBar		%BOOL;			#IMPLIED
 	border			(none | thin | resizing | dialogFrame)	#IMPLIED
 	>
 
@@ -151,16 +156,18 @@
 <!ELEMENT combobox  (listitem | disabler)*>
 <!ATTLIST combobox
 	%coreattrs; 
-	editable	%BOOL;					#IMPLIED
-	sorted		%BOOL;					#IMPLIED
-	hasstrings	%BOOL;					#IMPLIED
-	size		CDATA					#IMPLIED
-	ownerdraw	(no | fixed | variable) #IMPLIED
+	editable		%BOOL;					#IMPLIED
+	sorted			%BOOL;					#IMPLIED
+	hasstrings		%BOOL;					#IMPLIED
+	autoComplete	%BOOL;					#IMPLIED
+	size			CDATA					#IMPLIED
+	ownerdraw		(no | fixed | variable) #IMPLIED
 	>
 
 <!ELEMENT listitem  EMPTY>
 <!ATTLIST listitem
 	locid		CDATA				#IMPLIED
+	noloc		CDATA				#IMPLIED
 	selected	%BOOL;				#IMPLIED
 	%label;
 	%value;
@@ -185,6 +192,31 @@
 	value			CDATA			#IMPLIED
 	helpTopic		CDATA			#IMPLIED
 	setFocus		%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT tabbox  (tabpanel*)>
+<!ATTLIST tabbox
+	%coreattrs; 
+	>
+
+<!ELEMENT tabpanel  ANY>
+<!ATTLIST tabpanel
+	%coreattrs; 
+	%label;
+	marginLeft		CDATA			#IMPLIED
+	marginRight		CDATA			#IMPLIED
+	marginBottom	CDATA			#IMPLIED
+	marginTop		CDATA			#IMPLIED
+	>
+
+<!ELEMENT vsplitter  EMPTY>
+<!ATTLIST vsplitter
+	id			ID				#IMPLIED
+	>
+
+<!ELEMENT hsplitter  EMPTY>
+<!ATTLIST hsplitter
+	id			ID				#IMPLIED
 	>
 
 <!ELEMENT color  EMPTY>
@@ -227,6 +259,7 @@
 	%coreattrs; 
 	multicolumn			%BOOL;									#IMPLIED
 	selection			(single | multiple | extended | none)	#IMPLIED
+	ownerDraw			(none | fixed | variable)				#IMPLIED
 	sort				%BOOL;									#IMPLIED
 	nointegralheight	%BOOL;									#IMPLIED
 	colWidth			CDATA									#IMPLIED
@@ -258,20 +291,33 @@
 	NoLabelWrap			%BOOL;									#IMPLIED
 	NoScroll			%BOOL;									#IMPLIED
 	SingleSelection		%BOOL;									#IMPLIED
+	ownerDraw			%BOOL;									#IMPLIED
 
 	CheckBoxes			%BOOL;									#IMPLIED
 	FullRowSelect		%BOOL;									#IMPLIED
 	GridLines			%BOOL;									#IMPLIED
 	HeaderDragDrop		%BOOL;									#IMPLIED
 	LabelTip			%BOOL;									#IMPLIED
+	editColumns			%BOOL;									#IMPLIED
+	smallIconsWidth		CDATA									#IMPLIED
+	smallIconsHeight	CDATA									#IMPLIED
 	>
 
 <!ELEMENT listcol  EMPTY>
 <!ATTLIST listcol
-	locid			CDATA				#IMPLIED
-	caption			CDATA				#REQUIRED
-	size			CDATA				#IMPLIED
-	flex			CDATA				#IMPLIED
+	id				ID							#IMPLIED
+	locid			CDATA						#IMPLIED
+	noloc			CDATA						#IMPLIED
+	caption			CDATA						#IMPLIED
+	name			CDATA						#IMPLIED
+	size			CDATA						#IMPLIED
+	flex			CDATA						#IMPLIED
+	icon			CDATA						#IMPLIED
+	textalign		(left | right | center)		#IMPLIED
+	colHasImages	%BOOL;						#IMPLIED
+	image			%BOOL;						#IMPLIED
+	bitmapOnRight	%BOOL;						#IMPLIED
+	visible			%BOOL;						#IMPLIED
 	>
 
 
@@ -279,6 +325,7 @@
 <!ATTLIST selectfile
 	id					ID										#IMPLIED
 	locid				CDATA									#IMPLIED
+	noloc				CDATA									#IMPLIED
 	title				CDATA									#REQUIRED
 	defExt				CDATA									#IMPLIED
 	type				(open | save)							#REQUIRED
@@ -306,6 +353,7 @@
 <!ELEMENT ext  EMPTY>
 <!ATTLIST ext
 	locid				CDATA									#IMPLIED
+	noloc				CDATA									#IMPLIED
 	text				CDATA									#REQUIRED
 	extension			CDATA									#REQUIRED
 	>
@@ -319,6 +367,7 @@
 <!ELEMENT checkitem  EMPTY>
 <!ATTLIST checkitem
 	locid				CDATA									#IMPLIED
+	noloc				CDATA									#IMPLIED
 	label				CDATA									#REQUIRED
 	value				CDATA									#REQUIRED
 	>
@@ -340,6 +389,7 @@
 	imgHeight	CDATA		#IMPLIED
 	tag			CDATA		#IMPLIED
 	locid		CDATA		#IMPLIED
+	noloc		CDATA		#IMPLIED
 	>
 
 <!ELEMENT sendcmd  EMPTY>
@@ -368,4 +418,76 @@
 	showNone		%BOOL;							#IMPLIED
 	useSpin			%BOOL;							#IMPLIED
 	>
+
+<!ELEMENT statusbar (sbpart*)>
+<!ATTLIST statusbar
+	sizeGrip		%BOOL;			#IMPLIED
+	>
+
+<!ELEMENT sbpart EMPTY>
+<!ATTLIST sbpart
+	id			ID				#IMPLIED
+	flex		CDATA			#IMPLIED
+	>
+
+<!ELEMENT toolbar (toolbarbutton*)>
+<!ATTLIST toolbar
+	id				ID				#IMPLIED
+	altDrag			%BOOL;			#IMPLIED
+	flat			%BOOL;			#IMPLIED
+	list			%BOOL;			#IMPLIED
+	tooltips		%BOOL;			#IMPLIED
+	drawDDArrows	%BOOL;			#IMPLIED
+	mixedButtons	%BOOL;			#IMPLIED
+	btnWidth		CDATA			#IMPLIED
+	btnHeight		CDATA			#IMPLIED
+	>
+
+<!ELEMENT toolbarbutton EMPTY>
+<!ATTLIST toolbarbutton
+	id				ID				#IMPLIED
+	button			%BOOL;			#IMPLIED
+	check			%BOOL;			#IMPLIED
+	checkgroup		%BOOL;			#IMPLIED
+	dropdown		%BOOL;			#IMPLIED
+	group			%BOOL;			#IMPLIED
+	noprefix		%BOOL;			#IMPLIED
+	separator		%BOOL;			#IMPLIED
+	showtext		%BOOL;			#IMPLIED
+	wholedropdown	%BOOL;			#IMPLIED
+	label			CDATA			#IMPLIED
+	icon			CDATA			#IMPLIED
+	tip				CDATA			#IMPLIED
+	iconWidth		CDATA			#IMPLIED
+	iconHeight		CDATA			#IMPLIED
+	>
+
+<!ELEMENT rtf  EMPTY>
+<!ATTLIST rtf
+	%coreattrs; 
+	autoHScroll	%BOOL;				#IMPLIED
+	autoVScroll	%BOOL;				#IMPLIED
+	hScroll		%BOOL;				#IMPLIED
+	vScroll		%BOOL;				#IMPLIED
+	readonly	%BOOL;				#IMPLIED
+	multiline	%BOOL;				#IMPLIED
+	wantReturn	%BOOL;				#IMPLIED
+	textalign	(left|right|center)	#IMPLIED
+	>
+
+<!ELEMENT menupopup  (menuitem | menuseparator | menupopup)*>
+<!ATTLIST menupopup
+	id				ID				#IMPLIED
+	label			CDATA			#IMPLIED
+	>
+
+<!ELEMENT menuitem EMPTY>
+<!ATTLIST menuitem
+	id				ID				#IMPLIED
+	label			CDATA			#IMPLIED
+	radio			%BOOL;				#IMPLIED
+	default			%BOOL;				#IMPLIED
+	>
+
+<!ELEMENT menuseparator EMPTY>
 

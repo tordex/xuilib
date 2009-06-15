@@ -6,6 +6,10 @@
 #define XUI_LB_SELECTION_EXTENDED		2
 #define XUI_LB_SELECTION_NONE			3
 
+#define XUI_LB_OWNERDRAW_NONE			0
+#define XUI_LB_OWNERDRAW_FIXED			1
+#define XUI_LB_OWNERDRAW_VARIABLE		2
+
 class CXUIListBox : public CXUIElement
 {
 	BOOL	m_bMulticolumn;
@@ -14,6 +18,7 @@ class CXUIListBox : public CXUIElement
 	BOOL	m_bSort;
 	BOOL	m_listRows;
 	BOOL	m_bNoIntegralHeight;
+	int		m_ownerDraw;
 public:
 	CXUIListBox(CXUIElement* parent, CXUIEngine* engine);
 	virtual ~CXUIListBox(void);
