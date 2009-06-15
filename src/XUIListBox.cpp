@@ -20,6 +20,7 @@ BOOL CXUIListBox::loadDATA( IXMLDOMNode* node )
 {
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	m_selection			= xmlGetAttributeValueSTRArray(node, TEXT("selection"), XUI_LB_SELECTION_SINGLE, L"single\0multiple\0extended\0none\0");
+	m_ownerDraw			= xmlGetAttributeValueSTRArray(node, TEXT("ownerDraw"), XUI_LB_OWNERDRAW_NONE, L"none\0fixed\0variable\0");
 	m_bMulticolumn		= xmlGetAttributeValueBOOL(node,	TEXT("multicolumn"),		FALSE);
 	m_bSort				= xmlGetAttributeValueBOOL(node,	TEXT("sort"),				FALSE);
 	m_bNoIntegralHeight	= xmlGetAttributeValueBOOL(node,	TEXT("nointegralheight"),	TRUE);
@@ -30,13 +31,19 @@ BOOL CXUIListBox::loadDATA( IXMLDOMNode* node )
 
 void CXUIListBox::Init()
 {
-	DWORD wStyle = WS_CHILD | WS_TABSTOP | LBS_NOTIFY | WS_VSCROLL;
+	DWORD wStyle = WS_CHILD | WS_TABSTOP | LBS_NOTIFY;
 
 	if(get_disabled())		wStyle |= WS_DISABLED;
 	if(!get_hidden())		wStyle |= WS_VISIBLE;
 	if(m_bSort)				wStyle |= LBS_SORT;
 	if(m_bNoIntegralHeight)	wStyle |= LBS_NOINTEGRALHEIGHT;
-	if(m_bMulticolumn)		wStyle |= LBS_MULTICOLUMN;
+	if(m_bMulticolumn)
+	{
+		wStyle |= LBS_MULTICOLUMN | WS_HSCROLL;
+	} else
+	{
+		wStyle |= WS_VSCROLL;
+	}
 
 	switch(m_selection)
 	{
@@ -48,6 +55,15 @@ void CXUIListBox::Init()
 		break;
 	case XUI_LB_SELECTION_NONE:
 		wStyle |= LBS_NOSEL;
+		break;
+	}
+	switch(m_ownerDraw)
+	{
+	case XUI_LB_OWNERDRAW_FIXED:
+		wStyle |= LBS_OWNERDRAWFIXED;
+		break;
+	case XUI_LB_OWNERDRAW_VARIABLE:
+		wStyle |= LBS_OWNERDRAWVARIABLE;
 		break;
 	}
 

@@ -8,11 +8,14 @@ class CXUIMenuPopup : public CXUIElement
 public:
 	CXUIMenuPopup(CXUIElement* parent, CXUIEngine* engine);
 	~CXUIMenuPopup(void);
+	
 	IMPLEMENT_INTERFACE(L"menupopup")
 
-	void Init();
-	BOOL loadDATA(IXMLDOMNode* node);
+	virtual void	Init();
+	virtual BOOL	loadDATA(IXMLDOMNode* node);
+	virtual void	doDefaultAction(CXUIElement* el);
+	virtual BOOL	OnEvent(CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam);
 
-	HMENU get_menu() { return m_hMenu; }
-	LPCWSTR get_label() { return m_label; }
+	HMENU get_menu()	{ return m_hMenu;	}
+
 };

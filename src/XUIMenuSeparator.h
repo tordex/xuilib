@@ -8,4 +8,6 @@ public:
 	~CXUIMenuSeparator(void);
 
 	IMPLEMENT_INTERFACE(L"menuseparator")
+
+	virtual BOOL OnEvent(CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam);
 };

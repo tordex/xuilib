@@ -7,12 +7,14 @@
 
 class CXUIComboBox : public CXUIElement
 {
+	BOOL	m_bAutoComplete;
 	BOOL	m_editable;
 	BOOL	m_sorted;
 	int		m_size;
 	UINT	m_ownerDraw;
 	BOOL	m_bHasStrings;
 	LPWSTR	m_string;
+	WCHAR	m_autoCompleteTXT[255];
 public:
 	CXUIComboBox(CXUIElement* parent, CXUIEngine* engine);
 	~CXUIComboBox(void);

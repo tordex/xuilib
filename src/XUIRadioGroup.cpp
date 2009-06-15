@@ -63,12 +63,14 @@ void CXUIRadioGroup::value_INT( INT val )
 			}
 		}
 	}
+	processDefaultAction();
 }
 
 BOOL CXUIRadioGroup::OnEvent( CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam )
 {
 	if(el && el->QueryElement(L"radio", NULL) && IS_SAME_STR(evID, XUI_EVENT_CHANGED))
 	{
+		processDefaultAction();
 		return raiseEvent(XUI_EVENT_CHANGED, 0, NULL);
 	}
 	return CXUIElement::OnEvent(el, evID, wParam, lParam);

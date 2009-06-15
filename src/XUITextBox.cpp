@@ -74,8 +74,7 @@ void CXUITextBox::Init()
 	}
 
 	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
-	HDC hdc = GetDC(m_hWnd);
-	HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+
 	int rows = 1;
 	int cols = m_size;
 	if(m_multiline)
@@ -83,30 +82,41 @@ void CXUITextBox::Init()
 		rows = m_rows;
 		cols = m_cols;
 	}
-	LPWSTR testStr = new WCHAR[rows * (cols + 2)];
-	int k=0;
-	for(int i=0; i < rows; i++)
+
+	if(!m_minWidth)
 	{
-		for(int j=0; j < cols; j++)
+		HDC hdc = GetDC(m_hWnd);
+		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		LPWSTR testStr = new WCHAR[rows * (cols + 2)];
+		int k=0;
+		for(int i=0; i < rows; i++)
 		{
-			testStr[k] = L'W';
+			for(int j=0; j < cols; j++)
+			{
+				testStr[k] = L'W';
+				k++;
+			}
+			testStr[k] = L'\n';
 			k++;
 		}
-		testStr[k] = L'\n';
-		k++;
+		testStr[k] = 0;
+		RECT rcDraw = {0, 0, 3, 3};
+		DrawText(hdc, testStr, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+		m_minWidth = rcDraw.right - rcDraw.left + 6;
+
+		SelectObject(hdc, oldFont);
+		ReleaseDC(m_hWnd, hdc);
+	} else
+	{
+		RECT rcDlg = {0, 0, 1, 14};
+		rcDlg.right = m_minWidth;
+		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+		m_minWidth = rcDlg.right;
 	}
-	testStr[k] = 0;
-	RECT rcDraw = {0, 0, 3, 3};
-	DrawText(hdc, testStr, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
-	m_minWidth = rcDraw.right - rcDraw.left + 6;
-	//m_minHeight = rcDraw.bottom - rcDraw.top + 6;
 
 	RECT rcDlg = {0, 0, 1, 14};
 	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 	m_minHeight = rcDlg.bottom * rows;
-
-	SelectObject(hdc, oldFont);
-	ReleaseDC(m_hWnd, hdc);
 
 	CXUIElement::Init();
 }

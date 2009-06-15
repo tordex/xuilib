@@ -3,11 +3,14 @@
 #include "XUIContextHelp.h"
 #include "XUIButton.h"
 
-#define BIND_TYPE_INT	0
-#define BIND_TYPE_PSTR	1
-#define BIND_TYPE_STR	2
-#define BIND_TYPE_WORD	3
-#define BIND_TYPE_BYTE	4
+#define BIND_TYPE_INT		0
+#define BIND_TYPE_PSTR		1
+#define BIND_TYPE_STR		2
+#define BIND_TYPE_WORD		3
+#define BIND_TYPE_BYTE		4
+#define BIND_TYPE_BIT		5
+#define BIND_TYPE_INTMASK	6
+#define BIND_TYPE_INTUNIT	7
 
 //////////////////////////////////////////////////////////////////////////
 //						DATA EXCHANGE MAP								//
@@ -45,6 +48,33 @@
 									}
 
 #define XUI_DATA_MAP_INT_CHOICE( elID, trueVal, falseVal, val)	item.id = elID; item.isChoice = TRUE; item.type = BIND_TYPE_INT; item.intVal = (LPINT) &(val); item.intTrueVal = (INT) (trueVal); item.intFalseVal = (INT) (falseVal); \
+	if(bSave) \
+									{ \
+									saveMapItem(&item); \
+									} else \
+									{ \
+									loadMapItem(&item, parent); \
+									}
+
+#define XUI_DATA_MAP_BIT( elID, mask, val)	item.id = elID; item.type = BIND_TYPE_BIT; item.intVal = (LPINT) &(val); item.intTrueVal = (INT) (mask); \
+	if(bSave) \
+									{ \
+									saveMapItem(&item); \
+									} else \
+									{ \
+									loadMapItem(&item, parent); \
+									}
+
+#define XUI_DATA_MAP_INTMASK( elID, mask, val)	item.id = elID; item.type = BIND_TYPE_INTMASK; item.intVal = (LPINT) &(val); item.intTrueVal = (INT) (mask); \
+	if(bSave) \
+									{ \
+									saveMapItem(&item); \
+									} else \
+									{ \
+									loadMapItem(&item, parent); \
+									}
+
+#define XUI_DATA_MAP_INTUNIT( elID, mask, val)	item.id = elID; item.type = BIND_TYPE_INTUNIT; item.intVal = (LPINT) &(val); item.intTrueVal = (INT) (mask); \
 	if(bSave) \
 									{ \
 									saveMapItem(&item); \
@@ -125,6 +155,20 @@
 														return TRUE; \
 													} \
 												}
+
+#define XUI_HANDLE_CONTEXTMENU(elID, func)			if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_CONTEXTMENU, evID)) \
+												{ \
+												return func(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
+												}
+
+#define XUI_HANDLE_CONTEXTMENU_ALL(func)			if(IS_SAME_STR(XUI_EVENT_CONTEXTMENU, evID)) \
+												{ \
+												if(func(el, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))) \
+													{ \
+													return TRUE; \
+													} \
+												}
+
 
 #define XUI_HANDLE_CLICKED(elID, func)			if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_CLICKED, evID)) \
 												{ \
@@ -231,6 +275,11 @@
 													return func((LPNMHDR) lParam); \
 												}
 
+#define XUI_HANDLE_LST_CUSTOMDRAW(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_LST_CUSTOMDRAW, evID)) \
+												{ \
+												return func((LPNMLVCUSTOMDRAW) lParam); \
+												}
+
 #define XUI_HANDLE_LST_COLUMNCLICK_ALL(func)	if(IS_SAME_STR(XUI_EVENT_LST_COLUMNCLICK, evID)) \
 												{ \
 													CXUIList* lst = NULL; \
@@ -248,6 +297,21 @@
 													CXUIList* lst = NULL; \
 													el->QueryElement(L"list", (LPVOID*) &lst); \
 													return func(lst, (LPNMHDR) lParam); \
+												}
+
+#define XUI_HANDLE_LST_KEYDOWN(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_LST_KEYDOWN, evID)) \
+												{ \
+												return func((LPNMLVKEYDOWN) lParam); \
+												}
+
+#define XUI_HANDLE_LST_COLSCHANGED(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_LST_COLSCHANGED, evID)) \
+												{ \
+												return func(); \
+												}
+
+#define XUI_HANDLE_LST_REQUESTCOLS(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_LST_REQUESTCOLS, evID)) \
+												{ \
+												return func((XUI_COL_INFO*) lParam, (int) wParam); \
 												}
 
 #define XUI_HANDLE_HSCROLL(elID, func)			if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_HSCROLL, evID)) \
@@ -288,6 +352,16 @@
 #define XUI_HANDLE_FREEDRAW(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_FREEDRAW, evID)) \
 												{ \
 													return func((HDC) wParam, (LPRECT) lParam); \
+												}
+
+#define XUI_HANDLE_TOOLBAR_CHANGED(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_TOOLBAR_CHANGED, evID)) \
+												{ \
+												return func(); \
+												}
+
+#define XUI_HANDLE_TOOLBAR_DROPDOWN(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_TOOLBAR_DROPDOWN, evID)) \
+												{ \
+												return func((LPRECT) lParam); \
 												}
 
 #define XUI_END_EVENT_MAP						return FALSE; \
@@ -333,6 +407,7 @@ protected:
 	BOOL			m_bMinimizeBox;
 	BOOL			m_bMaximizeBox;
 	BOOL			m_bSysMenu;
+	BOOL			m_bTitleBar;
 	CXUIContextHelp	m_contextHelp;
 	CXUIButton*		m_defButton;
 	INT				m_minWindowWidth;

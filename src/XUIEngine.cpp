@@ -146,8 +146,31 @@ CXUIElement* CXUIEngine::createXUIElement( LPCWSTR name, CXUIElement* parent )
 	} else if(!StrCmpI(name, TEXT("datepicker")))
 	{
 		ret = new CXUIDatePicker(parent, this);
-	}
-	return ret;
+	} else if(!StrCmpI(name, TEXT("selectfolder")))
+	{
+		ret = new CXUISelectFolder(parent, this);
+	} else if(!StrCmpI(name, TEXT("toolbar")))
+	{
+		ret = new CXUIToolbar(parent, this);
+	} else if(!StrCmpI(name, TEXT("toolbarbutton")))
+	{
+		ret = new CXUIToolbarButton(parent, this);
+	} else if(!StrCmpI(name, TEXT("rtf")))
+	{
+		ret = new CXUIRTF(parent, this);
+	} else if(!StrCmpI(name, TEXT("statusbar")))
+	{
+		ret = new CXUIStatusBar(parent, this);
+	} else if(!StrCmpI(name, TEXT("sbpart")))
+	{
+		ret = new CXUISBPart(parent, this);
+	} else if(!StrCmpI(name, TEXT("vsplitter")))
+	{
+		ret = new CXUIVSplitter(parent, this);
+	} else if(!StrCmpI(name, TEXT("hsplitter")))
+	{
+		ret = new CXUIHSplitter(parent, this);
+	}	return ret;
 }
 
 void CXUIEngine::DrawImage( HDC hdc, int x, int y, int width, int height, LPWSTR imgUrl )
@@ -248,4 +271,9 @@ BOOL CXUIEngine::isViewer()
 void CXUIEngine::DrawFrame( HDC hdc, int x, int y, int width, int height, LPWSTR imgUrl, int frames, int frame, int framesOrient )
 {
 
+}
+
+void CXUIEngine::DrawDisabledImage( HDC hdc, int x, int y, int width, int height, LPWSTR imgUrl )
+{
+	DrawImage(hdc, x, y, width, height, imgUrl);
 }

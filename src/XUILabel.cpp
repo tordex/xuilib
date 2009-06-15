@@ -129,7 +129,12 @@ void CXUILabel::recalcHeight( int width )
 {
 	if(m_bMultiline)
 	{
-		m_minWidth = width;
+		RECT rcDlg = {0, 0, 7, 7};
+		if(m_width)		rcDlg.right		= m_width;
+		if(m_height)	rcDlg.bottom	= m_height;
+		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+
+		m_minWidth = max(rcDlg.right, width);
 
 		HDC hdc = GetDC(m_hWnd);
 		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
@@ -142,7 +147,7 @@ void CXUILabel::recalcHeight( int width )
 		{
 			DrawText(hdc, L"W", -1, &rcDraw, DT_CALCRECT | DT_WORDBREAK | DT_EDITCONTROL);
 		}
-		m_minHeight = rcDraw.bottom - rcDraw.top;
+		m_minHeight = max(rcDlg.bottom, rcDraw.bottom - rcDraw.top);
 
 		SelectObject(hdc, oldFont);
 		ReleaseDC(m_hWnd, hdc);

@@ -7,6 +7,7 @@ CXUIElement::CXUIElement(CXUIElement* parent, CXUIEngine* engine)
 	m_cols			= 0;
 	m_rows			= 0;
 
+	m_renderOnly	= FALSE;
 	m_span			= 1;
 	m_lockid		= NULL;
 	m_engine		= engine;
@@ -54,6 +55,8 @@ BOOL CXUIElement::loadDATA(IXMLDOMNode* node)
 	m_cols			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("columns"),	0);
 	m_rows			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("rows"),		0);
 	m_span			= xmlGetAttributeValueNonSTR<int>(node,	TEXT("span"),		1);
+	m_cellSpaceX	= xmlGetAttributeValueNonSTR<int>(node,	TEXT("cellSpaceX"),	-1);
+	m_cellSpaceY	= xmlGetAttributeValueNonSTR<int>(node,	TEXT("cellSpaceY"),	-1);
 	m_hidden		= xmlGetAttributeValueBOOL(node,	TEXT("hidden"),		FALSE);
 	m_disabled		= xmlGetAttributeValueBOOL(node,	TEXT("disabled"),	FALSE);
 	m_orient		= xmlGetAttributeValueSTRArray(node, TEXT("orient"), XUI_ORIENT_HORIZONTAL, L"horizontal\0vertical\0");
@@ -166,8 +169,28 @@ void CXUIElement::Init()
 {
 	if(m_parent)
 	{
-		m_cellSpaceX = m_parent->m_cellSpaceX;
-		m_cellSpaceY = m_parent->m_cellSpaceY;
+		if(m_cellSpaceX < 0)
+		{
+			m_cellSpaceX = m_parent->m_cellSpaceX;
+		} else
+		{
+			RECT rcDlg = {0, 0, 0, 0};
+			rcDlg.right		= m_cellSpaceX;
+			rcDlg.bottom	= m_cellSpaceY;
+			MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+			m_cellSpaceX	= rcDlg.right;
+		}
+		if(m_cellSpaceY < 0)
+		{
+			m_cellSpaceY = m_parent->m_cellSpaceY;
+		} else
+		{
+			RECT rcDlg = {0, 0, 0, 0};
+			rcDlg.right		= m_cellSpaceX;
+			rcDlg.bottom	= m_cellSpaceY;
+			MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+			m_cellSpaceY	= rcDlg.bottom;
+		}
 
 		RECT rcDlg = {0, 0, 0, 0};
 		rcDlg.right		= m_maxWidth;
@@ -241,7 +264,11 @@ void CXUIElement::getMinSize( SIZE& minSize )
 
 void CXUIElement::render( int x, int y, int width, int height )
 {
-	if(m_hWnd && m_parent)
+	m_left		= x;
+	m_top		= y;
+	m_width		= width;
+	m_height	= height;
+	if(m_hWnd && m_parent && !m_renderOnly)
 	{
 		int w = width;
 		int h = height;
@@ -738,4 +765,61 @@ CRenderData* CXUIElement::getRenderData()
 	}
 
 	return retData;
+}
+
+CXUIElement* CXUIElement::getNextEl()
+{
+	CXUIElement* ret = NULL;
+	if(m_parent)
+	{
+		for(int i=0; i < m_parent->get_childsCount(); i++)
+		{
+			if(m_parent->get_childIDX(i) == this)
+			{
+				if(i < m_parent->get_childsCount() - 1)
+				{
+					ret = m_parent->get_childIDX(i + 1);
+				}
+				break;
+			}
+		}
+	}
+	return ret;
+}
+
+CXUIElement* CXUIElement::getPrevEl()
+{
+	CXUIElement* ret = NULL;
+	if(m_parent)
+	{
+		for(int i=0; i < m_parent->get_childsCount(); i++)
+		{
+			if(m_parent->get_childIDX(i) == this)
+			{
+				if(i > 0)
+				{
+					ret = m_parent->get_childIDX(i - 1);
+				}
+				break;
+			}
+		}
+	}
+	return ret;
+}
+
+void CXUIElement::set_width( int width )
+{
+	m_hFlex = 0;
+	m_minWidth	= width;
+}
+
+void CXUIElement::set_height( int height )
+{
+	m_vFlex		= 0;
+	m_minHeight	= height;
+}
+
+void CXUIElement::reRender()
+{
+	render(m_left, m_top, m_width, m_height);
 }

@@ -5,6 +5,8 @@
 #include "OpenDlg.h"
 #include <shlobj.h>
 #include "MyXUIEngine.h"
+#include <stdio.h>
+#include <io.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -116,6 +118,8 @@ BOOL CMainDialog::OnOpen()
 		MAKE_STR(m_projectFile, dlg.m_projectFile);
 		MAKE_STR(m_outFile,		dlg.m_outFile);
 		m_lcid = dlg.m_lcid;
+		m_ctlDialogs->value_INT(-1);
+		clearDialogs();
 
 		IXMLDOMNode* outStrings = NULL;
 
@@ -193,8 +197,6 @@ BOOL CMainDialog::OnOpen()
 
 					strings->Release();
 				}
-
-				clearDialogs();
 
 				IXMLDOMNode* dialogs = xmlOpenNode(root, TEXT("files"));
 				if(dialogs)
@@ -540,7 +542,7 @@ BOOL CMainDialog::OnImport( LPWSTR fileName )
 
 			root->Release();
 		}
-	} else
+	} else if(PathFindExtension(fileName) && !lstrcmp(PathFindExtension(fileName), L".ini"))
 	{
 		FILE* fl = _tfopen(fileName, TEXT("rb"));
 		if(fl)
@@ -570,6 +572,79 @@ BOOL CMainDialog::OnImport( LPWSTR fileName )
 					}
 				}
 			}
+			fclose(fl);
+		}
+	} else if(PathFindExtension(fileName) && !lstrcmp(PathFindExtension(fileName), L".txt"))
+	{
+		FILE* fl = _tfopen(fileName, TEXT("rt,ccs=UTF-8"));
+		if(fl)
+		{
+			int flLen = _filelength(_fileno(fl)) + 10;
+			LPWSTR content = new WCHAR[flLen];
+
+			int count = fread(content, sizeof(WCHAR), flLen, fl);
+			content[count] = 0;
+
+			if(!StrCmpN(content, L"///xuilib\n", 10))
+			{
+				LPWSTR flString = content + 10;
+				LPWSTR text		= NULL;
+				LPWSTR id		= NULL;
+				LPWSTR attr		= NULL;
+				while(flString)
+				{
+					flString = _tcsstr(flString, L"///");
+					if(flString)
+					{
+						flString += 3;
+						LPWSTR eol = _tcsstr(flString, L"\n");
+						LPWSTR tocDst = new WCHAR[eol - flString + 1];
+						StrCpyN(tocDst, flString, eol - flString + 1);
+						tocDst[eol - flString] = 0;
+
+						LPWSTR tok = _tcstok(tocDst, L"|");
+						MAKE_STR(id,	tok);
+						tok = _tcstok(NULL, L"|");
+						MAKE_STR(attr,	tok);
+						flString = _tcsstr(flString, L"\n");
+						delete tocDst;
+
+						if(flString)
+						{
+							flString++;
+							LPWSTR beginText	= flString;
+							LPWSTR endText		= _tcsstr(beginText, L"\n\\\\\\");
+							if(beginText && endText)
+							{
+								text  = new WCHAR[endText - beginText + 1];
+								StrCpyN(text, beginText, endText - beginText + 1);
+								text[endText - beginText] = 0;
+							}
+							flString = endText + 4;
+						}
+					}
+					if(text && id)
+					{
+						for(int i=0; i < m_strings.GetCount(); i++)
+						{
+							if(!lstrcmp(id, m_strings[i].id))
+							{
+								if(attr && m_strings[i].attr && !lstrcmp(attr, m_strings[i].attr) || !attr && !m_strings[i].attr)
+								{
+									if(lstrcmp(m_strings[i].defString, text))
+									{
+										updateString(i, text);
+									}
+								}
+							}
+						}
+					}
+					FREE_CLEAR_STR(text);
+					FREE_CLEAR_STR(id);
+					FREE_CLEAR_STR(attr);
+				}
+			}
+
 			fclose(fl);
 		}
 	}
@@ -848,6 +923,34 @@ BOOL CMainDialog::OnExport( LPWSTR fileName )
 			delete strA;
 		}
 		CloseHandle(hFile);
+	}
+	return TRUE;
+}
+
+BOOL CMainDialog::OnExportText( LPWSTR fileName )
+{
+	FILE* fl = _tfopen(fileName, TEXT("wt+,ccs=UTF-8"));
+	if(fl)
+	{
+		_ftprintf(fl, TEXT("///xuilib\n"));
+		for(int i=0; i < m_strings.GetCount(); i++)
+		{
+			if(m_strings[i].attr)
+			{
+				_ftprintf(fl, TEXT("///%s|%s\n"), m_strings[i].id, m_strings[i].attr);
+			} else
+			{
+				_ftprintf(fl, TEXT("///%s\n"), m_strings[i].id);
+			}
+			if(m_strings[i].locString)
+			{
+				_ftprintf(fl, TEXT("%s\n\\\\\\\n"), m_strings[i].locString);
+			} else
+			{
+				_ftprintf(fl, TEXT("%s\n\\\\\\\n"), m_strings[i].defString);
+			}
+		}
+		fclose(fl);
 	}
 	return TRUE;
 }

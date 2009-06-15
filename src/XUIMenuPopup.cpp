@@ -23,35 +23,7 @@ void CXUIMenuPopup::Init()
 		MENUITEMINFO mii;
 		ZeroMemory(&mii, sizeof(mii));
 		mii.cbSize = sizeof(MENUITEMINFO);
-		BOOL isValid = FALSE;
-
-		CXUIMenuItem* mi = NULL;
-		CXUIMenuSeparator* sep = NULL;
-		CXUIMenuPopup* pop = NULL;
-		if(m_childs[i]->QueryElement(L"menuitem", (LPVOID*) &mi))
-		{
-			isValid = TRUE;
-			mii.fMask = MIIM_ID | MIIM_TYPE;
-			mii.fType = MFT_STRING;
-			mii.dwTypeData = (LPWSTR) mi->get_label();
-			mii.cch = lstrlen(mi->get_label()) + 1;
-			mii.wID = i + 1;
-		} else if(m_childs[i]->QueryElement(L"menuseparator", (LPVOID*) &sep))
-		{
-			isValid = TRUE;
-			mii.fMask = MIIM_TYPE;
-			mii.fType = MFT_SEPARATOR;
-		} else if(m_childs[i]->QueryElement(L"menupopup", (LPVOID*) &pop))
-		{
-			isValid = TRUE;
-			mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_SUBMENU;
-			mii.fType = MFT_STRING;
-			mii.dwTypeData = (LPWSTR) pop->get_label();
-			mii.hSubMenu = pop->get_menu();
-			mii.cch = lstrlen(pop->get_label()) + 1;
-			mii.wID = i + 1;
-		}
-		if(isValid)
+		if(m_childs[i]->raiseEvent(L"get-menu-item", 0, (LPARAM) &mii))
 		{
 			InsertMenuItem(m_hMenu, i, TRUE, &mii);
 		}
@@ -64,4 +36,48 @@ BOOL CXUIMenuPopup::loadDATA(IXMLDOMNode* node)
 	if(m_label) delete m_label;
 	m_label = xmlGetAttributeSTR(node, TEXT("label"));
 	return TRUE;
+}
+
+void CXUIMenuPopup::doDefaultAction( CXUIElement* el )
+{
+	POINT pt;
+	GetCursorPos(&pt);
+	UINT ret = TrackPopupMenu(m_hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, NULL, get_root()->get_wnd(), NULL);
+	CXUIElement* mi = find(ret);
+	if(mi)
+	{
+		mi->raiseEvent(XUI_EVENT_CLICKED, 0, NULL);
+	}
+}
+
+BOOL CXUIMenuPopup::OnEvent( CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam )
+{
+	if(!StrCmpI(evID, L"get-menu-item"))
+	{
+		LPMENUITEMINFO pmii = (LPMENUITEMINFO) lParam;
+		pmii->fMask			= MIIM_ID | MIIM_TYPE | MIIM_SUBMENU;
+		pmii->fType			= MFT_STRING;
+		pmii->dwTypeData	= (LPWSTR) m_label;
+		pmii->cch			= lstrlen(m_label) + 1;
+		pmii->hSubMenu		= m_hMenu;
+		pmii->wID			= get_dlgid();
+		return TRUE;
+	} else if(!StrCmpI(evID, L"enable-menu-item"))
+	{
+		EnableMenuItem(m_hMenu, (UINT) wParam, MF_BYCOMMAND | MF_ENABLED );
+		return TRUE;
+	} else if(!StrCmpI(evID, L"disable-menu-item"))
+	{
+		EnableMenuItem(m_hMenu, (UINT) wParam, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		return TRUE;
+	} else if(!StrCmpI(evID, L"check-menu-item"))
+	{
+		CheckMenuItem(m_hMenu, (UINT) wParam, MF_BYCOMMAND | MF_CHECKED);
+		return TRUE;
+	} else if(!StrCmpI(evID, L"uncheck-menu-item"))
+	{
+		CheckMenuItem(m_hMenu, (UINT) wParam, MF_BYCOMMAND | MF_UNCHECKED);
+		return TRUE;
+	}
+	return CXUIElement::OnEvent(el, evID, wParam, lParam);
 }

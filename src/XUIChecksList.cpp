@@ -6,6 +6,7 @@
 
 CXUIChecksList::CXUIChecksList(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
+	m_lockChanged = FALSE;
 }
 
 CXUIChecksList::~CXUIChecksList(void)
@@ -115,6 +116,7 @@ int CXUIChecksList::getItemIndex( int value )
 
 void CXUIChecksList::checkItem( int value, BOOL bChecked )
 {
+	m_lockChanged = TRUE;
 	int count = ListView_GetItemCount(m_hWnd);
 	for(int i=0; i < count; i++)
 	{
@@ -129,6 +131,7 @@ void CXUIChecksList::checkItem( int value, BOOL bChecked )
 			ListView_SetCheckState(m_hWnd, i, bChecked);
 		}
 	}
+	m_lockChanged = FALSE;
 }
 
 void CXUIChecksList::setItemIndex( int value, int idx )
@@ -213,4 +216,51 @@ int CXUIChecksList::getSelected()
 		}
 	}
 	return -1;
+}
+
+void CXUIChecksList::addItem( LPWSTR text, int data )
+{
+	LVITEM lvi;
+	ZeroMemory(&lvi, sizeof(lvi));
+
+	lvi.mask = LVIF_TEXT | LVIF_PARAM;
+	lvi.pszText = text;
+	lvi.lParam	= (LPARAM) data;
+	lvi.iItem	= getCount() + 1;
+	m_lockChanged = TRUE;
+	ListView_InsertItem(m_hWnd, &lvi);
+	m_lockChanged = FALSE;
+}
+
+void CXUIChecksList::clearItems()
+{
+	ListView_DeleteAllItems(m_hWnd);
+}
+
+BOOL CXUIChecksList::onNotify( int idCtrl, LPNMHDR pnmh )
+{
+	switch(pnmh->code)
+	{
+	case LVN_ITEMCHANGED:
+		if(!m_lockChanged)
+		{
+			LPNMLISTVIEW pnmv = (LPNMLISTVIEW) pnmh;
+			BOOL oldCheckState = FALSE;
+			BOOL newCheckState = FALSE;
+			if(((pnmv->uOldState & LVIS_STATEIMAGEMASK) >> 12) - 1)
+			{
+				oldCheckState = TRUE;
+			}
+			if(((pnmv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1)
+			{
+				newCheckState = TRUE;
+			}
+			if(oldCheckState != newCheckState)
+			{
+				return raiseEvent(XUI_EVENT_CHANGED, NULL, NULL);
+			}
+		}
+		break;
+	}
+	return FALSE;
 }

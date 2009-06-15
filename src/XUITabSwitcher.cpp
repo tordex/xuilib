@@ -3,6 +3,7 @@
 #include "XUITab.h"
 #include <windowsx.h>
 #include "xmltools.h"
+#include <commctrl.h>
 
 CXUITabSwitcher::CXUITabSwitcher(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
@@ -258,7 +259,6 @@ void CXUITabSwitcher::Init()
 {
 	DWORD wStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER;
 	DWORD wStyleCaption = WS_CHILD | WS_VISIBLE;
-
 	if(m_disabled) wStyle |= WS_DISABLED;
 
 	RECT rcMargins;
@@ -712,6 +712,10 @@ void CXUITabSwitcher::value_INT( INT val )
 	{
 		InvalidateRect(m_hWndCaption, NULL, FALSE);
 	}
+	if(m_bShowSwitcher)
+	{
+		InvalidateRect(get_wnd(), NULL, FALSE);
+	}
 }
 
 INT CXUITabSwitcher::value_INT()
@@ -914,4 +918,29 @@ void CXUITabSwitcher::drawFocusRect(HDC hdc)
 			DrawFocusRect(hdc, &rcDraw);
 		}
 	}
+}
+
+BOOL CXUITabSwitcher::onNotify( int idCtrl, LPNMHDR pnmh )
+{
+	if(pnmh->code == TCN_SELCHANGE)
+	{
+		int idx = TabCtrl_GetCurSel(m_hWnd);
+		TCITEM tci;
+		ZeroMemory(&tci, sizeof(TCITEM));
+		tci.mask = TCIF_PARAM;
+		TabCtrl_GetItem(m_hWnd, idx, &tci);
+		CXUITab* tab = (CXUITab*) tci.lParam;
+
+		CXUITab* selTab = findSelectedTab();
+		if(selTab != tab)
+		{
+			if(selTab)
+			{
+				selTab->selected(FALSE);
+			}
+			tab->selected(TRUE);
+		}
+
+	}
+	return FALSE;
 }

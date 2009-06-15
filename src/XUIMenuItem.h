@@ -3,12 +3,17 @@
 
 class CXUIMenuItem : public CXUIElement
 {
-	LPWSTR m_label;
+	LPWSTR	m_label;
+	BOOL	m_isRadio;
+	BOOL	m_isChecked;
+	BOOL	m_isDefault;
 public:
 	CXUIMenuItem(CXUIElement* parent, CXUIEngine* engine);
 	~CXUIMenuItem(void);
 	IMPLEMENT_INTERFACE(L"menuitem")
 
-	BOOL loadDATA(IXMLDOMNode* node);
-	LPCWSTR get_label() { return m_label; }
+	virtual BOOL loadDATA(IXMLDOMNode* node);
+	virtual void value_INT(INT val);
+	virtual BOOL OnEvent(CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam);
+	virtual void updateDisabledState();
 };

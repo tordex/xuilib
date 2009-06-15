@@ -73,6 +73,7 @@ protected:
 	HWND			m_hWnd;
 	LPWSTR			m_lockid;
 	int				m_span;
+	BOOL			m_renderOnly;
 
 	int				m_marginLeft;
 	int				m_marginRight;
@@ -135,6 +136,11 @@ public:
 	int				get_childsCount() { return m_childCount; }
 	LPWSTR			get_id() { return m_strID; }
 	UINT			get_dlgid() { return m_id; }
+	CXUIElement*	getNextEl();
+	CXUIElement*	getPrevEl();
+	void			set_width(int width);
+	void			set_height(int height);
+	void			reRender();
 
 	virtual INT		value_INT();
 	virtual void	value_INT(INT val);
