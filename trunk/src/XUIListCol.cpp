@@ -8,6 +8,8 @@ CXUIListCol::CXUIListCol(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(
 	m_name		= NULL;
 	m_icon		= NULL;
 	m_bVisible	= TRUE;
+	m_isSorted	= FALSE;
+	m_sortDown	= TRUE;
 }
 
 CXUIListCol::~CXUIListCol(void)
@@ -105,4 +107,10 @@ void CXUIListCol::get_colData( LPLVCOLUMN plvi )
 			}
 		}
 	}
+}
+
+void CXUIListCol::setSort( BOOL isSorted, BOOL down )
+{
+	m_isSorted	= isSorted;
+	m_sortDown	= down;
 }

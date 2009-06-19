@@ -19,7 +19,7 @@ BOOL CXUITabPanel::loadDATA(IXMLDOMNode* node)
 {
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	if(m_label) delete m_label;
-	m_label = xmlGetAttributeSTR(node, TEXT("label"));
+	m_label = getLocalizedString(node, TEXT("label"));
 
 	m_marginLeft	=	xmlGetAttributeValueNonSTR<INT>(node, L"marginLeft",	7);
 	m_marginRight	=	xmlGetAttributeValueNonSTR<INT>(node, L"marginRight",	7);

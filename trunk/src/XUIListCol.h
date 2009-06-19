@@ -18,6 +18,8 @@ class CXUIListCol : public CXUIElement
 	BOOL	m_bitmapOnRight;
 	int		m_colID;
 	BOOL	m_bVisible;
+	BOOL	m_isSorted;
+	BOOL	m_sortDown;
 public:
 	CXUIListCol(CXUIElement* parent, CXUIEngine* engine);
 	virtual ~CXUIListCol(void);
@@ -36,4 +38,7 @@ public:
 	BOOL	isVisible()		{ return m_bVisible;	}
 	void	setColID(int id)		{ m_colID = id;	}
 	void	setVisible(BOOL visible)		{ m_bVisible = visible;	}
+	void	setSort(BOOL isSorted, BOOL down);
+	BOOL	isSorted()		{ return m_isSorted; }
+	BOOL	isSortDown()	{ return m_sortDown; }
 };

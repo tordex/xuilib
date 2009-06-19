@@ -17,7 +17,7 @@ BOOL CXUIMenuItem::loadDATA(IXMLDOMNode* node)
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	if(m_label) delete m_label;
 
-	m_label		= xmlGetAttributeSTR(		node,	L"label");
+	m_label		= getLocalizedString(		node,	L"label");
 	m_isRadio	= xmlGetAttributeValueBOOL(	node,	L"radio",	FALSE);
 	m_isDefault	= xmlGetAttributeValueBOOL(	node,	L"default", FALSE);
 

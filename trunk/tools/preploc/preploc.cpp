@@ -32,6 +32,7 @@ struct
 	{L"groupbox",		L"label"		},
 	{L"label",			L"value"		},
 	{L"listcol",		L"caption"		},
+	{L"listcol",		L"name"			},
 	{L"radio",			L"label"		},
 	{L"selectfile",		L"title"		},
 	{L"tab",			L"label"		},
@@ -39,6 +40,11 @@ struct
 	{L"url",			L"text"			},
 	{L"url",			L"url"			},
 	{L"tip",			L"CDATA"		},
+	{L"toolbarbutton",	L"label"		},
+	{L"toolbarbutton",	L"tip"			},
+	{L"tabpanel",		L"label"		},
+	{L"menupopup",		L"label"		},
+	{L"menuitem",		L"label"		},
 	{NULL,				NULL			}
 };
 
@@ -46,37 +52,76 @@ void processNode(IXMLDOMNode* root)
 {
 	BSTR nodeName = NULL;
 	root->get_nodeName(&nodeName);
+
+	LPWSTR noloc = xmlGetAttributeSTR(root, L"noloc");
+	LPWSTR nolocAttrs[5];
+	ZeroMemory(nolocAttrs, sizeof(nolocAttrs));
+	if(noloc)
+	{
+		LPWSTR str = wcstok(noloc, L";, ");
+		int idx = 0;
+		while(str)
+		{
+			nolocAttrs[idx] = new WCHAR[lstrlen(str) + 1];
+			lstrcpy(nolocAttrs[idx], str);
+			str = wcstok(NULL, L";, ");
+			idx++;
+		}
+	}
+
 	for(int i=0; tags[i].tag; i++)
 	{
 		if(!lstrcmpi(tags[i].tag, nodeName))
 		{
-			LPTSTR val = NULL;
-			if(lstrcmp(tags[i].attr, L"CDATA"))
+			BOOL ignore = FALSE;
+			for(int j=0; j < 5 && nolocAttrs[j]; j++)
 			{
-				val = xmlGetAttributeSTR(root, tags[i].attr);
-			} else
-			{
-				val = xmlGetNodeText(root);
+				if(!StrCmpI(nolocAttrs[j], tags[i].attr))
+				{
+					ignore = TRUE;
+					break;
+				}
 			}
-			if(val && !lstrcmp(tags[i].tag, L"url") && !lstrcmp(tags[i].attr, L"url") && !lstrcmp(val, L":notify:"))
+			if(!ignore)
 			{
-				delete val;
-				val = NULL;
-			}
-			if(val)
-			{
-				LOC_STR locstr = {0};
+				LPTSTR val = NULL;
+				if(lstrcmp(tags[i].attr, L"CDATA"))
+				{
+					val = xmlGetAttributeSTR(root, tags[i].attr);
+				} else
+				{
+					val = xmlGetNodeText(root);
+				}
+				if(val && !lstrcmp(tags[i].tag, L"url") && !lstrcmp(tags[i].attr, L"url") && !lstrcmp(val, L":notify:"))
+				{
+					delete val;
+					val = NULL;
+				}
+				if(val)
+				{
+					LOC_STR locstr = {0};
 
-				locstr.id				= xmlGetAttributeSTR(root, L"locid");
-				locstr.defString		= val;
-				locstr.node				= root;
-				MAKE_STR(locstr.attr,	tags[i].attr);
-				locstr.node->AddRef();
-				gStrings.Add(&locstr);
+					locstr.id				= xmlGetAttributeSTR(root, L"locid");
+					locstr.defString		= val;
+					locstr.node				= root;
+					MAKE_STR(locstr.attr,	tags[i].attr);
+					locstr.node->AddRef();
+					gStrings.Add(&locstr);
+				}
 			}
 		}
 	}
 	SysFreeString(nodeName);
+
+	if(noloc) delete noloc;
+	for(int i=0; i < 5; i++)
+	{
+		if(nolocAttrs[i])
+		{
+			delete nolocAttrs[i];
+		}
+	}
+
 	IXMLDOMNode* child = NULL;
 	root->get_firstChild(&child);
 	while(child)
