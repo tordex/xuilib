@@ -327,8 +327,8 @@ BOOL CXUIToolbarButton::loadDATA( IXMLDOMNode* node )
 	m_fsStyle	|= xmlGetAttributeValueBOOL(node, L"wholedropdown",	FALSE)	? BTNS_WHOLEDROPDOWN	: 0;
 
 	m_icon			= xmlGetAttributeSTR(node, TEXT("icon"));
-	m_label			= xmlGetAttributeSTR(node, TEXT("label"));
-	m_tip			= xmlGetAttributeSTR(node, TEXT("tip"));
+	m_label			= getLocalizedString(node, TEXT("label"));
+	m_tip			= getLocalizedString(node, TEXT("tip"));
 	m_iconWidth		= xmlGetAttributeValueNonSTR<int>(node,	TEXT("iconWidth"),		16);
 	m_iconHeight	= xmlGetAttributeValueNonSTR<int>(node,	TEXT("iconHeight"),		16);
 

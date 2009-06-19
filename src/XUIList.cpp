@@ -6,7 +6,7 @@
 
 CXUIList::CXUIList(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
-	m_hSmallImages		= NULL;
+	m_hSmallImages	= NULL;
 }
 
 CXUIList::~CXUIList(void)
@@ -386,7 +386,6 @@ BOOL CXUIList::onNotify( int idCtrl, LPNMHDR pnmh )
 									}
 								}
 							}
-							raiseEvent(XUI_EVENT_LST_COLSCHANGED, 0, NULL);
 						}
 
 					} else
@@ -413,8 +412,9 @@ BOOL CXUIList::onNotify( int idCtrl, LPNMHDR pnmh )
 								}
 							}
 						}
-						raiseEvent(XUI_EVENT_LST_COLSCHANGED, 0, NULL);
 					}
+					updateColsSortState();
+					raiseEvent(XUI_EVENT_LST_COLSCHANGED, 0, NULL);
 				}
 				return TRUE;
 			}
@@ -629,6 +629,25 @@ void CXUIList::setColSort( int colID, BOOL down )
 		CXUIListCol* col = NULL;
 		if(m_childs[i]->QueryElement(L"listcol", (LPVOID*) &col))
 		{
+			col->setSort(FALSE, down);
+		}
+	}
+	CXUIListCol* sortCol = getColByID(colID);
+	if(sortCol)
+	{
+		sortCol->setSort(TRUE, down);
+	}
+	updateColsSortState();
+}
+
+void CXUIList::updateColsSortState()
+{
+	HWND header = ListView_GetHeader(m_hWnd);
+	for(int i=0; i < m_childCount; i++)
+	{
+		CXUIListCol* col = NULL;
+		if(m_childs[i]->QueryElement(L"listcol", (LPVOID*) &col))
+		{
 			if(col->isVisible())
 			{
 				HDITEM hdi;
@@ -637,9 +656,9 @@ void CXUIList::setColSort( int colID, BOOL down )
 				Header_GetItem(header, col->get_ColID(), &hdi);
 				hdi.fmt &= ~HDF_SORTDOWN;
 				hdi.fmt &= ~HDF_SORTUP;
-				if(col->get_ColID() == colID)
+				if(col->isSorted())
 				{
-					if(down)
+					if(col->isSortDown())
 					{
 						hdi.fmt |= HDF_SORTDOWN;
 					} else

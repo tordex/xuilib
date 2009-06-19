@@ -34,7 +34,7 @@ BOOL CXUIMenuPopup::loadDATA(IXMLDOMNode* node)
 {
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 	if(m_label) delete m_label;
-	m_label = xmlGetAttributeSTR(node, TEXT("label"));
+	m_label = getLocalizedString(node, TEXT("label"));
 	return TRUE;
 }
 

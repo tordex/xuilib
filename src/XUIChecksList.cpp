@@ -59,6 +59,7 @@ void CXUIChecksList::Init()
 		idx = count - 1;
 	}
 	RECT rcItem;
+	ZeroMemory(&rcItem, sizeof(rcItem));
 	ListView_GetItemRect(m_hWnd, idx, &rcItem, LVIR_BOUNDS);
 
 	m_minHeight = rcItem.bottom + (rcItem.bottom - rcItem.top) / 2;
