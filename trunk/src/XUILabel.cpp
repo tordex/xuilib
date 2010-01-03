@@ -130,8 +130,10 @@ void CXUILabel::recalcHeight( int width )
 	if(m_bMultiline)
 	{
 		RECT rcDlg = {0, 0, 7, 7};
+/*
 		if(m_width)		rcDlg.right		= m_width;
 		if(m_height)	rcDlg.bottom	= m_height;
+*/
 		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 
 		m_minWidth = max(rcDlg.right, width);

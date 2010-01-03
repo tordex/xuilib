@@ -46,7 +46,7 @@ BOOL CXUISelectFile::loadDATA( IXMLDOMNode* node )
 	m_title = getLocalizedString(node, TEXT("title"));
 	if(m_saveto) delete m_saveto;
 	m_saveto = xmlGetAttributeSTR(node, TEXT("saveto"));
-	if(m_defExt) delete m_saveto;
+	if(m_defExt) delete m_defExt;
 	m_defExt = xmlGetAttributeSTR(node, TEXT("defExt"));
 	
 	m_allowMultiSelect	= xmlGetAttributeValueBOOL(node,	TEXT("allowMultiSelect"),	FALSE);
