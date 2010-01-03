@@ -128,6 +128,10 @@ void CXUIColorPicker::Create(HWND hWndParent, COLORREF color, HINSTANCE hInst)
 	{
 		y = rcWindow.top - height;
 	}
+	if(x + width > rcDesktop.right)
+	{
+		x = rcWindow.right - width;
+	}
 
 	CreateWindowEx(0,
 		XUI_COLORPICKER_CLASS, NULL, 
@@ -296,39 +300,19 @@ void CXUIColorPicker::OnLButtonDown(int x, int y)
 	}
 }
 
-typedef HANDLE (WINAPI *MonitorFromWindowFNC)(HWND hwnd, DWORD dwFlags);
-typedef BOOL (WINAPI *GetMonitorInfoFNC)(HANDLE hMonitor, LPMONITORINFO lpmi);
-
 void CXUIColorPicker::GetDesktopRect(RECT* rcDsk, HWND hWnd)
 {
-	int nMonitors = GetSystemMetrics(80);
-	if(!nMonitors) nMonitors = 0;
-	if(nMonitors == 1)
+	HMONITOR hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+	if(!hMonitor)
 	{
-oneMonitor:
 		HWND dskWnd = GetDesktopWindow();
 		GetClientRect(dskWnd, rcDsk);
 	} else
 	{
-		HMODULE hUser32 = LoadLibrary(TEXT("user32.dll"));
-		MonitorFromWindowFNC getMonitor = (MonitorFromWindowFNC) GetProcAddress(hUser32, "MonitorFromWindow");
-		if(!getMonitor)
-		{
-			FreeLibrary(hUser32);
-			goto oneMonitor;
-		}
-		HANDLE hMonitor = (*getMonitor)(hWnd, 0x00000002);
-		if(!hMonitor)
-		{
-			FreeLibrary(hUser32);
-			goto oneMonitor;
-		}
-		GetMonitorInfoFNC getMonitorInfo = (GetMonitorInfoFNC) GetProcAddress(hUser32, "GetMonitorInfoA");
 		MONITORINFO mInf;
 		mInf.cbSize = sizeof(MONITORINFO);
-		(*getMonitorInfo)(hMonitor, &mInf);
-		*rcDsk = mInf.rcMonitor;
-		FreeLibrary(hUser32);
+		GetMonitorInfo(hMonitor, &mInf);
+		*rcDsk = mInf.rcWork;
 	}
 }
 
