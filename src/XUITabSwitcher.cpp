@@ -265,7 +265,7 @@ void CXUITabSwitcher::Init()
 	rcMargins.left = 0;
 	rcMargins.right = 10;
 	rcMargins.top = 7;
-	rcMargins.bottom = 20;
+	rcMargins.bottom = 16;
 	MapDialogRect(m_parent->get_parentWnd(), &rcMargins);
 	m_ctlsMarginX	= rcMargins.right;
 	m_ctlsMarginY	= rcMargins.top;
@@ -284,7 +284,7 @@ void CXUITabSwitcher::Init()
 	ZeroMemory(&ncm, sizeof(ncm));
 	ncm.cbSize = sizeof(ncm);
 	GetNonClientMetrics(&ncm);
-	ncm.lfCaptionFont.lfHeight = m_captionHeight * 2 / 3;
+	ncm.lfCaptionFont.lfHeight = m_captionHeight - 6;
 	ncm.lfCaptionFont.lfWidth = 0;
 	ncm.lfCaptionFont.lfWeight = FW_BOLD;
 	m_hCaptionFont = CreateFontIndirect(&ncm.lfCaptionFont);
@@ -483,7 +483,10 @@ void CXUITabSwitcher::OnLButtonDown( int x, int y )
 			}
 			overTab->selected(TRUE);
 			InvalidateRect(m_hWnd, (LPRECT) overTab->rect(), TRUE);
-			InvalidateRect(m_hWndCaption, NULL, FALSE);
+			if(m_hWndCaption)
+			{
+				InvalidateRect(m_hWndCaption, NULL, FALSE);
+			}
 		}
 	}
 }

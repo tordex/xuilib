@@ -139,6 +139,7 @@ void CXUIList::Init()
 			m_minHeight += 20;
 		}
 	}
+	CXUIElement::Init();
 }
 
 BOOL CXUIList::loadDATA( IXMLDOMNode* node )
