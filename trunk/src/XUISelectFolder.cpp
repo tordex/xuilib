@@ -7,12 +7,14 @@ CXUISelectFolder::CXUISelectFolder(CXUIElement* parent, CXUIEngine* engine) : CX
 {
 	m_title		= NULL;
 	m_saveto	= NULL;
+	m_selFolder	= NULL;
 }
 
 CXUISelectFolder::~CXUISelectFolder(void)
 {
 	if(m_title)		delete m_title;
 	if(m_saveto)	delete m_saveto;
+	if(m_selFolder)	delete m_selFolder;
 }
 
 BOOL CXUISelectFolder::loadDATA( IXMLDOMNode* node )
@@ -43,6 +45,11 @@ void CXUISelectFolder::doDefaultAction( CXUIElement* el )
 	bi.pszDisplayName = displayName;
 	bi.lpszTitle = m_title;
 	bi.ulFlags = BIF_USENEWUI | BIF_RETURNONLYFSDIRS;
+	if(m_selFolder)
+	{
+		bi.lpfn		= BrowseIconFldProc;
+		bi.lParam	= (LPARAM) this;
+	}
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if(pidl)
 	{
@@ -66,4 +73,34 @@ void CXUISelectFolder::doDefaultAction( CXUIElement* el )
 			raiseEvent(XUI_EVENT_FSSELECTED, 0, (LPARAM) displayName);
 		}
 	}
+}
+
+void CXUISelectFolder::value_STR( LPCWSTR val )
+{
+	if(m_selFolder)	delete m_selFolder;
+	m_selFolder = NULL;
+	if(val)
+	{
+		m_selFolder = new WCHAR[lstrlen(val) + 1];
+		lstrcpy(m_selFolder, val);
+	}
+}
+
+LPCWSTR CXUISelectFolder::value_STR()
+{
+	return m_selFolder;
+}
+
+int CALLBACK CXUISelectFolder::BrowseIconFldProc( HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData )
+{
+	switch(uMsg)
+	{
+	case BFFM_INITIALIZED:
+		{
+			CXUISelectFolder* pThis = (CXUISelectFolder*) lpData;
+			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM) pThis->m_selFolder);
+		}
+		break;
+	}
+	return 0;
 }

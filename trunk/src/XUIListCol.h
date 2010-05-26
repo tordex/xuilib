@@ -27,6 +27,7 @@ public:
 	IMPLEMENT_INTERFACE(L"listcol")
 
 	virtual BOOL loadDATA(IXMLDOMNode* node);
+	virtual void Init();
 
 	int		get_size()		{ return m_size;		}
 	void	set_size(int sz){ m_size = sz;			}

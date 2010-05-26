@@ -284,7 +284,7 @@ void CXUIUrl::Init()
 	}
 	m_minWidth = rcDraw.right - rcDraw.left;
 
-	RECT rcDlg = {0, 0, 1, 14};
+	RECT rcDlg = {0, 0, 1, 8};
 	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 
 	m_minHeight = max(rcDraw.bottom - rcDraw.top, rcDlg.bottom);

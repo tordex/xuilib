@@ -97,7 +97,10 @@ void CXUIComboBox::Init()
 		m_minWidth = rcDlg.right;
 	} else
 	{
-		m_minWidth += 26;
+		RECT rcDlg = {0, 0, 18, 14};
+		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+
+		m_minWidth += rcDlg.right;
 	}
 }
 
@@ -220,6 +223,11 @@ void CXUIComboBox::render( int x, int y, int width, int height )
 	if(m_hWnd && m_parent)
 	{
 		SetWindowPos(m_hWnd, NULL, x, y, width, height * 5, SWP_NOOWNERZORDER | SWP_NOZORDER);
+		RECT rcWindow;
+		GetWindowRect(m_hWnd, &rcWindow);
+		int realHeight = rcWindow.bottom - rcWindow.top;
+		int newY = y + height / 2 - realHeight / 2;
+		SetWindowPos(m_hWnd, NULL, x, newY, width, height * 5, SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
 }
 
