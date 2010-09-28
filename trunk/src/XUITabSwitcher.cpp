@@ -103,7 +103,7 @@ LRESULT CXUITabSwitcher::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM
 		case WM_GETDLGCODE:
 			return DLGC_WANTARROWS;
 		case WM_KEYDOWN:
-			pThis->OnKeyDown(wParam);
+			pThis->OnKeyDown((UINT) wParam);
 			return 0;
 		case WM_ERASEBKGND:
 			return TRUE;
@@ -122,7 +122,7 @@ LRESULT CXUITabSwitcher::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM
 			{
 				PAINTSTRUCT ps;
 				HDC hdc = BeginPaint(hWnd, &ps);
-				HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+				HFONT oldFont = (HFONT) SelectObject(hdc, pThis->getFont());
 				pThis->OnPaint(hdc, &ps.rcPaint);
 				SelectObject(hdc, oldFont);
 				EndPaint(hWnd, &ps);
@@ -296,9 +296,9 @@ void CXUITabSwitcher::Init()
 	if(m_bShowSwitcher)
 	{
 		m_hWnd = CreateWindowEx(0, XUI_TAB_SWITCHER, TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), (LPVOID) this);
-		SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+		SetWindowFont(m_hWnd, getFont(), TRUE);
 		HDC hdc = GetDC(m_hWnd);
-		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 
 		for(int i=0; i < m_childCount; i++)
 		{
@@ -422,7 +422,7 @@ void CXUITabSwitcher::OnPaint( HDC hdc, LPRECT rcDraw )
 	HBITMAP oldBmp = (HBITMAP) SelectObject(memDC, bmp);
 
 	FillRect(memDC, &rcClient, (HBRUSH) (COLOR_WINDOW + 1));
-	HFONT oldFont = (HFONT) SelectObject(memDC, GetStockObject(DEFAULT_GUI_FONT));
+	HFONT oldFont = (HFONT) SelectObject(memDC, getFont());
 
 	for(int i=0; i < m_childCount; i++)
 	{
@@ -946,4 +946,28 @@ BOOL CXUITabSwitcher::onNotify( int idCtrl, LPNMHDR pnmh )
 
 	}
 	return FALSE;
+}
+
+BOOL CXUITabSwitcher::processAccelerator( WCHAR accChr )
+{
+	for(int i=0; i < m_childCount; i++)
+	{
+		CXUITab* tab = NULL;
+		m_childs[i]->QueryElement(L"tab", (LPVOID*) &tab);
+		if(tab)
+		{
+			LPWSTR txt = (LPWSTR) tab->get_label();
+			LPWSTR amp = StrStrI(txt, L"&");
+			if(amp)
+			{
+				if(!ChrCmpI(amp[1], accChr))
+				{
+					value_INT(tab->value_INT());
+					tab->set_TabStopFocus();
+					return TRUE;
+				}
+			}
+		}
+	}
+	return CXUIElement::processAccelerator(accChr);
 }

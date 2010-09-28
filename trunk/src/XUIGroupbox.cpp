@@ -28,10 +28,10 @@ void CXUIGroupbox::Init()
 	if(get_disabled())	wStyle |= WS_DISABLED;
 	if(!get_hidden())	wStyle |= WS_VISIBLE;
 
-	m_hWnd = CreateWindowEx(0, TEXT("BUTTON"), m_label, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	m_hWnd = CreateWindowEx(WS_EX_TRANSPARENT, TEXT("BUTTON"), m_label, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 	HDC hdc = GetDC(m_hWnd);
-	HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+	HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 	RECT rcDraw = {0, 0, 3, 3};
 	if(m_label)
 	{

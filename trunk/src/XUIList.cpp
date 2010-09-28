@@ -47,7 +47,7 @@ void CXUIList::Init()
 	}
 
 	m_hWnd = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 
 	clearSmallIcons();
 
@@ -223,12 +223,12 @@ void CXUIList::render( int x, int y, int width, int height )
 	}
 }
 
-int CXUIList::insertItem(LPWSTR text, LPARAM data, int iconID)
+int CXUIList::insertItem(LPCWSTR text, LPARAM data, int iconID)
 {
 	LVITEM lvi;
 	ZeroMemory(&lvi, sizeof(lvi));
 	lvi.mask		= LVIF_TEXT | LVIF_PARAM;
-	lvi.pszText		= text;
+	lvi.pszText		= (LPWSTR) text;
 	lvi.lParam		= data;
 	lvi.iItem		= ListView_GetItemCount(m_hWnd);
 	lvi.iSubItem	= 0;
@@ -240,9 +240,9 @@ int CXUIList::insertItem(LPWSTR text, LPARAM data, int iconID)
 	return ListView_InsertItem(m_hWnd, &lvi);
 }
 
-void CXUIList::setItemText(int iItem, int iSubitem, LPWSTR text)
+void CXUIList::setItemText(int iItem, int iSubitem, LPCWSTR text)
 {
-	ListView_SetItemText(m_hWnd, iItem, iSubitem, text);
+	ListView_SetItemText(m_hWnd, iItem, iSubitem, (LPWSTR) text);
 }
 
 void CXUIList::selectItem( int idx )
@@ -447,9 +447,9 @@ void CXUIList::setImageList( HIMAGELIST himl, int iImageList )
 	ListView_SetImageList(m_hWnd, himl, iImageList);
 }
 
-void CXUIList::getItemText( int iItem, int iSubitem, LPWSTR text, int cbText )
+void CXUIList::getItemText( int iItem, int iSubitem, LPCWSTR text, int cbText )
 {
-	ListView_GetItemText(m_hWnd, iItem, iSubitem, text, cbText);
+	ListView_GetItemText(m_hWnd, iItem, iSubitem, (LPWSTR) text, cbText);
 }
 
 void CXUIList::clearSmallIcons()

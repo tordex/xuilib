@@ -108,7 +108,7 @@ void CXUIListCol::Init()
 	if(m_size)
 	{
 		HDC hdc = GetDC(NULL);
-		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 		LPWSTR testStr = L"W";
 		RECT rcDraw = {0, 0, 3, 3};
 		DrawText(hdc, testStr, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);

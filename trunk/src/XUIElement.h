@@ -53,6 +53,7 @@ protected:
 	CXUIEngine*		m_engine;
 	UINT			m_id;
 	LPWSTR			m_strID;
+	LPWSTR			m_tags;
 	int				m_left;
 	int				m_top;
 	int				m_width;
@@ -104,25 +105,28 @@ public:
 	BOOL raiseEvent(LPCWSTR evID, WPARAM wParam, LPARAM lParam);
 	void processDefaultAction();
 
-	virtual void getMinSize(SIZE& minSize);
-	virtual void render(int x, int y, int width, int height);
+	virtual void	getMinSize(SIZE& minSize);
+	virtual void	render(int x, int y, int width, int height);
 
-	virtual BOOL loadDATA(IXMLDOMNode* node);
-	virtual BOOL loadFile(LPCTSTR fileName, LPCTSTR defNode, HINSTANCE hInst = NULL);
-	virtual void addChild(CXUIElement* child);
-	virtual void Init();
-	virtual void doDefaultAction(CXUIElement* el);
-	virtual BOOL OnEvent(CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam);
-	virtual BOOL isInitialized();
-	virtual UINT get_newDlgID();
+	virtual BOOL	loadDATA(IXMLDOMNode* node);
+	virtual BOOL	loadFile(LPCTSTR fileName, LPCTSTR defNode, HINSTANCE hInst = NULL);
+	virtual void	addChild(CXUIElement* child);
+	virtual void	Init();
+	virtual void	doDefaultAction(CXUIElement* el);
+	virtual BOOL	OnEvent(CXUIElement* el, LPCWSTR evID, WPARAM wParam, LPARAM lParam);
+	virtual BOOL	isInitialized();
+	virtual UINT	get_newDlgID();
+	virtual BOOL	processAccelerator(WCHAR accChr);
+	virtual HFONT	getFont();
 
-	virtual BOOL onNotify(int idCtrl, LPNMHDR pnmh);
-	virtual BOOL onCommnd(UINT code, UINT id, HWND hWnd);
+	virtual BOOL	onNotify(int idCtrl, LPNMHDR pnmh);
+	virtual BOOL	onCommnd(UINT code, UINT id, HWND hWnd);
 
 	CXUIElement*	get_root();
 	CXUIElement*	find(HWND hWnd);
 	CXUIElement*	find(LPTSTR id);
 	CXUIElement*	find(UINT id);
+	CXUIElement*	findByType(LPTSTR id, BOOL findInChild);
 
 	CXUIElement*	get_parent() { return m_parent; }
 	int				get_width() { return m_width; }
@@ -134,7 +138,8 @@ public:
 	virtual HWND	get_parentWnd();
 	CXUIElement*	get_childIDX(int idx) { return (idx >=0 && idx < m_childCount) ? m_childs[idx] : NULL; }
 	int				get_childsCount() { return m_childCount; }
-	LPWSTR			get_id() { return m_strID; }
+	LPWSTR			get_id()	{ return m_strID; }
+	LPWSTR			get_tags()	{ return m_tags; }
 	UINT			get_dlgid() { return m_id; }
 	CXUIElement*	getNextEl();
 	CXUIElement*	getPrevEl();

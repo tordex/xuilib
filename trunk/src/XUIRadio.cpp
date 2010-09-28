@@ -62,11 +62,11 @@ void CXUIRadio::Init()
 	}
 
 	m_hWnd = CreateWindowEx(0, TEXT("BUTTON"), m_label, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 	if(!m_bMultiline)
 	{
 		HDC hdc = GetDC(m_hWnd);
-		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 		RECT rcDraw = {0, 0, 3, 3};
 		if(m_label)
 		{
@@ -123,7 +123,7 @@ void CXUIRadio::recalcHeight( int width )
 		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 
 		HDC hdc = GetDC(m_hWnd);
-		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 
 		RECT rcDraw = {0, 0, m_minWidth - rcDlg.right, 3};
 		if(m_label)

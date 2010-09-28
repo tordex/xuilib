@@ -52,12 +52,12 @@ void CXUIComboBox::Init()
 	}
 
 	m_hWnd = CreateWindowEx(0, TEXT("COMBOBOX"), NULL, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 	m_minWidth = 0;
 	m_minHeight = 0;
 
 	HDC hdc = GetDC(NULL);
-	HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+	HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 	for(int i=0; i < m_childCount; i++)
 	{
 		CXUIListItem* cbi = NULL;
@@ -76,7 +76,7 @@ void CXUIComboBox::Init()
 	if(!m_minWidth)
 	{
 		HDC hdc = GetDC(m_hWnd);
-		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 		RECT rcDraw = {0, 0, 3, 3};
 		LPSTR label = new CHAR[m_size + 1];
 		memset(label, 'W', m_size);
@@ -239,7 +239,7 @@ BOOL CXUIComboBox::onCommnd( UINT code, UINT id, HWND hWnd )
 		GetWindowText(m_hWnd, txt, 255);
 		if(lstrcmpi(txt, m_autoCompleteTXT))
 		{
-			int newIDX = SendMessage(m_hWnd, CB_FINDSTRING, -1, (LPARAM) txt);
+			int newIDX = (int) SendMessage(m_hWnd, CB_FINDSTRING, -1, (LPARAM) txt);
 			if(newIDX >= 0)
 			{
 				SendMessage(m_hWnd, CB_SETCURSEL, newIDX, 0);
@@ -255,4 +255,19 @@ BOOL CXUIComboBox::onCommnd( UINT code, UINT id, HWND hWnd )
 		return raiseEvent(XUI_EVENT_CHANGED, 0, NULL);
 	}
 	return FALSE;
+}
+
+void CXUIComboBox::selectIndex(int idx)
+{
+	SendMessage(m_hWnd, CB_SETCURSEL, idx, 0);
+}
+
+int CXUIComboBox::selectIndex()
+{
+	return (int) SendMessage(m_hWnd, CB_GETCURSEL, 0, 0);
+}
+
+int CXUIComboBox::itemsCount()
+{
+	return (int) SendMessage(m_hWnd, CB_GETCOUNT, 0, 0);
 }

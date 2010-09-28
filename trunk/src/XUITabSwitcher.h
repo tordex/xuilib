@@ -60,6 +60,7 @@ public:
 	virtual LPCWSTR	value_STR();
 	virtual void	value_STR(LPCWSTR val);
 	virtual BOOL	onNotify(int idCtrl, LPNMHDR pnmh);
+	virtual BOOL	processAccelerator(WCHAR accChr);
 
 	virtual void	recalcLayout();
 	virtual void	onCmd(LPWSTR cmd);

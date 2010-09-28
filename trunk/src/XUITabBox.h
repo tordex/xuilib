@@ -16,4 +16,5 @@ public:
 	virtual HWND	get_parentWnd();
 	virtual void	value_INT(INT val);
 	virtual INT		value_INT();
+	virtual BOOL	processAccelerator(WCHAR accChr);
 };

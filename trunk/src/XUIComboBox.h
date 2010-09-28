@@ -28,6 +28,9 @@ public:
 
 	void clearItems();
 	void addItem(int id, LPCWSTR str);
+	void selectIndex(int idx);
+	int  selectIndex();
+	int  itemsCount();
 
 	virtual INT		value_INT();
 	virtual void	value_INT(INT val);

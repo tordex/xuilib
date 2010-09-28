@@ -13,10 +13,11 @@ CXUITabBox::~CXUITabBox(void)
 
 void CXUITabBox::Init()
 {
-	DWORD wStyle = WS_CHILD | WS_VISIBLE | TCS_SINGLELINE;
+	DWORD wStyle = WS_CHILD | TCS_RAGGEDRIGHT;
+	if(!get_hidden()) wStyle |= WS_VISIBLE;
 
 	m_hWnd = CreateWindowEx(0, WC_TABCONTROL, NULL, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 	m_minWidth = 0;
 	m_minHeight = 0;
 	for(int i=0; i < get_childsCount(); i++)
@@ -25,6 +26,7 @@ void CXUITabBox::Init()
 		if(get_childIDX(i)->QueryElement(L"tabpanel", (LPVOID*) &tp))
 		{
 			TCITEM tci;
+			ZeroMemory(&tci, sizeof(tci));
 			tci.mask = TCIF_PARAM | TCIF_TEXT;
 			tci.lParam = (LPARAM) tp;
 			tci.pszText = (LPWSTR) tp->get_label();
@@ -141,4 +143,27 @@ void CXUITabBox::value_INT( INT val )
 INT CXUITabBox::value_INT()
 {
 	return TabCtrl_GetCurSel(m_hWnd);
+}
+
+BOOL CXUITabBox::processAccelerator( WCHAR accChr )
+{
+	for(int i=0; i < get_childsCount(); i++)
+	{
+		CXUITabPanel* tp = NULL;
+		if(get_childIDX(i)->QueryElement(L"tabpanel", (LPVOID*) &tp))
+		{
+			LPWSTR txt = (LPWSTR) tp->get_label();
+			LPWSTR amp = StrStrI(txt, L"&");
+			if(amp)
+			{
+				if(!ChrCmpI(amp[1], accChr))
+				{
+					value_INT(i);
+					tp->set_TabStopFocus();
+					return TRUE;
+				}
+			}
+		}
+	}
+	return FALSE;
 }

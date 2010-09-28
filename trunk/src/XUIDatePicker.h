@@ -19,6 +19,7 @@ public:
 	virtual BOOL loadDATA(IXMLDOMNode* node);
 	virtual void Init();
 	virtual HWND get_parentWnd();
+	virtual BOOL onNotify(int idCtrl, LPNMHDR pnmh);
 
 	BOOL isNone();
 	void getDate(LPSYSTEMTIME pTm);
