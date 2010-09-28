@@ -58,9 +58,9 @@ public:
 
 	IMPLEMENT_INTERFACE(L"list")
 
-	int		insertItem(LPWSTR text, LPARAM data, int iconID = -1);
-	void	setItemText(int iItem, int iSubitem, LPWSTR text);
-	void	getItemText(int iItem, int iSubitem, LPWSTR text, int cbText);
+	int		insertItem(LPCWSTR text, LPARAM data, int iconID = -1);
+	void	setItemText(int iItem, int iSubitem, LPCWSTR text);
+	void	getItemText(int iItem, int iSubitem, LPCWSTR text, int cbText);
 	void	selectItem(int idx);
 	void	clearItems();
 	int		getItemsCount();

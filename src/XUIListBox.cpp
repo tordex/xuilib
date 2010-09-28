@@ -68,13 +68,13 @@ void CXUIListBox::Init()
 	}
 
 	m_hWnd = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("ListBox"), TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 
 	m_minWidth = 0;
 	m_minHeight = 0;
 
 	HDC hdc = GetDC(NULL);
-	HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+	HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 	if(!m_bMulticolumn)
 	{
 		for(int i=0; i < m_childCount; i++)

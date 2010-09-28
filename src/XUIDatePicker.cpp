@@ -94,3 +94,12 @@ void CXUIDatePicker::setFormat( LPWSTR format )
 {
 	DateTime_SetFormat(m_hWnd, format);
 }
+
+BOOL CXUIDatePicker::onNotify( int idCtrl, LPNMHDR pnmh )
+{
+	if(pnmh->code == DTN_DATETIMECHANGE)
+	{
+		return raiseEvent(XUI_EVENT_CHANGED, NULL, NULL);
+	}
+	return FALSE;
+}

@@ -85,9 +85,12 @@ void CXUIToolbar::Init()
 	}
 	//SendMessage(m_hWnd, TB_SETBUTTONSIZE, 0, MAKELONG(32, 32));
 
-	RECT rcToolbar;
-	GetWindowRect(m_hWnd, &rcToolbar);
-	m_minHeight = rcToolbar.bottom - rcToolbar.top;
+	//RECT rcToolbar;
+	//GetWindowRect(m_hWnd, &rcToolbar);
+	//m_minHeight = rcToolbar.bottom - rcToolbar.top;
+	SIZE szToolbar = {0};
+	SendMessage(m_hWnd, TB_GETMAXSIZE, 0, (LPARAM) &szToolbar);
+	m_minHeight = szToolbar.cy;
 
 	CXUIElement::Init();
 }

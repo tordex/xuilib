@@ -3,6 +3,8 @@
 #include <CommCtrl.h>
 #include <vssym32.h>
 #include <Uxtheme.h>
+#include <WindowsX.h>
+#include "xmltools.h"
 
 CXUIHotkey::CXUIHotkey(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
@@ -24,13 +26,19 @@ CXUIHotkey::CXUIHotkey(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(pa
 		RegisterClass(&wc);
 	}
 
-	m_hotKey = 0;
-	m_text[0] = 0;
+	m_clrBg				= NULL;
+	m_clrIcon			= NULL;
+	m_hotKey			= 0;
+	m_text[0]			= 0;
+	m_btnState			= 0;
+	m_trackInstalled	= FALSE;
 	FillString();
 }
 
 CXUIHotkey::~CXUIHotkey(void)
 {
+	if(m_clrBg)		delete m_clrBg;
+	if(m_clrIcon)	delete m_clrIcon;
 }
 
 LRESULT CALLBACK CXUIHotkey::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam )
@@ -188,9 +196,6 @@ LRESULT CALLBACK CXUIHotkey::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, L
 				ShowCaret(hWnd);
 			}
 			return 0;
-		case WM_LBUTTONDOWN:
-			SetFocus(hWnd);
-			return 0;
 		case WM_CREATE:
 			{
 				LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
@@ -205,6 +210,128 @@ LRESULT CALLBACK CXUIHotkey::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, L
 		case WM_PAINT:
 			pThis->OnPaint();
 			break;
+		case WM_MOUSEMOVE:
+			{
+				if(!pThis->m_trackInstalled)
+				{
+					TRACKMOUSEEVENT tme;
+					tme.cbSize		= sizeof(tme);
+					tme.hwndTrack	= hWnd;
+					tme.dwFlags		= TME_LEAVE;
+					tme.dwHoverTime	= HOVER_DEFAULT;
+					TrackMouseEvent(&tme);
+					pThis->m_trackInstalled = TRUE;
+				}
+				RECT rcBtn;
+				GetClientRect(hWnd, &rcBtn);
+				rcBtn.left = rcBtn.right - (rcBtn.bottom - rcBtn.top);
+				POINT pt;
+				pt.x	= GET_X_LPARAM(lParam);
+				pt.y	= GET_Y_LPARAM(lParam);
+				if(PtInRect(&rcBtn, pt))
+				{
+					if(!pThis->m_btnState)
+					{
+						pThis->m_btnState = 1;
+						InvalidateRect(hWnd, &rcBtn, FALSE);
+					}
+				} else
+				{
+					if(pThis->m_btnState)
+					{
+						pThis->m_btnState = 0;
+						InvalidateRect(hWnd, &rcBtn, FALSE);
+					}
+				}
+			}
+			break;
+		case WM_MOUSELEAVE:
+			{
+				if(pThis->m_trackInstalled)
+				{
+					TRACKMOUSEEVENT tme;
+					tme.cbSize		= sizeof(tme);
+					tme.hwndTrack	= hWnd;
+					tme.dwFlags		= TME_LEAVE | TME_CANCEL;
+					tme.dwHoverTime	= HOVER_DEFAULT;
+					TrackMouseEvent(&tme);
+					pThis->m_trackInstalled = FALSE;
+				}
+				if(pThis->m_btnState)
+				{
+					RECT rcBtn;
+					GetClientRect(hWnd, &rcBtn);
+					rcBtn.left = rcBtn.right - (rcBtn.bottom - rcBtn.top);
+					pThis->m_btnState = 0;
+					InvalidateRect(hWnd, &rcBtn, FALSE);
+				}
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			{
+				SetFocus(hWnd);
+				RECT rcBtn;
+				GetClientRect(hWnd, &rcBtn);
+				rcBtn.left = rcBtn.right - (rcBtn.bottom - rcBtn.top);
+				POINT pt;
+				pt.x	= GET_X_LPARAM(lParam);
+				pt.y	= GET_Y_LPARAM(lParam);
+				if(PtInRect(&rcBtn, pt))
+				{
+					if(pThis->m_btnState != 2)
+					{
+						pThis->m_btnState = 2;
+						InvalidateRect(hWnd, &rcBtn, FALSE);
+					}
+				} else
+				{
+					if(pThis->m_btnState)
+					{
+						pThis->m_btnState = 0;
+						InvalidateRect(hWnd, &rcBtn, FALSE);
+					}
+				}
+			}
+			return 0;
+		case WM_LBUTTONUP:
+			{
+				RECT rcBtn;
+				GetClientRect(hWnd, &rcBtn);
+				rcBtn.left = rcBtn.right - (rcBtn.bottom - rcBtn.top);
+				POINT pt;
+				pt.x	= GET_X_LPARAM(lParam);
+				pt.y	= GET_Y_LPARAM(lParam);
+				if(PtInRect(&rcBtn, pt))
+				{
+					if(pThis->m_btnState == 2)
+					{
+						pThis->value_INT(0);
+						pThis->raiseEvent(XUI_EVENT_CHANGED, 0, NULL);
+					}
+					if(pThis->m_btnState != 1)
+					{
+						pThis->m_btnState = 1;
+						InvalidateRect(hWnd, &rcBtn, FALSE);
+					}
+				} else
+				{
+					if(pThis->m_btnState)
+					{
+						pThis->m_btnState = 0;
+						InvalidateRect(hWnd, &rcBtn, FALSE);
+					}
+				}
+			}
+			break;
+		case WM_SETCURSOR:
+			if(pThis->m_btnState)
+			{
+				SetCursor(LoadCursor(NULL, IDC_ARROW));
+			} else
+			{
+				SetCursor(LoadCursor(NULL, IDC_IBEAM));
+			}
+			return TRUE;
 		}
 	}
 
@@ -245,12 +372,27 @@ void CXUIHotkey::OnPaint( void )
 	HFONT hFont = (HFONT) SendMessage(GetParent(m_hWnd), WM_GETFONT, 0, 0);
 	HFONT oldFont = (HFONT) SelectObject(ps.hdc, hFont);
 
+	RECT rcText = rcClient;
+	rcText.right -= rcText.bottom - rcText.top;
+
 	SetBkMode(ps.hdc, TRANSPARENT);
-	rcClient.left += 4;
-	rcClient.right -= 4;
-	DrawText(ps.hdc, m_text, -1, &rcClient, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+	rcText.left += 4;
+	rcText.right -= 4;
+	DrawText(ps.hdc, m_text, -1, &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 
 	SelectObject(ps.hdc, oldFont);
+
+	RECT rcBtn = rcClient;
+	rcBtn.left = rcClient.right - (rcClient.bottom - rcClient.top);
+
+	if(m_clrBg)
+	{
+		m_engine->DrawFrame(ps.hdc, rcBtn.left, rcBtn.top, rcBtn.right - rcBtn.left, rcBtn.bottom - rcBtn.top, m_clrBg, 3, m_btnState, 0);
+	}
+	if(m_clrIcon)
+	{
+		m_engine->DrawImage(ps.hdc, rcBtn.left, rcBtn.top, rcBtn.right - rcBtn.left, rcBtn.bottom - rcBtn.top, m_clrIcon);
+	}
 
 	EndPaint(m_hWnd, &ps);
 }
@@ -347,4 +489,15 @@ void CXUIHotkey::value_INT( INT val )
 	FillString();
 	UpdateCarret();
 	InvalidateRect(m_hWnd, NULL, FALSE);
+}
+
+BOOL CXUIHotkey::loadDATA( IXMLDOMNode* node )
+{
+	if(!CXUIElement::loadDATA(node)) return FALSE;
+	if(m_clrBg)		delete m_clrBg;
+	if(m_clrIcon)	delete m_clrIcon;
+	m_clrBg		= xmlGetAttributeSTR(node,				TEXT("background"));
+	m_clrIcon	= xmlGetAttributeSTR(node,				TEXT("icon"));
+
+	return TRUE;
 }

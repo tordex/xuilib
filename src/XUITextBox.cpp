@@ -73,7 +73,7 @@ void CXUITextBox::Init()
 		SendMessage(m_hWnd, EM_LIMITTEXT, m_maxlength, NULL);
 	}
 
-	SetWindowFont(m_hWnd, GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SetWindowFont(m_hWnd, getFont(), TRUE);
 
 	int rows = 1;
 	int cols = m_size;
@@ -86,7 +86,7 @@ void CXUITextBox::Init()
 	if(!m_minWidth)
 	{
 		HDC hdc = GetDC(m_hWnd);
-		HFONT oldFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
+		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
 		LPWSTR testStr = new WCHAR[rows * (cols + 2)];
 		int k=0;
 		for(int i=0; i < rows; i++)

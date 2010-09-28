@@ -149,13 +149,16 @@ LPDLGTEMPLATE CXUIDialog::createDialog(int left, int top, int width, int height)
 		*lpw++ = 0;   // no caption
 	}
 
-	HFONT fnt = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+	HFONT fnt = getFont();
 	LOGFONT lf;
 	GetObject(fnt, sizeof(LOGFONT), &lf);
 
-	if(m_style & DS_SETFONT)
+	if((m_style & DS_SETFONT) || (m_style & DS_SHELLFONT) )
 	{
-		*lpw++ = (WORD) lf.lfHeight;	// pointsize
+		HDC hdc = GetDC(NULL);
+		WORD pointsize = MulDiv(-lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY));
+
+		*lpw++ = (WORD) pointsize;				// pointsize
 		*lpw++ = (WORD) lf.lfWeight;	// weight
 		LPBYTE lpb = (LPBYTE) lpw;
 		*lpb++ = lf.lfItalic;			// italic
@@ -206,7 +209,7 @@ BOOL CXUIDialog::loadDATA(IXMLDOMNode* node)
 	m_bSysMenu		= xmlGetAttributeValueBOOL(node,	TEXT("sysMenu"),		TRUE);
 	m_bTitleBar		= xmlGetAttributeValueBOOL(node,	TEXT("titleBar"),		TRUE);
 	m_border		= xmlGetAttributeValueSTRArray(node, TEXT("border"), XUI_DLG_BORDER_DIALOGFRAME, L"none\0thin\0resizing\0dialogFrame\0");
-	m_style = WS_VISIBLE | DS_SETFONT | WS_POPUP;
+	m_style = WS_VISIBLE | DS_SHELLFONT | WS_POPUP;
 
 	if(m_bClipChildren)	m_style |= WS_CLIPCHILDREN;
 	if(m_bClipSiblings)	m_style |= WS_CLIPSIBLINGS;
@@ -464,6 +467,16 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 				pThis->OnInitDialog();
 			}
 			return TRUE;
+		case WM_SYSCOMMAND:
+			if((wParam & 0xFFF0) == SC_KEYMENU)
+			{
+				if(pThis->processAccelerator((WCHAR) lParam))
+				{
+					SetWindowLongPtr(hWnd, DWLP_MSGRESULT, 0);
+					return TRUE;
+				}
+			}
+			break;
 		}
 	}
 
@@ -929,3 +942,4 @@ HWND CXUIDialog::Create( HWND hWndParent )
 	}
 	return NULL;
 }
+

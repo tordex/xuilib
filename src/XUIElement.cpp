@@ -62,6 +62,7 @@ BOOL CXUIElement::loadDATA(IXMLDOMNode* node)
 	m_orient		= xmlGetAttributeValueSTRArray(node, TEXT("orient"), XUI_ORIENT_HORIZONTAL, L"horizontal\0vertical\0");
 	m_lockid		= xmlGetAttributeSTR(node, TEXT("locid"));
 	m_strID			= xmlGetAttributeSTR(node, TEXT("id"));
+	m_tags			= xmlGetAttributeSTR(node, TEXT("tags"));
 
 	m_id = get_newDlgID();
 
@@ -586,6 +587,27 @@ CXUIElement* CXUIElement::find( LPTSTR id )
 	return NULL;
 }
 
+CXUIElement* CXUIElement::findByType( LPTSTR id, BOOL findInChild )
+{
+	for(int i=0; i < m_childCount; i++)
+	{
+		CXUIElement* el = NULL;
+		if(m_childs[i]->QueryElement(id, (LPVOID*) &el))
+		{
+			return m_childs[i];
+		}
+		if(findInChild)
+		{
+			el = m_childs[i]->findByType(id, findInChild);
+		}
+		if(el)
+		{
+			return el;
+		}
+	}
+	return NULL;
+}
+
 CXUIElement* CXUIElement::find( UINT id )
 {
 	if(m_id == id)
@@ -822,4 +844,25 @@ void CXUIElement::set_height( int height )
 void CXUIElement::reRender()
 {
 	render(m_left, m_top, m_width, m_height);
+}
+
+BOOL CXUIElement::processAccelerator( WCHAR accChr )
+{
+	if(get_hidden())	
+	{
+		return FALSE;
+	}
+	for(int i=0; i < m_childCount; i++)
+	{
+		if(m_childs[i]->processAccelerator(accChr))
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+HFONT CXUIElement::getFont()
+{
+	return (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 }

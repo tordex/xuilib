@@ -98,13 +98,12 @@ LRESULT CALLBACK CXUIUrl::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPAR
 
 void CXUIUrl::OnCreate( void )
 {
-	NONCLIENTMETRICS ncm;
-	ZeroMemory(&ncm, sizeof(ncm));
-	ncm.cbSize = sizeof(ncm);
-	GetNonClientMetrics(&ncm);
-	m_TextFont = CreateFontIndirect(&ncm.lfMessageFont);
-	ncm.lfMessageFont.lfUnderline = TRUE;
-	m_OverFont = CreateFontIndirect(&ncm.lfMessageFont);
+	LOGFONT lf;
+	GetObject(GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+
+	m_TextFont = CreateFontIndirect(&lf);
+	lf.lfUnderline = TRUE;
+	m_OverFont = CreateFontIndirect(&lf);
 }
 
 BOOL CXUIUrl::GetNonClientMetrics( NONCLIENTMETRICS* ncm )
