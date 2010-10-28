@@ -103,6 +103,36 @@ BOOL CXUIToolbar::onNotify( int idCtrl, LPNMHDR pnmh )
 	case TBN_QUERYINSERT:
 		SetWindowLong(m_parent->get_parentWnd(), DWLP_MSGRESULT, TRUE);
 		break;
+	case NM_CUSTOMDRAW:
+		{
+			LPNMCUSTOMDRAW cd = (LPNMCUSTOMDRAW) pnmh;
+			if(cd->dwDrawStage == CDDS_PREPAINT)
+			{
+				SetWindowLongPtr(m_parent->get_parentWnd(), DWLP_MSGRESULT, CDRF_NOTIFYITEMDRAW);
+				return TRUE;
+			} else
+			{
+				CXUIToolbarButton* btn = NULL;
+				for(int i=0; i < m_childCount; i++)
+				{
+					if(m_childs[i]->QueryElement(L"toolbarbutton", (LPVOID*) &btn))
+					{
+						if(btn->getCmdID() == cd->dwItemSpec)
+						{
+							if(!btn->raiseEvent(XUI_EVENT_TOOLBAR_CUSTOMDRAW, NULL, (LPARAM) pnmh))
+							{
+								SetWindowLongPtr(m_parent->get_parentWnd(), DWLP_MSGRESULT, CDRF_DODEFAULT);
+								return TRUE;
+							}
+							return TRUE;
+						}
+					}
+					btn = NULL;
+				}
+			}
+		}
+		SetWindowLongPtr(m_parent->get_parentWnd(), DWLP_MSGRESULT, CDRF_DODEFAULT);
+		break;
 /*
 	case NM_CUSTOMDRAW:
 		{

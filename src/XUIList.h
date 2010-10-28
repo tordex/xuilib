@@ -36,6 +36,7 @@ class CXUIList : public CXUIElement
 	BOOL		m_bHeaderDragDrop;
 	BOOL		m_bLabelTip;
 	BOOL		m_bEditColumns;
+	BOOL		m_useIcons;
 
 	BOOL		m_bAutoSizeCols;
 
