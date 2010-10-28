@@ -64,7 +64,7 @@ void CXUIChecksList::Init()
 
 	m_minHeight = rcItem.bottom + (rcItem.bottom - rcItem.top) / 2;
 
-	if(!m_minWidth)
+	if(!m_minWidth || !m_minHeight)
 	{
 		RECT rcDlg = {0, 0, 48, 40};
 		if(m_width) rcDlg.right = m_width;
@@ -264,4 +264,14 @@ BOOL CXUIChecksList::onNotify( int idCtrl, LPNMHDR pnmh )
 		break;
 	}
 	return FALSE;
+}
+
+BOOL CXUIChecksList::isItemCheckedIdx( int idx )
+{
+	return ListView_GetCheckState(m_hWnd, idx);
+}
+
+void CXUIChecksList::checkItemIdx( int idx, BOOL bChecked )
+{
+	ListView_SetCheckState(m_hWnd, idx, bChecked);
 }

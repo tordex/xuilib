@@ -364,6 +364,12 @@
 												return func((LPRECT) lParam); \
 												}
 
+#define XUI_HANDLE_TOOLBAR_CUSTOMDRAW(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_TOOLBAR_CUSTOMDRAW, evID)) \
+												{ \
+												return func((LPNMCUSTOMDRAW) lParam); \
+												}
+
+
 #define XUI_END_EVENT_MAP						return FALSE; \
 											}
 

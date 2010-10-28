@@ -102,7 +102,8 @@ void CXUITextBox::Init()
 		testStr[k] = 0;
 		RECT rcDraw = {0, 0, 3, 3};
 		DrawText(hdc, testStr, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
-		m_minWidth = rcDraw.right - rcDraw.left + 6;
+		m_minWidth	= rcDraw.right - rcDraw.left + 6;
+		m_minHeight = rcDraw.bottom - rcDraw.top + 6;
 
 		SelectObject(hdc, oldFont);
 		ReleaseDC(m_hWnd, hdc);
@@ -112,11 +113,15 @@ void CXUITextBox::Init()
 		rcDlg.right = m_minWidth;
 		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 		m_minWidth = rcDlg.right;
+		m_minHeight = rcDlg.bottom * rows;
 	}
 
-	RECT rcDlg = {0, 0, 1, 14};
-	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
-	m_minHeight = rcDlg.bottom * rows;
+	if(!m_multiline)
+	{
+		RECT rcDlg = {0, 0, 1, 14};
+		MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+		m_minHeight = rcDlg.bottom * rows;
+	}
 
 	CXUIElement::Init();
 }

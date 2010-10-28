@@ -61,8 +61,11 @@ void CXUIList::Init()
 
 	ListView_SetExtendedListViewStyle(m_hWnd, exStyle);
 
-	m_hSmallImages = ImageList_Create(m_smallIconsWidth, m_smallIconsHeight, ILC_COLOR32, 0, 20);
-	ListView_SetImageList(m_hWnd, m_hSmallImages, LVSIL_SMALL);
+	if(m_useIcons)
+	{
+		m_hSmallImages = ImageList_Create(m_smallIconsWidth, m_smallIconsHeight, ILC_COLOR32, 0, 20);
+		ListView_SetImageList(m_hWnd, m_hSmallImages, LVSIL_SMALL);
+	}
 
 	m_minWidth = 0;
 	m_minHeight = 0;
@@ -146,7 +149,11 @@ BOOL CXUIList::loadDATA( IXMLDOMNode* node )
 {
 	if(!CXUIElement::loadDATA(node)) return FALSE;
 
-	if(m_hSmallImages)	ImageList_Destroy(m_hSmallImages);
+	if(m_hSmallImages)
+	{
+		ImageList_Destroy(m_hSmallImages);
+		m_hSmallImages = NULL;
+	}
 
 	m_view					= xmlGetAttributeValueSTRArray(node,	TEXT("view"), XUI_LIST_VIEW_ICON, L"icon\0smallicon\0list\0report\0");
 	m_bNoColHeader			= xmlGetAttributeValueBOOL(node,		TEXT("NoColHeader"),			FALSE);
@@ -165,6 +172,7 @@ BOOL CXUIList::loadDATA( IXMLDOMNode* node )
 	m_bHeaderDragDrop		= xmlGetAttributeValueBOOL(node,		TEXT("HeaderDragDrop"),			FALSE);
 	m_bLabelTip				= xmlGetAttributeValueBOOL(node,		TEXT("LabelTip"),				FALSE);
 	m_bEditColumns			= xmlGetAttributeValueBOOL(node,		TEXT("editColumns"),			FALSE);
+	m_useIcons				= xmlGetAttributeValueBOOL(node,		TEXT("useIcons"),				FALSE);
 
 	m_smallIconsWidth		= xmlGetAttributeValueNonSTR<INT>(node, L"smallIconsWidth",		16);
 	m_smallIconsHeight		= xmlGetAttributeValueNonSTR<INT>(node, L"smallIconsHeight",	16);
@@ -465,7 +473,7 @@ void CXUIList::clearSmallIcons()
 
 int CXUIList::addIcon( LPCWSTR icon, ICON_TYPE iconType )
 {
-	if(!icon)
+	if(!icon || !m_hSmallImages)
 	{
 		return -1;
 	}
@@ -531,7 +539,7 @@ int CXUIList::addIcon( LPCWSTR icon, ICON_TYPE iconType )
 
 int CXUIList::addIcon( HBITMAP bmp, ICON_TYPE iconType )
 {
-	if(!bmp)
+	if(!bmp || !m_hSmallImages)
 	{
 		return -1;
 	}

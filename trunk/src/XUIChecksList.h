@@ -18,7 +18,9 @@ public:
 	int  getItemIndex(int value);
 	void setItemIndex(int value, int idx);
 	void checkItem(int value, BOOL bChecked);
+	void checkItemIdx(int idx, BOOL bChecked);
 	BOOL isItemChecked(int value);
+	BOOL isItemCheckedIdx(int idx);
 	int  getCount();
 	int  getItemValue(int idx);
 	int  getSelected();
