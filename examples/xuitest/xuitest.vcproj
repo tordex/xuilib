@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="xuitest"
 	ProjectGUID="{ACB6715B-98F6-45FA-B508-815F384BD535}"
 	RootNamespace="xuitest"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,12 +42,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\TrueLaunchBar\tlb-pdk-public\src\cximage\CxImage;..\..\src"
+				AdditionalIncludeDirectories="..\..\src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
@@ -62,13 +63,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib UxTheme.lib cximage.lib png.lib zlib.lib jpeg.lib xuilib.lib"
+				AdditionalDependencies="comctl32.lib UxTheme.lib xuilib.lib gdiplus.lib"
 				OutputFile="$(OutDir)/xuitest.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\TrueLaunchBar\tlb-pdk-public\lib\debug\win32;..\..\lib\32\debug"
+				AdditionalLibraryDirectories="..\..\lib\32\debug"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/xuitest.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -89,9 +92,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -122,8 +122,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\TrueLaunchBar\tlb-pdk-public\src\cximage\CxImage"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\src"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -141,14 +141,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib UxTheme.lib cximage.lib png.lib zlib.lib jpeg.lib"
+				AdditionalDependencies="comctl32.lib UxTheme.lib xuilib.lib gdiplus.lib"
 				OutputFile="$(OutDir)/xuitest.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\TrueLaunchBar\tlb-pdk-public\lib\release\win32"
+				AdditionalLibraryDirectories="..\..\lib\32\release"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -169,9 +171,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

@@ -9,6 +9,7 @@ class CXUIRTF : public CXUIElement
 {
 	LPWSTR	m_value;
 	UINT	m_style;
+	BOOL	m_bLockEvents;
 public:
 	CXUIRTF(CXUIElement* parent, CXUIEngine* engine);
 	virtual ~CXUIRTF(void);
@@ -20,4 +21,5 @@ public:
 	virtual LPCWSTR	value_STR();
 	virtual void	value_STR(LPCWSTR val);
 	virtual BOOL	onNotify(int idCtrl, LPNMHDR pnmh);
+	virtual BOOL	onCommnd(UINT code, UINT id, HWND hWnd);
 };

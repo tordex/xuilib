@@ -26,9 +26,9 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // XUILIB
 //
 
-main.xml                XUILIB                  "xui\\main.xml"
-translate.xml           XUILIB                  "xui\\translate.xml"
-open.xml                XUILIB                  "xui\\open.xml"
+MAIN.XML                XUILIB                  "xui\\main.xml"
+TRANSLATE.XML           XUILIB                  "xui\\translate.xml"
+OPEN.XML                XUILIB                  "xui\\open.xml"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -74,8 +74,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,0,0
- PRODUCTVERSION 1,2,0,0
+ FILEVERSION 1,3,0,0
+ PRODUCTVERSION 1,3,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -91,12 +91,12 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "FileDescription", "xuilibTr Application"
-            VALUE "FileVersion", "1, 2, 0, 0"
+            VALUE "FileVersion", "1, 3, 0, 0"
             VALUE "InternalName", "xuilibTr"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "OriginalFilename", "xuilibTr.exe"
             VALUE "ProductName", "xuilibTr Application"
-            VALUE "ProductVersion", "1, 2, 0, 0"
+            VALUE "ProductVersion", "1, 3, 0, 0"
         END
     END
     BLOCK "VarFileInfo"

@@ -1,6 +1,6 @@
 #include "globals.h"
 #include "MyXUIEngine.h"
-#include <ximage.h>
+#include <GdiPlus.h>
 
 CMyXUIEngine::CMyXUIEngine(HINSTANCE hInst, LPCWSTR projectFile) : CXUIEngine(hInst)
 {
@@ -24,11 +24,9 @@ void CMyXUIEngine::DrawImage( HDC hdc, int x, int y, int width, int height, LPWS
 	lstrcat(imgFile, imgUrl);
 	if(PathFileExists(imgFile))
 	{
-		CxImage img;
-		if(img.Load(imgFile))
-		{
-			img.Draw(hdc, x, y, width, height);
-		}
+		Gdiplus::Graphics	gdi(hdc);
+		Gdiplus::Image		img(imgFile);
+		gdi.DrawImage(&img, (Gdiplus::REAL) x, (Gdiplus::REAL) y, (Gdiplus::REAL) width, (Gdiplus::REAL) height);
 	}
 }
 
