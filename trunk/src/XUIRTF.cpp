@@ -6,7 +6,8 @@
 
 CXUIRTF::CXUIRTF(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
-	m_value = NULL;
+	m_bLockEvents	= FALSE;
+	m_value			= NULL;
 }
 
 CXUIRTF::~CXUIRTF(void)
@@ -77,6 +78,7 @@ LPCWSTR CXUIRTF::value_STR()
 
 void CXUIRTF::value_STR( LPCWSTR val )
 {
+	m_bLockEvents = TRUE;
 	if(val)
 	{
 		SetWindowText(m_hWnd, val);
@@ -84,6 +86,7 @@ void CXUIRTF::value_STR( LPCWSTR val )
 	{
 		SetWindowText(m_hWnd, TEXT(""));
 	}
+	m_bLockEvents = FALSE;
 }
 
 BOOL CXUIRTF::onNotify( int idCtrl, LPNMHDR pnmh )
@@ -102,6 +105,16 @@ BOOL CXUIRTF::onNotify( int idCtrl, LPNMHDR pnmh )
 			delete txt;
 			return TRUE;
 		}
+	}
+	return FALSE;
+}
+
+BOOL CXUIRTF::onCommnd( UINT code, UINT id, HWND hWnd )
+{
+	if(code == EN_CHANGE && !m_bLockEvents)
+	{
+		processDefaultAction();
+		return raiseEvent(XUI_EVENT_CHANGED, 0, NULL);
 	}
 	return FALSE;
 }

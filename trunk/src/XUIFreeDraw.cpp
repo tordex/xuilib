@@ -1,8 +1,12 @@
 #include "xuilib.h"
 #include "XUIFreeDraw.h"
+#include "xmltools.h"
+#include <Uxtheme.h>
 
 CXUIFreeDraw::CXUIFreeDraw(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(parent, engine)
 {
+	m_bDoubleBuffered = FALSE;
+
 	WNDCLASS wc;
 	if(!GetClassInfo(engine->get_hInstance(), XUI_FREEDRAW_CLASS, &wc))
 	{
@@ -46,6 +50,12 @@ LRESULT CALLBACK CXUIFreeDraw::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam,
 	{
 		switch (uMessage)
 		{
+		case WM_ERASEBKGND:
+			if(pThis->m_bDoubleBuffered)
+			{
+				return TRUE;
+			}
+			break;
 		case WM_DESTROY:
 			RemoveProp(hWnd, TEXT("CXUIFreeDrawThis"));
 			return 0;
@@ -70,10 +80,28 @@ void CXUIFreeDraw::OnPaint()
 {
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(m_hWnd, &ps);
-	
+
 	RECT rcClient;
 	GetClientRect(m_hWnd, &rcClient);
-	raiseEvent(XUI_EVENT_FREEDRAW, (WPARAM) hdc, (LPARAM) &rcClient);
+
+	if(m_bDoubleBuffered)
+	{
+		RECT rcDraw = {0, 0, 0, 0};
+		rcDraw.right	= rcClient.right - rcClient.left;
+		rcDraw.bottom	= rcClient.bottom - rcClient.top;
+		HDC memDC	= CreateCompatibleDC(hdc);
+		HBITMAP bmp = CreateCompatibleBitmap(hdc, rcDraw.right, rcDraw.bottom);
+		HBITMAP oldBmp = (HBITMAP) SelectObject(memDC, bmp);
+		SendMessage(GetParent(m_hWnd), WM_ERASEBKGND, (WPARAM) memDC, NULL);
+		raiseEvent(XUI_EVENT_FREEDRAW, (WPARAM) memDC, (LPARAM) &rcDraw);
+		BitBlt(hdc, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, memDC, 0, 0, SRCCOPY);
+		SelectObject(memDC, oldBmp);
+		DeleteObject(bmp);
+		DeleteDC(memDC);
+	} else
+	{
+		raiseEvent(XUI_EVENT_FREEDRAW, (WPARAM) hdc, (LPARAM) &rcClient);
+	}
 
 	EndPaint(m_hWnd, &ps);
 }
@@ -98,4 +126,11 @@ void CXUIFreeDraw::Init()
 void CXUIFreeDraw::redraw( BOOL eraseBg )
 {
 	InvalidateRect(m_hWnd, NULL, eraseBg);
+}
+
+BOOL CXUIFreeDraw::loadDATA( IXMLDOMNode* node )
+{
+	if(!CXUIElement::loadDATA(node)) return FALSE;
+	m_bDoubleBuffered	=	xmlGetAttributeValueBOOL(node,	TEXT("doubleBuffered"),		VARIANT_FALSE);
+	return TRUE;
 }

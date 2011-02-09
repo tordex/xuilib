@@ -5,8 +5,8 @@
 #include "xuitest.h"
 #include "xuilib.h"
 #include <commctrl.h>
-#include <ximage.h>
 #include "arrays.h"
+#include <GdiPlus.h>
 
 #define FREE_CLEAR_STR(str) if(str) delete str; str = NULL;
 #define MAKE_STR(str, cpstr) FREE_CLEAR_STR(str); if(cpstr) { str = new TCHAR[lstrlen(cpstr) + 1]; lstrcpy(str, cpstr); }
@@ -32,11 +32,52 @@ MyXUIEngine::~MyXUIEngine()
 
 void MyXUIEngine::DrawImage(HDC hdc, int x, int y, int width, int height, LPWSTR imgUrl)
 {
-	CxImage img;
-	img.LoadResource(FindResource(m_hInst, imgUrl, TEXT("XUILIB")), CXIMAGE_FORMAT_PNG, m_hInst);
-	if(img.IsValid())
+	Gdiplus::Bitmap* bmp = NULL;
+
+	HRSRC hResource = ::FindResource(m_hInst, imgUrl, TEXT("XUILIB"));
+	if(hResource)
 	{
-		img.Draw(hdc, x, y, width, height);
+		DWORD imageSize = ::SizeofResource(m_hInst, hResource);
+		if(imageSize)
+		{
+			const void* pResourceData = ::LockResource(::LoadResource(m_hInst, hResource));
+			if(pResourceData)
+			{
+				HGLOBAL buffer  = ::GlobalAlloc(GMEM_MOVEABLE, imageSize);
+				if(buffer)
+				{
+					void* pBuffer = ::GlobalLock(buffer);
+					if (pBuffer)
+					{
+						CopyMemory(pBuffer, pResourceData, imageSize);
+
+						IStream* pStream = NULL;
+						if (::CreateStreamOnHGlobal(buffer, FALSE, &pStream) == S_OK)
+						{
+							bmp = Gdiplus::Bitmap::FromStream(pStream);
+							pStream->Release();
+							if (bmp)
+							{ 
+								if (bmp->GetLastStatus() != Gdiplus::Ok)
+								{
+									delete bmp;
+									bmp = NULL;
+								}
+							}
+						}
+						::GlobalUnlock(buffer);
+					}
+					::GlobalFree(buffer);
+				}
+			}
+		}
+	}
+
+	if(bmp)
+	{
+		Gdiplus::Graphics gdi(hdc);
+		gdi.DrawImage(bmp, (Gdiplus::REAL) x, (Gdiplus::REAL) y, (Gdiplus::REAL) width, (Gdiplus::REAL) height);
+		delete bmp;
 	}
 }
 
@@ -313,9 +354,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	CoInitialize(NULL);
 
 	InitCommonControls();
+
+	ULONG_PTR m_gdiplusToken;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 	
 	MyXUIEngine engine(hInstance);
-	//engine.loadStrings(TEXT("res\\tlbsettings-ru.xml"));
 
 	CTlbSettingsDlg dlg(&engine);
 	dlg.m_pwd1					= NULL;
@@ -330,9 +374,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	lstrcpy(dlg.m_CaptionFont,	L"Verdana");
 	lstrcpy(dlg.m_MenuFont,		L"Arial");
 
-//	CSpanTestDlg dlg(&engine);
-
 	dlg.DoModal(NULL);
+
+	Gdiplus::GdiplusShutdown(m_gdiplusToken);
 
 	return 0;
 }
