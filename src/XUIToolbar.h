@@ -29,6 +29,7 @@ public:
 
 	virtual BOOL	loadDATA(IXMLDOMNode* node);
 	virtual void	Init();
+	virtual int		get_margin(int mgidx);
 	virtual BOOL	onNotify(int idCtrl, LPNMHDR pnmh);
 	virtual BOOL	onCommnd(UINT code, UINT id, HWND hWnd);
 

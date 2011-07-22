@@ -127,6 +127,7 @@ void CXUIList::Init()
 
 		ListView_SetColumnOrderArray(m_hWnd, colsCount, order);
 		delete order;
+		delete cols;
 
 		if(!m_minWidth)
 		{

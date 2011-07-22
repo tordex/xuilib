@@ -105,6 +105,8 @@ void CXUITextBox::Init()
 		m_minWidth	= rcDraw.right - rcDraw.left + 6;
 		m_minHeight = rcDraw.bottom - rcDraw.top + 6;
 
+		delete testStr;
+
 		SelectObject(hdc, oldFont);
 		ReleaseDC(m_hWnd, hdc);
 	} else

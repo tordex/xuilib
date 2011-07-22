@@ -115,7 +115,7 @@ void CXUIFreeDraw::Init()
 
 	m_hWnd = CreateWindowEx(0, XUI_FREEDRAW_CLASS, TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), (LPVOID) this);
 
-	RECT rcDlg = {0, 0, 14, 14};
+	RECT rcDlg = {0, 0, !m_minWidth ?  14: m_minWidth, !m_minHeight ? 14 : m_minHeight};
 	if(m_width)		rcDlg.right		= m_width;
 	if(m_height)	rcDlg.bottom	= m_height;
 	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);

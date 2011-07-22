@@ -31,12 +31,15 @@ CXUIElement::CXUIElement(CXUIElement* parent, CXUIEngine* engine)
 
 	m_cellSpaceX	= 0;
 	m_cellSpaceY	= 0;
+	
+	m_tags			= NULL;
 }
 
 CXUIElement::~CXUIElement(void)
 {
 	if(m_lockid)	delete m_lockid;
 	if(m_strID)		delete m_strID;
+	if(m_tags)		delete m_tags;
 	clearChilds();
 }
 
