@@ -92,6 +92,9 @@ void CXUIToolbar::Init()
 	SendMessage(m_hWnd, TB_GETMAXSIZE, 0, (LPARAM) &szToolbar);
 	m_minHeight = szToolbar.cy;
 
+	m_marginTop		= 0;
+	m_marginBottom	= 0;
+
 	CXUIElement::Init();
 }
 
@@ -322,6 +325,11 @@ int CXUIToolbar::addIcon( LPCWSTR icon )
 	lstrcpy(m_icons[m_iconsCount].icon, icon);
 	m_iconsCount++;
 	return idx;
+}
+
+int CXUIToolbar::get_margin( int mgidx )
+{
+	return 0;
 }
 //////////////////////////////////////////////////////////////////////////
 
