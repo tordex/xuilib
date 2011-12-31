@@ -7,6 +7,7 @@
 
 class CXUIRTF : public CXUIElement
 {
+protected:
 	LPWSTR	m_value;
 	UINT	m_style;
 	BOOL	m_bLockEvents;
