@@ -67,8 +67,10 @@ void CXUIList::Init()
 		ListView_SetImageList(m_hWnd, m_hSmallImages, LVSIL_SMALL);
 	}
 
+/*
 	m_minWidth = 0;
 	m_minHeight = 0;
+*/
 	m_bAutoSizeCols = FALSE;
 
 

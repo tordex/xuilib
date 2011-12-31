@@ -35,6 +35,7 @@ CXUISelectFile::~CXUISelectFile(void)
 	if(m_title)		delete m_title;
 	if(m_saveto)	delete m_saveto;
 	if(m_fileName)	delete m_fileName;
+	if(m_defExt)	delete m_defExt;
 }
 
 BOOL CXUISelectFile::loadDATA( IXMLDOMNode* node )

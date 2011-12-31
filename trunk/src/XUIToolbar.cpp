@@ -343,6 +343,8 @@ CXUIToolbarButton::CXUIToolbarButton( CXUIElement* parent, CXUIEngine* engine ) 
 CXUIToolbarButton::~CXUIToolbarButton()
 {
 	if(m_icon)	delete m_icon;
+	if(m_label)	delete m_label;
+	if(m_tip)	delete m_tip;
 }
 
 BOOL CXUIToolbarButton::loadDATA( IXMLDOMNode* node )
