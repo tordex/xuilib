@@ -51,7 +51,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="..\lib\32\debug\vc80.pdb"
+				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\lib\32\debug\XUIlib.lib"
+				OutputFile="$(SolutionDir)lib\$(ConfigurationName)\$(PlatformName)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -118,7 +118,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="..\lib\64\debug\vc80.pdb"
+				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\lib\64\debug\XUIlib.lib"
+				OutputFile="$(SolutionDir)lib\$(ConfigurationName)\$(PlatformName)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -184,7 +184,7 @@
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="..\lib\32\release\vc80.pdb"
+				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -200,7 +200,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\lib\32\release\XUIlib.lib"
+				OutputFile="$(SolutionDir)lib\$(ConfigurationName)\$(PlatformName)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -249,7 +249,7 @@
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="..\lib\64\release\vc80.pdb"
+				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
@@ -265,7 +265,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\lib\64\release\XUIlib.lib"
+				OutputFile="$(SolutionDir)lib\$(ConfigurationName)\$(PlatformName)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

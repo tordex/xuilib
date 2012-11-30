@@ -213,11 +213,14 @@ void CXUIList::render( int x, int y, int width, int height )
 			{
 				colsWidth[colsCount].width = col->get_size();
 				colsWidth[colsCount].flex  = col->get_flex();
-				if(!col->get_flex())
+				if(col->isVisible())
 				{
-					nonFlexWidth += col->get_size();
+					if(!col->get_flex())
+					{
+						nonFlexWidth += col->get_size();
+					}
+					flexCount += col->get_flex();
 				}
-				flexCount += col->get_flex();
 				colsCount++; 
 			}
 		}

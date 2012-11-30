@@ -78,8 +78,15 @@
 #define XUI_EVENT_DRAWITEM				L"drawitem"
 // select file
 #define XUI_EVENT_FSSELECTED			L"fsselected"
+#define XUI_EVENT_FSINITIALDIR			L"fsinitialdir"
 // free draw events
 #define XUI_EVENT_FREEDRAW				L"freedraw"
+#define XUI_EVENT_MOUSEMOVE				L"mousemove"
+#define XUI_EVENT_LBUTTONDOWN			L"lbuttondown"
+#define XUI_EVENT_RBUTTONDOWN			L"rbuttondown"
+#define XUI_EVENT_LBUTTONUP				L"lbuttonup"
+#define XUI_EVENT_RBUTTONUP				L"rbuttonup"
+#define XUI_EVENT_SIZE					L"size"
 // toolbars events
 #define XUI_EVENT_TOOLBAR_CHANGED		L"toolbar-changed"
 #define XUI_EVENT_TOOLBAR_DROPDOWN		L"toolbar-dropdown"
