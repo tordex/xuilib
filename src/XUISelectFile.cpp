@@ -32,10 +32,10 @@ CXUISelectFile::CXUISelectFile(CXUIElement* parent, CXUIEngine* engine) : CXUIEl
 
 CXUISelectFile::~CXUISelectFile(void)
 {
-	if(m_title)		delete m_title;
-	if(m_saveto)	delete m_saveto;
-	if(m_fileName)	delete m_fileName;
-	if(m_defExt)	delete m_defExt;
+	if(m_title)			delete m_title;
+	if(m_saveto)		delete m_saveto;
+	if(m_fileName)		delete m_fileName;
+	if(m_defExt)		delete m_defExt;
 }
 
 BOOL CXUISelectFile::loadDATA( IXMLDOMNode* node )
@@ -117,8 +117,12 @@ void CXUISelectFile::doDefaultAction( CXUIElement* el )
 		filter[len] = 0;
 	}
 
+	LPWSTR init_dir = new WCHAR[MAX_PATH];
+	init_dir[0] = 0;
+	raiseEvent(XUI_EVENT_FSINITIALDIR, 0, (LPARAM) init_dir);
+
 	TCHAR fileName[500];
-	fileName[0] = 0;
+	ZeroMemory(fileName, sizeof(fileName));
 	if(m_fileName)
 	{
 		lstrcpy(fileName, m_fileName);
@@ -135,6 +139,10 @@ void CXUISelectFile::doDefaultAction( CXUIElement* el )
 	ofn.lpstrTitle			= m_title;
 	ofn.Flags				= 0;
 	ofn.lpstrDefExt			= m_defExt;
+	if(init_dir[0])
+	{
+		ofn.lpstrInitialDir		= init_dir;
+	}
 
 	if(m_allowMultiSelect)		ofn.Flags |= OFN_ALLOWMULTISELECT;
 	if(m_dontAddRecent)			ofn.Flags |= OFN_DONTADDTORECENT;
@@ -163,6 +171,8 @@ void CXUISelectFile::doDefaultAction( CXUIElement* el )
 	{
 		ret = GetSaveFileName(&ofn);
 	}
+
+	delete init_dir;
 
 	if(fileName[0] && m_saveto && ret)
 	{

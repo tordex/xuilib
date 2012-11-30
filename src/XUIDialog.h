@@ -349,6 +349,11 @@
 													return func((LPWSTR) lParam); \
 												}
 
+#define XUI_HANDLE_FSINITIALDIR(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_FSINITIALDIR, evID)) \
+												{ \
+												return func((LPWSTR) lParam); \
+												}
+
 #define XUI_HANDLE_FREEDRAW(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_FREEDRAW, evID)) \
 												{ \
 													return func((HDC) wParam, (LPRECT) lParam); \
@@ -367,6 +372,37 @@
 #define XUI_HANDLE_TOOLBAR_CUSTOMDRAW(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_TOOLBAR_CUSTOMDRAW, evID)) \
 												{ \
 												return func((LPNMCUSTOMDRAW) lParam); \
+												}
+
+#define XUI_HANDLE_MOUSEMOVE(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_MOUSEMOVE, evID)) \
+												{ \
+												return func(wParam, lParam); \
+												}
+
+#define XUI_HANDLE_LBUTTONDOWN(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_LBUTTONDOWN, evID)) \
+												{ \
+												return func(wParam, lParam); \
+												}
+
+#define XUI_HANDLE_RBUTTONDOWN(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_RBUTTONDOWN, evID)) \
+												{ \
+												return func(wParam, lParam); \
+												}
+
+
+#define XUI_HANDLE_LBUTTONUP(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_LBUTTONUP, evID)) \
+												{ \
+												return func(wParam, lParam); \
+												}
+
+#define XUI_HANDLE_RBUTTONUP(elID, func)	if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_RBUTTONUP, evID)) \
+												{ \
+												return func(wParam, lParam); \
+												}
+
+#define XUI_HANDLE_SIZE(elID, func)			if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_SIZE, evID)) \
+												{ \
+												return func(wParam, lParam); \
 												}
 
 

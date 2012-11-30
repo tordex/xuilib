@@ -17,7 +17,7 @@ CXUIFreeDraw::CXUIFreeDraw(CXUIElement* parent, CXUIEngine* engine) : CXUIElemen
 		wc.cbWndExtra		= 0;
 		wc.hInstance		= engine->get_hInstance();
 		wc.hIcon			= NULL;
-		wc.hCursor			= LoadCursor(engine->get_hInstance(), IDC_ARROW);
+		wc.hCursor			= LoadCursor(NULL, IDC_ARROW);
 		wc.hbrBackground	= (HBRUSH)(COLOR_BTNFACE + 1);
 		wc.lpszMenuName		= NULL;
 		wc.lpszClassName	= XUI_FREEDRAW_CLASS;
@@ -70,6 +70,39 @@ LRESULT CALLBACK CXUIFreeDraw::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam,
 		case WM_PAINT:
 			pThis->OnPaint();
 			return TRUE;
+		case WM_MOUSEMOVE:
+			if(pThis->raiseEvent(XUI_EVENT_MOUSEMOVE, wParam, lParam))
+			{
+				return 0;
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			if(pThis->raiseEvent(XUI_EVENT_LBUTTONDOWN, wParam, lParam))
+			{
+				return 0;
+			}
+			break;
+		case WM_LBUTTONUP:
+			if(pThis->raiseEvent(XUI_EVENT_LBUTTONUP, wParam, lParam))
+			{
+				return 0;
+			}
+			break;
+		case WM_RBUTTONDOWN:
+			if(pThis->raiseEvent(XUI_EVENT_RBUTTONDOWN, wParam, lParam))
+			{
+				return 0;
+			}
+			break;
+		case WM_RBUTTONUP:
+			if(pThis->raiseEvent(XUI_EVENT_RBUTTONUP, wParam, lParam))
+			{
+				return 0;
+			}
+			break;
+		case WM_SIZE:
+			pThis->raiseEvent(XUI_EVENT_SIZE, wParam, lParam);
+			break;
 		}
 	}
 
