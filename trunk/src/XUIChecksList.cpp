@@ -260,6 +260,10 @@ BOOL CXUIChecksList::onNotify( int idCtrl, LPNMHDR pnmh )
 			{
 				return raiseEvent(XUI_EVENT_CHANGED, NULL, NULL);
 			}
+			if((pnmv->uOldState & LVIS_SELECTED) != (pnmv->uNewState & LVIS_SELECTED))
+			{
+				return raiseEvent(XUI_EVENT_LST_ITEMACTIVATE, NULL, (LPARAM) pnmh);
+			}
 		}
 		break;
 	}
