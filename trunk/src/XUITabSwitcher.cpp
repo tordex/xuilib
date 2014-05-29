@@ -971,3 +971,33 @@ BOOL CXUITabSwitcher::processAccelerator( WCHAR accChr )
 	}
 	return CXUIElement::processAccelerator(accChr);
 }
+
+void CXUITabSwitcher::updateHiddenState()
+{
+	if(m_hWndCaption)
+	{
+		if(get_hidden())
+		{
+			ShowWindow(m_hWndCaption, SW_HIDE);
+		} else
+		{
+			ShowWindow(m_hWndCaption, SW_SHOW);
+		}
+	}
+	CXUIElement::updateHiddenState();
+}
+
+void CXUITabSwitcher::updateDisabledState()
+{
+	if(m_hWndCaption)
+	{
+		if(get_disabled())
+		{
+			EnableWindow(m_hWndCaption, FALSE);
+		} else
+		{
+			EnableWindow(m_hWndCaption, TRUE);
+		}
+	}
+	CXUIElement::updateDisabledState();
+}
