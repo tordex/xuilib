@@ -21,8 +21,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib UxTheme.lib xuilib.lib cximage.lib jpeg.lib png.lib zlib.lib"
+				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib\32\debug;..\..\..\TrueLaunchBar\tlb-pdk-public\lib\debug\win32"
 				GenerateDebugInformation="true"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib UxTheme.lib xuilib.lib cximage.lib jpeg.lib png.lib zlib.lib"
+				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib\32\debug;..\..\..\TrueLaunchBar\tlb-pdk-public\lib\debug\win32"
 				GenerateDebugInformation="true"
@@ -178,8 +178,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -220,7 +220,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib UxTheme.lib xuilib.lib gdiplus.lib"
+				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\32\release"
 				GenerateDebugInformation="true"
@@ -299,7 +299,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib UxTheme.lib xuilib.lib gdiplus.lib"
+				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\64\release"
 				GenerateDebugInformation="true"

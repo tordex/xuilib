@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="xuitest"
-	ProjectGUID="{ACB6715B-98F6-45FA-B508-815F384BD535}"
-	RootNamespace="xuitest"
+	Name="loadxui"
+	ProjectGUID="{1D21A726-499C-4E1E-A86D-79A35B62714E}"
+	RootNamespace="loadxui"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -50,7 +50,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
@@ -67,11 +67,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="$(OutDir)/loadxui.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib\32\debug"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/xuitest.pdb"
+				ProgramDatabaseFile="$(OutDir)/loadxui.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -82,7 +82,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="xuitest.exe.manifest"
+				AdditionalManifestFiles="loadxui.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -132,7 +132,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -149,11 +149,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="$(OutDir)/loadxui.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib\32\debug"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/xuitest.pdb"
+				ProgramDatabaseFile="$(OutDir)/loadxui.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -164,7 +164,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="xuitest.exe.64.manifest"
+				AdditionalManifestFiles="loadxui.x64.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -208,7 +208,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\src"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -227,7 +227,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="$(OutDir)/loadxui.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\32\release"
 				GenerateDebugInformation="false"
@@ -243,7 +243,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="xuitest.exe.manifest"
+				AdditionalManifestFiles="loadxui.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -288,7 +288,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\src"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -307,7 +307,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib UxTheme.lib gdiplus.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="$(OutDir)/loadxui.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\32\release"
 				GenerateDebugInformation="false"
@@ -323,7 +323,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="xuitest.exe.64.manifest"
+				AdditionalManifestFiles="loadxui.x64.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -350,6 +350,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\loadxui.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\stdafx.cpp"
 				>
@@ -386,10 +390,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\xuitest.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -397,7 +397,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\arrays.h"
+				RelativePath=".\loadxui.h"
 				>
 			</File>
 			<File
@@ -408,157 +408,13 @@
 				RelativePath=".\stdafx.h"
 				>
 			</File>
-			<File
-				RelativePath=".\xuitest.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\small.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\xuitest.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\xuitest.rc"
-				>
-			</File>
 		</Filter>
-		<File
-			RelativePath=".\res\about.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\clipboard.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\cm-settings.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\general.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\menu.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\options.png"
-			>
-		</File>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\res\span.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\tlbsettings-ru.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\tlbsettings.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\toolbar.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_about.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_autosensing.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_colors.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_ctxmenu.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_effects.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_fonts.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_General.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_hotkey.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_iconsizes.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_Menu.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_metrics.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_Mouse.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_registration.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_skins.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_sysinfo.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_tips.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_Toolbar.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_toolbars.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ts_transparency.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\xuilib.dtd"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
