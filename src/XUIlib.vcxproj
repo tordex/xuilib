@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D04C19CF-EC95-48D8-A8FE-18A62865700B}</ProjectGuid>
+    <RootNamespace>XUIlib</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <ProgramDataBaseFileName>$(IntDir)vc80.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)lib\$(Configuration)\$(Platform)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <ProgramDataBaseFileName>$(IntDir)vc80.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)lib\$(Configuration)\$(Platform)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <ProgramDataBaseFileName>$(IntDir)vc80.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)lib\$(Configuration)\$(Platform)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <ProgramDataBaseFileName>$(IntDir)vc80.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)lib\$(Configuration)\$(Platform)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="html\HTMLCODES.CPP" />
+    <ClCompile Include="html\htmlviewer.cpp" />
+    <ClCompile Include="RenderData.cpp" />
+    <ClCompile Include="XUIBox.cpp" />
+    <ClCompile Include="XUIButton.cpp" />
+    <ClCompile Include="XUICheckbox.cpp" />
+    <ClCompile Include="XUICheckItem.cpp" />
+    <ClCompile Include="XUIChecksList.cpp" />
+    <ClCompile Include="XUIColor.cpp" />
+    <ClCompile Include="XUIComboBox.cpp" />
+    <ClCompile Include="XUIComboItem.cpp" />
+    <ClCompile Include="XUIContextHelp.cpp" />
+    <ClCompile Include="XUIDatePicker.cpp" />
+    <ClCompile Include="XUIDialog.cpp" />
+    <ClCompile Include="XUIDisabler.cpp" />
+    <ClCompile Include="XUIElement.cpp" />
+    <ClCompile Include="XUIEngine.cpp" />
+    <ClCompile Include="XUIExt.cpp" />
+    <ClCompile Include="XUIFreeDraw.cpp" />
+    <ClCompile Include="XUIGroupbox.cpp" />
+    <ClCompile Include="XUIHotkey.cpp" />
+    <ClCompile Include="XUILabel.cpp" />
+    <ClCompile Include="XUILine.cpp" />
+    <ClCompile Include="XUIList.cpp" />
+    <ClCompile Include="XUIListBox.cpp" />
+    <ClCompile Include="XUIListCol.cpp" />
+    <ClCompile Include="XUIMenuBar.cpp" />
+    <ClCompile Include="XUIMenuItem.cpp" />
+    <ClCompile Include="XUIMenuPopup.cpp" />
+    <ClCompile Include="XUIMenuSeparator.cpp" />
+    <ClCompile Include="XUIOpenHelp.cpp" />
+    <ClCompile Include="XUIPicture.cpp" />
+    <ClCompile Include="XUIProgress.cpp" />
+    <ClCompile Include="XUIRadio.cpp" />
+    <ClCompile Include="XUIRadioGroup.cpp" />
+    <ClCompile Include="XUIRTF.cpp" />
+    <ClCompile Include="XUISelectFile.cpp" />
+    <ClCompile Include="XUISelectFolder.cpp" />
+    <ClCompile Include="XUISendCMD.cpp" />
+    <ClCompile Include="XUISlider.cpp" />
+    <ClCompile Include="XUISpacer.cpp" />
+    <ClCompile Include="XUISpin.cpp" />
+    <ClCompile Include="XUISplitter.cpp" />
+    <ClCompile Include="XUIStatusBar.cpp" />
+    <ClCompile Include="XUITab.cpp" />
+    <ClCompile Include="XUITabBox.cpp" />
+    <ClCompile Include="XUITabPanel.cpp" />
+    <ClCompile Include="XUITabSwitcher.cpp" />
+    <ClCompile Include="XUITextBox.cpp" />
+    <ClCompile Include="XUIToolbar.cpp" />
+    <ClCompile Include="XUIUrl.cpp" />
+    <ClCompile Include="xuiwindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="html\HTMLCODES.h" />
+    <ClInclude Include="html\htmlviewer.h" />
+    <ClInclude Include="RenderData.h" />
+    <ClInclude Include="XUIBox.h" />
+    <ClInclude Include="XUIButton.h" />
+    <ClInclude Include="XUICheckbox.h" />
+    <ClInclude Include="XUICheckItem.h" />
+    <ClInclude Include="XUIChecksList.h" />
+    <ClInclude Include="XUIColor.h" />
+    <ClInclude Include="XUIComboBox.h" />
+    <ClInclude Include="XUIComboItem.h" />
+    <ClInclude Include="XUIContextHelp.h" />
+    <ClInclude Include="XUIDatePicker.h" />
+    <ClInclude Include="XUIDialog.h" />
+    <ClInclude Include="XUIDisabler.h" />
+    <ClInclude Include="XUIElement.h" />
+    <ClInclude Include="XUIEngine.h" />
+    <ClInclude Include="XUIExt.h" />
+    <ClInclude Include="XUIFreeDraw.h" />
+    <ClInclude Include="XUIGroupbox.h" />
+    <ClInclude Include="XUIHotkey.h" />
+    <ClInclude Include="XUILabel.h" />
+    <ClInclude Include="xuilib.h" />
+    <ClInclude Include="XUILine.h" />
+    <ClInclude Include="XUIList.h" />
+    <ClInclude Include="XUIListBox.h" />
+    <ClInclude Include="XUIListCol.h" />
+    <ClInclude Include="XUIMenuBar.h" />
+    <ClInclude Include="XUIMenuItem.h" />
+    <ClInclude Include="XUIMenuPopup.h" />
+    <ClInclude Include="XUIMenuSeparator.h" />
+    <ClInclude Include="XUIOpenHelp.h" />
+    <ClInclude Include="XUIPicture.h" />
+    <ClInclude Include="XUIProgress.h" />
+    <ClInclude Include="XUIRadio.h" />
+    <ClInclude Include="XUIRadioGroup.h" />
+    <ClInclude Include="XUIRTF.h" />
+    <ClInclude Include="XUISelectFile.h" />
+    <ClInclude Include="XUISelectFolder.h" />
+    <ClInclude Include="XUISendCMD.h" />
+    <ClInclude Include="XUISlider.h" />
+    <ClInclude Include="XUISpacer.h" />
+    <ClInclude Include="XUISpin.h" />
+    <ClInclude Include="XUISplitter.h" />
+    <ClInclude Include="XUIStatusBar.h" />
+    <ClInclude Include="XUITab.h" />
+    <ClInclude Include="XUITabBox.h" />
+    <ClInclude Include="XUITabPanel.h" />
+    <ClInclude Include="XUITabSwitcher.h" />
+    <ClInclude Include="XUITextBox.h" />
+    <ClInclude Include="XUIToolbar.h" />
+    <ClInclude Include="XUIUrl.h" />
+    <ClInclude Include="xuiwindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\xuilib.dtd" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
