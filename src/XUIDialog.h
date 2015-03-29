@@ -175,6 +175,11 @@
 													return func(); \
 												}
 
+#define XUI_HANDLE_DBL_CLICK(elID, func)		if(IS_SAME_STR(elID, el->get_id()) && IS_SAME_STR(XUI_EVENT_DBL_CLICK, evID)) \
+												{ \
+													return func(); \
+												}
+
 #define XUI_HANDLE_CLICKED_ALL(func)			if(IS_SAME_STR(XUI_EVENT_CLICKED, evID)) \
 												{ \
 													return func(el); \

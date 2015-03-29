@@ -55,6 +55,7 @@
 #define XUI_EVENT_CHANGED				L"changed"
 #define XUI_EVENT_CLICKED				L"clicked"
 #define XUI_EVENT_CONTEXTMENU			L"contextmenu"
+#define XUI_EVENT_DBL_CLICK				L"dbl-click"
 // Tab switcher events
 #define XUI_EVENT_TAB_INIT				L"tab-init"
 #define XUI_EVENT_TAB_ACTIVATE			L"tab-activate"

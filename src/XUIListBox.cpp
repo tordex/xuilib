@@ -221,6 +221,17 @@ void CXUIListBox::setItemText( int id, LPCWSTR str )
 
 BOOL CXUIListBox::onCommnd( UINT code, UINT id, HWND hWnd )
 {
+	switch (code)
+	{
+	case LBN_SELCHANGE:
+		processDefaultAction();
+		return raiseEvent(XUI_EVENT_CHANGED, 0, NULL);
+	case LBN_DBLCLK:
+		processDefaultAction();
+		return raiseEvent(XUI_EVENT_DBL_CLICK, 0, NULL);
+	default:
+		break;
+	}
 	if(code == LBN_SELCHANGE)
 	{
 		processDefaultAction();
