@@ -470,7 +470,7 @@ void CXUIHotkey::Init()
 
 	m_hWnd = CreateWindowEx(0, XUI_HOTKEY_CLASS, TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), (LPVOID) this);
 
-	RECT rcDlg = {0, 0, 80, 14};
+	RECT rcDlg = { 0, 0, m_minWidth ? m_minWidth : 80, m_minHeight ? m_minHeight : 14 };
 	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
 	m_minWidth  = rcDlg.right;
 	m_minHeight = rcDlg.bottom;
