@@ -45,6 +45,7 @@ BOOL CXUIRTF::loadDATA( IXMLDOMNode* node )
 	m_style	|= xmlGetAttributeValueBOOL(node, L"vScroll",		TRUE)	? WS_VSCROLL					: 0;
 	m_style	|= xmlGetAttributeValueBOOL(node, L"wantReturn",	TRUE)	? ES_WANTRETURN					: 0;
 	m_style	|= xmlGetAttributeValueBOOL(node, L"readonly",		FALSE)	? ES_READONLY					: 0;
+	m_style	|= xmlGetAttributeValueBOOL(node, L"savesel",		FALSE)	? ES_SAVESEL					: 0;
 
 	return TRUE;
 }
@@ -59,6 +60,8 @@ void CXUIRTF::Init()
 	m_hWnd = CreateWindowEx(WS_EX_CLIENTEDGE, RICHEDIT_CLASS, L"", wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), NULL);
 
 	SetWindowFont(m_hWnd, getFont(), TRUE);
+
+
 
 	CXUIElement::Init();
 }
