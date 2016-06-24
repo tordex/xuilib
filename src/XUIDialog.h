@@ -459,6 +459,7 @@ protected:
 	CXUIButton*		m_defButton;
 	INT				m_minWindowWidth;
 	INT				m_minWindowHeight;
+	HFONT			m_hFont;
 protected:
 	LPDLGTEMPLATE createDialog(int left, int top, int width, int height);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
@@ -480,7 +481,9 @@ public:
 	virtual int	getSavedHeight(int defHeight);
 	virtual void saveSizes(int width, int height);
 	virtual void showTipMessage(LPCWSTR elID, LPCWSTR tag);
-	
+	virtual int scaleDPI(int sz);
+	virtual HFONT getFont();
+
 	BOOL loadDATA(IXMLDOMNode* node);
 	UINT DoModal(HWND hWndParent);
 	HWND Create(HWND hWndParent);

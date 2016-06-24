@@ -66,6 +66,7 @@ CXUIDialog::CXUIDialog(LPCTSTR fileName, CXUIEngine* engine, CXUIElement* parent
 	m_bContextHelp		= FALSE;
 	m_minWindowWidth	= 0;
 	m_minWindowHeight	= 0;
+	m_hFont				= NULL;
 
 	m_nextDlgID			= 100;
 
@@ -149,14 +150,14 @@ LPDLGTEMPLATE CXUIDialog::createDialog(int left, int top, int width, int height)
 		*lpw++ = 0;   // no caption
 	}
 
-	HFONT fnt = getFont();
+	HFONT fnt = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	LOGFONT lf;
 	GetObject(fnt, sizeof(LOGFONT), &lf);
 
 	if((m_style & DS_SETFONT) || (m_style & DS_SHELLFONT) )
 	{
 		HDC hdc = GetDC(NULL);
-		WORD pointsize = MulDiv(-lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY));
+		WORD pointsize = scaleDPI(MulDiv(-lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)));
 
 		*lpw++ = (WORD) pointsize;				// pointsize
 		*lpw++ = (WORD) lf.lfWeight;	// weight
@@ -169,6 +170,7 @@ LPDLGTEMPLATE CXUIDialog::createDialog(int left, int top, int width, int height)
 		lstrcpy(lpwsz, lf.lfFaceName);
 		nchar = lstrlen(lf.lfFaceName) + 1;
 		lpw   += nchar;
+		ReleaseDC(NULL, hdc);
 	}
 
 	DLGITEMTEMPLATEEX* lpdit;
@@ -926,7 +928,34 @@ void CXUIDialog::showTipMessage( LPCWSTR elID, LPCWSTR tag )
 	}
 }
 
-HWND CXUIDialog::Create( HWND hWndParent )
+int CXUIDialog::scaleDPI(int sz)
+{
+	return sz;
+}
+
+HFONT CXUIDialog::getFont()
+{
+	if (!m_hFont)
+	{
+		HFONT fnt = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+		LOGFONT lf;
+		GetObject(fnt, sizeof(LOGFONT), &lf);
+
+		HDC hdc = GetDC(NULL);
+		int pointsize = scaleDPI(MulDiv(-lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)));
+		lf.lfHeight = -MulDiv(pointsize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+		ReleaseDC(NULL, hdc);
+
+		m_hFont = CreateFontIndirect(&lf);
+		if (!m_hFont)
+		{
+			m_hFont = fnt;
+		}
+	}
+	return m_hFont;
+}
+
+HWND CXUIDialog::Create(HWND hWndParent)
 {
 	clearChilds();
 	if(loadFile(m_fileName, TEXT("dialog"), m_engine->get_hInstance()))

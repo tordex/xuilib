@@ -89,3 +89,8 @@ void CXUITabPanel::render( int x, int y, int width, int height )
 	m_width		= width;
 	m_height	= height;
 }
+
+HFONT CXUITabPanel::getFont()
+{
+	return CXUIElement::getFont();
+}

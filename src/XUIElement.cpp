@@ -867,5 +867,9 @@ BOOL CXUIElement::processAccelerator( WCHAR accChr )
 
 HFONT CXUIElement::getFont()
 {
-	return (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+	if (!m_parent)
+	{
+		return (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	}
+	return m_parent->getFont();
 }
