@@ -102,9 +102,9 @@ UINT CXUIDialog::DoModal(HWND hWndParent)
 
 LPWORD lpwAlign ( LPWORD lpIn)
 {
-	ULONG ul;
+	uintptr_t ul;
 
-	ul = (ULONG) lpIn;
+	ul = (uintptr_t)lpIn;
 	ul +=3;
 	ul >>=2;
 	ul <<=2;
@@ -495,21 +495,14 @@ void CXUIDialog::GetDesktopRect(RECT* rcDsk, HWND hWnd)
 	HWND dskWnd = GetDesktopWindow();
 	GetClientRect(dskWnd, rcDsk);
 
-	HMODULE hUser32 = LoadLibrary(TEXT("user32.dll"));
-	MonitorFromWindowFNC getMonitor = (MonitorFromWindowFNC) GetProcAddress(hUser32, "MonitorFromWindow");
-	if(getMonitor)
+	HMONITOR hMonitor = MonitorFromWindow(hWnd, 0x00000002);
+	if(hMonitor)
 	{
-		HANDLE hMonitor = (*getMonitor)(hWnd, 0x00000002);
-		if(hMonitor)
-		{
-			GetMonitorInfoFNC getMonitorInfo = (GetMonitorInfoFNC) GetProcAddress(hUser32, "GetMonitorInfoA");
-			MONITORINFO mInf;
-			mInf.cbSize = sizeof(MONITORINFO);
-			(*getMonitorInfo)(hMonitor, &mInf);
-			*rcDsk = mInf.rcWork;
-		}
+		MONITORINFO mInf;
+		mInf.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &mInf);
+		*rcDsk = mInf.rcWork;
 	}
-	FreeLibrary(hUser32);
 }
 
 void CXUIDialog::OnInitDialog()
