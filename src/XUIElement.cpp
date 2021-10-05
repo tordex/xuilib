@@ -683,6 +683,27 @@ void CXUIElement::onCmd( LPWSTR cmd )
 
 }
 
+void CXUIElement::onDPIChanged(UINT dpi)
+{
+	updateSizes();
+	for (int i = 0; i < m_childCount; i++)
+	{
+		m_childs[i]->onDPIChanged(dpi);
+	}
+}
+
+void CXUIElement::updateSizes()
+{
+
+}
+
+int CXUIElement::getDPI()
+{
+	if (!m_parent)
+		return USER_DEFAULT_SCREEN_DPI;
+	return m_parent->getDPI();
+}
+
 BOOL CXUIElement::set_TabStopFocus()
 {
 	if(m_hWnd)
@@ -872,4 +893,25 @@ HFONT CXUIElement::getFont()
 		return (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	}
 	return m_parent->getFont();
+}
+
+void CXUIElement::setFont(HFONT fnt)
+{
+	if (m_hWnd)
+	{
+		SendMessage(m_hWnd, WM_SETFONT, (WPARAM)fnt, (LPARAM)1);
+	}
+	for (int i = 0; i < m_childCount; i++)
+	{
+		m_childs[i]->setFont(fnt);
+	}
+}
+
+int CXUIElement::scaleSize(int sz)
+{
+	if (!m_parent)
+	{
+		return sz;
+	}
+	return m_parent->scaleSize(sz);
 }

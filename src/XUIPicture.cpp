@@ -98,10 +98,10 @@ void CXUIPicture::OnPaint( HDC hdc )
 
 	if(m_frames <= 1)
 	{
-		m_engine->DrawImage(memDC, 0, 0, m_picWidth, m_picHeight, m_picture);
+		m_engine->DrawImage(memDC, 0, 0, scaleSize(m_picWidth), scaleSize(m_picHeight), m_picture);
 	} else
 	{
-		m_engine->DrawFrame(memDC, 0, 0, m_picWidth, m_picHeight, m_picture, m_frames, m_curFrame, m_framesAlign);
+		m_engine->DrawFrame(memDC, 0, 0, scaleSize(m_picWidth), scaleSize(m_picHeight), m_picture, m_frames, m_curFrame, m_framesAlign);
 	}
 
 	BitBlt(hdc, 0, 0, width, height, memDC, 0, 0, SRCCOPY);
@@ -124,8 +124,8 @@ void CXUIPicture::Init()
 		SetTimer(m_hWnd, 1, m_animInterval, NULL);
 	}
 
-	m_minWidth  = m_picWidth;
-	m_minHeight = m_picHeight;
+	m_minWidth = scaleSize(m_picWidth);
+	m_minHeight = scaleSize(m_picHeight);
 }
 
 BOOL CXUIPicture::loadDATA( IXMLDOMNode* node )

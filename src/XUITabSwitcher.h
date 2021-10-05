@@ -66,8 +66,11 @@ public:
 
 	virtual void	recalcLayout();
 	virtual void	onCmd(LPWSTR cmd);
-	
+	virtual void	updateSizes();
+
 	void reinitTabs();
 
 	static void DrawGradient(HDC dc, const RECT& rectClient, COLORREF m_clrStart, COLORREF m_clrEnd);
+private:
+	void create_caption_font();
 };

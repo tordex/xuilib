@@ -102,8 +102,8 @@ void CXUITextBox::Init()
 		testStr[k] = 0;
 		RECT rcDraw = {0, 0, 3, 3};
 		DrawText(hdc, testStr, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
-		m_minWidth	= rcDraw.right - rcDraw.left + 6;
-		m_minHeight = rcDraw.bottom - rcDraw.top + 6;
+		m_minWidth	= rcDraw.right - rcDraw.left + scaleSize(6);
+		m_minHeight = rcDraw.bottom - rcDraw.top + scaleSize(6);
 
 		delete testStr;
 

@@ -118,6 +118,8 @@ public:
 	virtual UINT	get_newDlgID();
 	virtual BOOL	processAccelerator(WCHAR accChr);
 	virtual HFONT	getFont();
+	virtual void	setFont(HFONT fnt);
+	virtual int		scaleSize(int sz);
 
 	virtual BOOL	onNotify(int idCtrl, LPNMHDR pnmh);
 	virtual BOOL	onCommnd(UINT code, UINT id, HWND hWnd);
@@ -153,6 +155,9 @@ public:
 	virtual void	value_STR(LPCWSTR val);
 	LPCWSTR			value_STRdef(LPCWSTR defVal);
 	virtual	void	onCmd(LPWSTR cmd);
+	virtual void	onDPIChanged(UINT dpi);
+	virtual void	updateSizes();
+	virtual int		getDPI();
 
 	BOOL			set_TabStopFocus();
 	void			set_hidden(int hide);

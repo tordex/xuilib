@@ -1,5 +1,8 @@
 #include "xuilib.h"
 #include "xmltools.h"
+#include <shellapi.h>
+#include <ShellScalingAPI.h>
+#include <ShlObj.h>
 
 //local struct used for implementation
 #pragma pack(push, 1)
@@ -66,7 +69,7 @@ CXUIDialog::CXUIDialog(LPCTSTR fileName, CXUIEngine* engine, CXUIElement* parent
 	m_bContextHelp		= FALSE;
 	m_minWindowWidth	= 0;
 	m_minWindowHeight	= 0;
-	m_hFont				= NULL;
+	m_dpi = USER_DEFAULT_SCREEN_DPI;
 
 	m_nextDlgID			= 100;
 
@@ -150,16 +153,18 @@ LPDLGTEMPLATE CXUIDialog::createDialog(int left, int top, int width, int height)
 		*lpw++ = 0;   // no caption
 	}
 
-	HFONT fnt = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-	LOGFONT lf;
-	GetObject(fnt, sizeof(LOGFONT), &lf);
-
 	if((m_style & DS_SETFONT) || (m_style & DS_SHELLFONT) )
 	{
 		HDC hdc = GetDC(NULL);
-		WORD pointsize = scaleDPI(MulDiv(-lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)));
+		int system_dpi = GetDeviceCaps(hdc, LOGPIXELSY);
 
-		*lpw++ = (WORD) pointsize;				// pointsize
+		LOGFONT lf;
+		HFONT fnt = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+		GetObject(fnt, sizeof(LOGFONT), &lf);
+
+		WORD pointsize = MulDiv(-lf.lfHeight, 72, system_dpi);
+
+		*lpw++ = (WORD) pointsize;		// pointsize
 		*lpw++ = (WORD) lf.lfWeight;	// weight
 		LPBYTE lpb = (LPBYTE) lpw;
 		*lpb++ = lf.lfItalic;			// italic
@@ -211,7 +216,7 @@ BOOL CXUIDialog::loadDATA(IXMLDOMNode* node)
 	m_bSysMenu		= xmlGetAttributeValueBOOL(node,	TEXT("sysMenu"),		TRUE);
 	m_bTitleBar		= xmlGetAttributeValueBOOL(node,	TEXT("titleBar"),		TRUE);
 	m_border		= xmlGetAttributeValueSTRArray(node, TEXT("border"), XUI_DLG_BORDER_DIALOGFRAME, L"none\0thin\0resizing\0dialogFrame\0");
-	m_style = WS_VISIBLE | DS_SHELLFONT | WS_POPUP;
+	m_style = WS_VISIBLE | WS_POPUP | DS_SETFONT;
 
 	if(m_bClipChildren)	m_style |= WS_CLIPCHILDREN;
 	if(m_bClipSiblings)	m_style |= WS_CLIPSIBLINGS;
@@ -264,6 +269,9 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 
 		switch (uMessage)
 		{
+		case 0x02E0: //WM_DPICHANGED
+			pThis->onDPIChanged(LOWORD(wParam));
+			break;
 		case WM_SIZING:
 			if(pThis->m_border == XUI_DLG_BORDER_RESIZING)
 			{
@@ -466,6 +474,7 @@ LRESULT CALLBACK CXUIDialog::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 
 				//set the window handle
 				pThis->m_hWnd = hWnd;
+				pThis->m_dpi = getWindowDPI(hWnd);
 				pThis->OnInitDialog();
 			}
 			return TRUE;
@@ -921,31 +930,39 @@ void CXUIDialog::showTipMessage( LPCWSTR elID, LPCWSTR tag )
 	}
 }
 
-int CXUIDialog::scaleDPI(int sz)
-{
-	return sz;
-}
-
 HFONT CXUIDialog::getFont()
 {
-	if (!m_hFont)
+	auto fnt = m_fonts.find(m_dpi);
+	if (fnt == m_fonts.end())
 	{
-		HFONT fnt = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-		LOGFONT lf;
-		GetObject(fnt, sizeof(LOGFONT), &lf);
-
 		HDC hdc = GetDC(NULL);
-		int pointsize = scaleDPI(MulDiv(-lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)));
-		lf.lfHeight = -MulDiv(pointsize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+		int system_dpi = GetDeviceCaps(hdc, LOGPIXELSY);
 		ReleaseDC(NULL, hdc);
 
-		m_hFont = CreateFontIndirect(&lf);
-		if (!m_hFont)
-		{
-			m_hFont = fnt;
-		}
+		LOGFONT lf;
+		HFONT fnt = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+		GetObject(fnt, sizeof(LOGFONT), &lf);
+
+		WORD pointsize = MulDiv(-lf.lfHeight, 72, system_dpi);
+		lf.lfHeight = -MulDiv(pointsize, m_dpi, 72);
+
+		fnt = CreateFontIndirect(&lf);
+		m_fonts.emplace(m_dpi, fnt);
+		return fnt;
 	}
-	return m_hFont;
+	return fnt->second;
+}
+
+int CXUIDialog::scaleSize(int sz)
+{
+	if (m_dpi == USER_DEFAULT_SCREEN_DPI)
+		return sz;
+	return MulDiv(sz, m_dpi, USER_DEFAULT_SCREEN_DPI);
+}
+
+int CXUIDialog::getDPI()
+{
+	return m_dpi;
 }
 
 HWND CXUIDialog::Create(HWND hWndParent)
@@ -965,3 +982,68 @@ HWND CXUIDialog::Create(HWND hWndParent)
 	return NULL;
 }
 
+void CXUIDialog::onDPIChanged(UINT dpi)
+{
+	m_dpi = dpi;
+	CXUIElement::onDPIChanged(dpi);
+}
+
+DWORD CXUIDialog::getMonitorDPI(HMONITOR monitor)
+{
+	static BOOL fixedDPI_valid = FALSE;
+	static DWORD fixedDPI = 0;
+	DWORD ret = 96;
+
+	if (!fixedDPI_valid)
+	{
+		fixedDPI_valid = TRUE;
+		WCHAR path[MAX_PATH];
+		SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, path);
+		PathAddBackslash(path);
+		StringCchCat(path, MAX_PATH, L"Tordex\\True Launch Bar\\dpi");
+		if (PathFileExists(path))
+		{
+			fixedDPI = GetPrivateProfileInt(L"fixed dpi", L"dpi", 0, path);
+		}
+	}
+
+	if (fixedDPI != 0)
+	{
+		return USER_DEFAULT_SCREEN_DPI * fixedDPI / 100;
+	}
+
+	typedef HRESULT(WINAPI *GetDpiForMonitorFnc)(_In_ HMONITOR hmonitor, _In_ MONITOR_DPI_TYPE dpiType, _Out_ UINT *dpiX, _Out_ UINT *dpiY);
+
+	HMODULE hMod = LoadLibrary(L"Shcore.dll");
+	if (hMod)
+	{
+		GetDpiForMonitorFnc fnc = (GetDpiForMonitorFnc)GetProcAddress(hMod, "GetDpiForMonitor");
+		if (fnc)
+		{
+			unsigned x = 0;
+			unsigned y = 0;
+			if (fnc(monitor, MDT_EFFECTIVE_DPI, &x, &y) == S_OK)
+			{
+				ret = x;
+			}
+		}
+	}
+	if (ret < USER_DEFAULT_SCREEN_DPI)
+	{
+		ret = USER_DEFAULT_SCREEN_DPI;
+	}
+	return ret;
+}
+
+DWORD CXUIDialog::getWindowDPI(HWND hWnd)
+{
+	HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+	return getMonitorDPI(monitor);
+}
+
+DWORD CXUIDialog::getPointDPI(int x, int y)
+{
+	POINT pt = { x, y };
+	HMONITOR monitor = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+	return getMonitorDPI(monitor);
+}

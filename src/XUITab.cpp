@@ -85,6 +85,8 @@ void CXUITab::selected( int bSelected )
 
 void CXUITab::Draw( HDC hdc, int imageAlign, int imageSize, LPRECT rcItem )
 {
+	auto scaledImageSize = scaleSize(imageSize);
+
 	FillRect(hdc, rcItem, (HBRUSH) (COLOR_WINDOW + 1));
 	COLORREF textColor = GetSysColor(COLOR_WINDOWTEXT);;
 	if(m_selected)
@@ -95,8 +97,8 @@ void CXUITab::Draw( HDC hdc, int imageAlign, int imageSize, LPRECT rcItem )
 		COLORREF bgColor2 = tswLightColor(GetSysColor(COLOR_HIGHLIGHT), -20);
 
 		RECT rcDraw = *rcItem;
-		rcDraw.left		+= DEF_MARGIN;
-		rcDraw.right	-= DEF_MARGIN;
+		rcDraw.left += scaleSize(DEF_MARGIN);
+		rcDraw.right -= scaleSize(DEF_MARGIN);
 
 		CXUITabSwitcher::DrawGradient(hdc, rcDraw, bgColor1, bgColor2);
 
@@ -108,8 +110,8 @@ void CXUITab::Draw( HDC hdc, int imageAlign, int imageSize, LPRECT rcItem )
 		COLORREF bgColor2 = tswLightColor(bgColor, -10);
 
 		RECT rcDraw = *rcItem;
-		rcDraw.left		+= DEF_MARGIN;
-		rcDraw.right	-= DEF_MARGIN;
+		rcDraw.left += scaleSize(DEF_MARGIN);
+		rcDraw.right -= scaleSize(DEF_MARGIN);
 
 		CXUITabSwitcher::DrawGradient(hdc, rcDraw, bgColor1, bgColor2);
 	}
@@ -121,16 +123,16 @@ void CXUITab::Draw( HDC hdc, int imageAlign, int imageSize, LPRECT rcItem )
 	switch(imageAlign)
 	{
 	case XUI_TAB_IMAGE_ALIGN_LEFT:
-		rcText.left += DEF_MARGIN * 2 + imageSize + DEF_MARGIN * 2;
-		rcText.right -= DEF_MARGIN * 2;
-		iconX = rcItem->left + DEF_MARGIN * 2;
-		iconY = rcItem->top + (rcItem->bottom - rcItem->top) / 2 - imageSize / 2;
+		rcText.left += scaleSize(DEF_MARGIN * 2 + imageSize + DEF_MARGIN * 2);
+		rcText.right -= scaleSize(DEF_MARGIN * 2);
+		iconX = rcItem->left + scaleSize(DEF_MARGIN * 2);
+		iconY = rcItem->top + (rcItem->bottom - rcItem->top) / 2 - scaledImageSize / 2;
 		break;
 	case XUI_TAB_IMAGE_ALIGN_TOP:
-		rcText.top		+= DEF_MARGIN + imageSize + DEF_MARGIN;
-		rcText.bottom	-= DEF_MARGIN;
-		iconY = rcItem->top + DEF_MARGIN;
-		iconX = rcItem->left + (rcItem->right - rcItem->left) / 2 - imageSize / 2;
+		rcText.top += scaleSize(DEF_MARGIN + imageSize + DEF_MARGIN);
+		rcText.bottom -= scaleSize(DEF_MARGIN);
+		iconY = rcItem->top + scaleSize(DEF_MARGIN);
+		iconX = rcItem->left + (rcItem->right - rcItem->left) / 2 - scaledImageSize / 2;
 		dtAdd = DT_CENTER;
 		break;
 	}
@@ -139,7 +141,7 @@ void CXUITab::Draw( HDC hdc, int imageAlign, int imageSize, LPRECT rcItem )
 	SetBkMode(hdc, TRANSPARENT);
 	DrawText(hdc, m_label, -1, &rcText, DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | dtAdd);
 
-	m_engine->DrawImage(hdc, iconX, iconY, imageSize, imageSize, m_image);
+	m_engine->DrawImage(hdc, iconX, iconY, scaledImageSize, scaledImageSize, m_image);
 }
 
 void CXUITab::GetTabSize( HDC hdc, int imageAlign, int imageSize, SIZE& sz )
@@ -151,18 +153,20 @@ void CXUITab::GetTabSize( HDC hdc, int imageAlign, int imageSize, SIZE& sz )
 	switch(imageAlign)
 	{
 	case XUI_TAB_IMAGE_ALIGN_LEFT:
-		w = DEF_MARGIN * 2 + imageSize + DEF_MARGIN * 2 + (rcDraw.right - rcDraw.left) + DEF_MARGIN * 2;
-		h = DEF_MARGIN + max(imageSize, rcDraw.bottom - rcDraw.top) + DEF_MARGIN;
+		w = scaleSize(DEF_MARGIN * 2 + imageSize + DEF_MARGIN * 2) + (rcDraw.right - rcDraw.left) + scaleSize(DEF_MARGIN * 2);
+		h = scaleSize(DEF_MARGIN) + max(scaleSize(imageSize), rcDraw.bottom - rcDraw.top) + scaleSize(DEF_MARGIN);
 		break;
 	case XUI_TAB_IMAGE_ALIGN_TOP:
-		w = DEF_MARGIN * 2 + max(imageSize, (rcDraw.right - rcDraw.left)) + DEF_MARGIN * 2;
-		h = DEF_MARGIN + imageSize + DEF_MARGIN + (rcDraw.bottom - rcDraw.top) + DEF_MARGIN;
+		w = scaleSize(DEF_MARGIN * 2) + max(scaleSize(imageSize), (rcDraw.right - rcDraw.left)) + scaleSize(DEF_MARGIN * 2);
+		h = scaleSize(DEF_MARGIN + imageSize + DEF_MARGIN) + (rcDraw.bottom - rcDraw.top) + scaleSize(DEF_MARGIN);
 		break;
 	}
-	sz.cx = w + 10;
+	sz.cx = w + scaleSize(10);
 	if(imageAlign == XUI_TAB_IMAGE_ALIGN_TOP)
 	{
-		if(sz.cx < imageSize + imageSize * 2 / 3) sz.cx = imageSize + imageSize * 2 / 3;
+		auto scaledImageSize = scaleSize(imageSize);
+		if (sz.cx < scaledImageSize + scaledImageSize * 2 / 3) 
+			sz.cx = scaledImageSize + scaledImageSize * 2 / 3;
 	}
 	sz.cy = h;
 }

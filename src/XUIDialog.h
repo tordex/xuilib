@@ -2,6 +2,7 @@
 #include "xuielement.h"
 #include "XUIContextHelp.h"
 #include "XUIButton.h"
+#include <map>
 
 #define BIND_TYPE_INT		0
 #define BIND_TYPE_PSTR		1
@@ -437,6 +438,28 @@ struct DATA_MAP_ITEM
 #define	XUI_DLG_BORDER_RESIZING			2
 #define	XUI_DLG_BORDER_DIALOGFRAME		3
 
+class font_wrapper
+{
+	HFONT m_hFont;
+public:
+	font_wrapper(HFONT fnt) : m_hFont(fnt) {}
+	font_wrapper(font_wrapper& fnt)
+	{
+		m_hFont = fnt;
+		fnt.m_hFont = NULL;
+	}
+	~font_wrapper()
+	{
+		if (m_hFont)
+		{
+			DeleteObject(m_hFont);
+		}
+	}
+	operator HFONT() const { return m_hFont; }
+};
+
+typedef std::map<UINT, font_wrapper> dpi_fonts;
+
 class CXUIDialog : public CXUIElement
 {
 protected:
@@ -459,7 +482,8 @@ protected:
 	CXUIButton*		m_defButton;
 	INT				m_minWindowWidth;
 	INT				m_minWindowHeight;
-	HFONT			m_hFont;
+	UINT			m_dpi;
+	dpi_fonts		m_fonts;
 protected:
 	LPDLGTEMPLATE createDialog(int left, int top, int width, int height);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
@@ -481,8 +505,9 @@ public:
 	virtual int	getSavedHeight(int defHeight);
 	virtual void saveSizes(int width, int height);
 	virtual void showTipMessage(LPCWSTR elID, LPCWSTR tag);
-	virtual int scaleDPI(int sz);
 	virtual HFONT getFont();
+	virtual int	  scaleSize(int sz);
+	virtual int	  getDPI();
 
 	BOOL loadDATA(IXMLDOMNode* node);
 	UINT DoModal(HWND hWndParent);
@@ -493,4 +518,11 @@ public:
 	virtual UINT get_newDlgID();
 	
 	void set_defButton(LPCWSTR btnID);
+
+	virtual void onDPIChanged(UINT dpi);
+private:
+	HFONT getFontForDPI(UINT dpi);
+	static DWORD getPointDPI(int x, int y);
+	static DWORD getWindowDPI(HWND hWnd);
+	static DWORD getMonitorDPI(HMONITOR monitor);
 };

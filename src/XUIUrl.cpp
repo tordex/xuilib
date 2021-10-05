@@ -77,7 +77,6 @@ LRESULT CALLBACK CXUIUrl::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPAR
 				pThis = (CXUIUrl*) lpcs->lpCreateParams;
 				SetProp(hWnd, TEXT("XUIUrl_this"), (HANDLE) pThis);
 				pThis->m_hWnd = hWnd;
-				pThis->OnCreate();
 			}
 			return 0;
 		case WM_DESTROY:
@@ -94,30 +93,6 @@ LRESULT CALLBACK CXUIUrl::WndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPAR
 		}
 	}
 	return DefWindowProc(hWnd, uMessage, wParam, lParam);
-}
-
-void CXUIUrl::OnCreate( void )
-{
-	LOGFONT lf;
-	GetObject(GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-
-	m_TextFont = CreateFontIndirect(&lf);
-	lf.lfUnderline = TRUE;
-	m_OverFont = CreateFontIndirect(&lf);
-}
-
-BOOL CXUIUrl::GetNonClientMetrics( NONCLIENTMETRICS* ncm )
-{
-	ncm->cbSize = sizeof(NONCLIENTMETRICS);
-	if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), ncm, 0))
-	{
-		ncm->cbSize -= sizeof(int);
-		if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), ncm, 0))
-		{
-			return FALSE;
-		}
-	}
-	return TRUE;
 }
 
 void CXUIUrl::OnLButtonDown( int x, int y )
@@ -270,26 +245,7 @@ void CXUIUrl::Init()
 	if(!get_hidden())	wStyle |= WS_VISIBLE;
 
 	m_hWnd = CreateWindowEx(0, XUI_URL_CLASS, m_text, wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), (LPVOID) this);
-	HDC hdc = GetDC(m_hWnd);
-	HFONT oldFont = (HFONT) SelectObject(hdc, m_TextFont);
-	
-	RECT rcDraw = {0, 0, 3, 3};
-	if(m_text)
-	{
-		DrawText(hdc, m_text, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
-	} else
-	{
-		DrawText(hdc, L"W", -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
-	}
-	m_minWidth = rcDraw.right - rcDraw.left;
-
-	RECT rcDlg = {0, 0, 1, 8};
-	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
-
-	m_minHeight = max(rcDraw.bottom - rcDraw.top, rcDlg.bottom);
-
-	SelectObject(hdc, oldFont);
-	ReleaseDC(m_hWnd, hdc);
+	updateSizes();
 }
 
 BOOL CXUIUrl::loadDATA( IXMLDOMNode* node )
@@ -308,4 +264,45 @@ void CXUIUrl::setData( LPCWSTR text, LPCWSTR url )
 	MAKE_STR(m_text, text);
 	MAKE_STR(m_url, url);
 	InvalidateRect(m_hWnd, NULL, TRUE);
+}
+
+void CXUIUrl::updateSizes()
+{
+	if (m_TextFont)
+	{
+		DeleteObject(m_TextFont);
+	}
+	if (m_OverFont)
+	{
+		DeleteObject(m_OverFont);
+	}
+	LOGFONT lf;
+	GetObject(getFont(), sizeof(lf), &lf);
+
+	m_TextFont = CreateFontIndirect(&lf);
+	lf.lfUnderline = TRUE;
+	m_OverFont = CreateFontIndirect(&lf);
+
+	HDC hdc = GetDC(m_hWnd);
+	HFONT oldFont = (HFONT)SelectObject(hdc, m_TextFont);
+
+	RECT rcDraw = { 0, 0, 3, 3 };
+	if (m_text)
+	{
+		DrawText(hdc, m_text, -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+	}
+	else
+	{
+		DrawText(hdc, L"W", -1, &rcDraw, DT_CALCRECT | DT_EDITCONTROL);
+	}
+	m_minWidth = rcDraw.right - rcDraw.left;
+
+	RECT rcDlg = { 0, 0, 3, 8 };
+	MapDialogRect(m_parent->get_parentWnd(), &rcDlg);
+	m_minWidth += rcDlg.right;
+
+	m_minHeight = max(rcDraw.bottom - rcDraw.top, rcDlg.bottom);
+
+	SelectObject(hdc, oldFont);
+	ReleaseDC(m_hWnd, hdc);
 }

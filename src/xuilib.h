@@ -1,6 +1,9 @@
 #pragma		once
 #include <ObjBase.h>
 #include <windows.h>
+#include <tchar.h>
+#include <strsafe.h>
+#include <shlwapi.h>
 #include "XUIElement.h"
 #include "XUIDialog.h"
 #include "XUIWindow.h"

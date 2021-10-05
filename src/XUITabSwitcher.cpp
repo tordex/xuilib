@@ -255,39 +255,26 @@ LRESULT CXUITabSwitcher::WndProcCaption(HWND hWnd, UINT uMessage, WPARAM wParam,
 	return DefWindowProc(hWnd, uMessage, wParam, lParam);
 }
 
+void CXUITabSwitcher::create_caption_font()
+{
+	if (m_hCaptionFont)
+	{
+		DeleteObject(m_hCaptionFont);
+	}
+	HFONT fnt = getFont();
+	LOGFONT lf;
+	GetObject(fnt, sizeof(LOGFONT), &lf);
+	lf.lfHeight = m_captionHeight - scaleSize(6);
+	lf.lfWidth = 0;
+	lf.lfWeight = FW_BOLD;
+	m_hCaptionFont = CreateFontIndirect(&lf);
+}
+
 void CXUITabSwitcher::Init()
 {
 	DWORD wStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER;
 	DWORD wStyleCaption = WS_CHILD | WS_VISIBLE;
 	if(m_disabled) wStyle |= WS_DISABLED;
-
-	RECT rcMargins;
-	rcMargins.left = 0;
-	rcMargins.right = 10;
-	rcMargins.top = 7;
-	rcMargins.bottom = 16;
-	MapDialogRect(m_parent->get_parentWnd(), &rcMargins);
-	m_ctlsMarginX	= rcMargins.right;
-	m_ctlsMarginY	= rcMargins.top;
-	m_captionHeight	= rcMargins.bottom;
-	if(!m_bShowCaption)
-	{
-		m_captionHeight = 0;
-		m_ctlsMarginY	= 0;
-	}
-	if(!m_bShowSwitcher)
-	{
-		m_ctlsMarginX	= 0;
-	}
-
-	NONCLIENTMETRICS ncm;
-	ZeroMemory(&ncm, sizeof(ncm));
-	ncm.cbSize = sizeof(ncm);
-	GetNonClientMetrics(&ncm);
-	ncm.lfCaptionFont.lfHeight = m_captionHeight - 6;
-	ncm.lfCaptionFont.lfWidth = 0;
-	ncm.lfCaptionFont.lfWeight = FW_BOLD;
-	m_hCaptionFont = CreateFontIndirect(&ncm.lfCaptionFont);
 
 	m_minWidth		= 0;
 	m_minHeight		= 0;
@@ -297,28 +284,8 @@ void CXUITabSwitcher::Init()
 	{
 		m_hWnd = CreateWindowEx(0, XUI_TAB_SWITCHER, TEXT(""), wStyle, m_left, m_top, m_width, m_height, m_parent->get_parentWnd(), (HMENU) m_id, m_engine->get_hInstance(), (LPVOID) this);
 		SetWindowFont(m_hWnd, getFont(), TRUE);
-		HDC hdc = GetDC(m_hWnd);
-		HFONT oldFont = (HFONT) SelectObject(hdc, getFont());
-
-		for(int i=0; i < m_childCount; i++)
-		{
-			CXUITab* tab = NULL;
-			m_childs[i]->QueryElement(L"tab", (LPVOID*) &tab);
-			if(tab)
-			{
-				SIZE szTab;
-				tab->GetTabSize(hdc, m_imageAlign, m_imageSize, szTab);
-				m_minWidth		= max(m_minWidth, szTab.cx);
-				m_minHeight		+= szTab.cy + 2;
-				m_defTabHeight	= max(m_defTabHeight, szTab.cy);
-			}
-		}
-		m_minWidth  += 2; // add the border size
-		m_minHeight += 4; // add buttons margins
-
-		SelectObject(hdc, oldFont);
-		ReleaseDC(m_hWnd, hdc);
 	}
+	updateSizes();
 
 	if(m_bShowCaption)
 	{
@@ -824,6 +791,61 @@ void CXUITabSwitcher::onCmd( LPWSTR cmd )
 	}
 }
 
+void CXUITabSwitcher::updateSizes()
+{
+	RECT rcMargins;
+	rcMargins.left = 0;
+	rcMargins.right = 10;
+	rcMargins.top = 7;
+	rcMargins.bottom = 16;
+	MapDialogRect(m_parent->get_parentWnd(), &rcMargins);
+	m_ctlsMarginX = rcMargins.right;
+	m_ctlsMarginY = rcMargins.top;
+	m_captionHeight = rcMargins.bottom;
+	if (!m_bShowCaption)
+	{
+		m_captionHeight = 0;
+		m_ctlsMarginY = 0;
+	}
+	if (!m_bShowSwitcher)
+	{
+		m_ctlsMarginX = 0;
+	}
+
+	create_caption_font();
+
+	if (m_bShowSwitcher)
+	{
+		HDC hdc = GetDC(m_hWnd);
+		HFONT oldFont = (HFONT)SelectObject(hdc, getFont());
+
+		m_minWidth = 0;
+		m_minHeight = 0;
+		m_defTabHeight = 0;
+
+		for (int i = 0; i < m_childCount; i++)
+		{
+			CXUITab* tab = NULL;
+			m_childs[i]->QueryElement(L"tab", (LPVOID*)&tab);
+			if (tab)
+			{
+				SIZE szTab;
+				tab->GetTabSize(hdc, m_imageAlign, m_imageSize, szTab);
+				m_minWidth = max(m_minWidth, szTab.cx);
+				m_minHeight += szTab.cy + scaleSize(2);
+				m_defTabHeight = max(m_defTabHeight, szTab.cy);
+			}
+		}
+		m_minWidth += scaleSize(2); // add the border size
+		m_minHeight += scaleSize(4); // add buttons margins
+
+		SelectObject(hdc, oldFont);
+		ReleaseDC(m_hWnd, hdc);
+
+		recalcLayout();
+	}
+}
+
 void CXUITabSwitcher::reinitTabs()
 {
 	for(int i=0; i < m_childCount; i++)
@@ -916,8 +938,8 @@ void CXUITabSwitcher::drawFocusRect(HDC hdc)
 		if(selTab)
 		{
 			RECT rcDraw = *selTab->rect();
-			rcDraw.left  += 2;
-			rcDraw.right -= 2;
+			rcDraw.left  += scaleSize(2);
+			rcDraw.right -= scaleSize(2);
 			DrawFocusRect(hdc, &rcDraw);
 		}
 	}
