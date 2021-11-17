@@ -18,6 +18,7 @@ class CXUIColorPicker
 	HWND m_hWnd;
 	COLORREF m_color;
 	HWND m_hWndParent;
+	CXUIColor* m_parent;
 
 	int selectedX;
 	int selectedY;
@@ -29,7 +30,7 @@ public:
 	BOOL m_enableNone;
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 
-	CXUIColorPicker();
+	CXUIColorPicker(CXUIColor* parent);
 	virtual ~CXUIColorPicker(void);
 	void Create(HWND hWndParent, COLORREF color, HINSTANCE hInst);
 	void OnMouseMove(DWORD keys, int x, int y);
@@ -45,7 +46,7 @@ void CXUIColorPicker::OnPaint()
 	PAINTSTRUCT ps;
 	BeginPaint(m_hWnd, &ps);
 
-	HPEN pen = CreatePen(PS_SOLID, 1, 0);
+	HPEN pen = CreatePen(PS_SOLID, m_parent->scaleSize(1), 0);
 
 	HPEN oldPen = (HPEN) SelectObject(ps.hdc, pen);
 
@@ -55,9 +56,9 @@ void CXUIColorPicker::OnPaint()
 		{
 			HBRUSH br = CreateSolidBrush(m_colors[i][j]);
 			RECT rc;
-			rc.top = i * COLOR_BOX_SIZE + 20; rc.left = j * COLOR_BOX_SIZE + 1;
-			rc.bottom = rc.top + COLOR_BOX_SIZE + 1;
-			rc.right = rc.left + COLOR_BOX_SIZE + 1;
+			rc.top = i * m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(20); rc.left = j * m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(1);
+			rc.bottom = rc.top + m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(1);
+			rc.right = rc.left + m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(1);
 
 			HBRUSH oldBrush = (HBRUSH) SelectObject(ps.hdc, br);
 			Rectangle(ps.hdc, rc.left, rc.top, rc.right, rc.bottom);
@@ -72,30 +73,30 @@ void CXUIColorPicker::OnPaint()
 	RECT rcButton;
 	GetClientRect(m_hWnd, &rcButton);
 
-	rcButton.top += 2; rcButton.bottom = rcButton.top + 16;
-	rcButton.right -= 2; rcButton.left = rcButton.right - 16;
+	rcButton.top += m_parent->scaleSize(2); rcButton.bottom = rcButton.top + m_parent->scaleSize(16);
+	rcButton.right -= m_parent->scaleSize(2); rcButton.left = rcButton.right - m_parent->scaleSize(16);
 
 	Rectangle(ps.hdc, rcButton.left, rcButton.top, rcButton.right, rcButton.bottom);
 
-	int x = rcButton.left + 6;
-	int y = rcButton.top + 2;
-	for(int i=0; i < 6; i++)
+	int x = rcButton.left + m_parent->scaleSize(6);
+	int y = rcButton.top + m_parent->scaleSize(2);
+	for (int i = 0; i < m_parent->scaleSize(6); i++)
 	{
 		MoveToEx(ps.hdc, x + i, y + i, NULL);
-		LineTo(ps.hdc, x + i, y + 11 - i);
+		LineTo(ps.hdc, x + i, y + m_parent->scaleSize(11) - i);
 	}
 
 	if(m_enableNone)
 	{
 		RECT rcNoneButton = rcButton;
 
-		rcNoneButton.right -= 20;
-		rcNoneButton.left -= 20;
+		rcNoneButton.right -= m_parent->scaleSize(20);
+		rcNoneButton.left -= m_parent->scaleSize(20);
 		Rectangle(ps.hdc, rcNoneButton.left, rcNoneButton.top, rcNoneButton.right, rcNoneButton.bottom);
-		HPEN redPen = CreatePen(PS_SOLID, 1, RGB(0xFF, 0, 0));
+		HPEN redPen = CreatePen(PS_SOLID, m_parent->scaleSize(1), RGB(0xFF, 0, 0));
 		SelectObject(ps.hdc, redPen);
-		MoveToEx(ps.hdc, rcNoneButton.left + 1, rcNoneButton.bottom - 2, NULL);
-		LineTo(ps.hdc, rcNoneButton.right - 1, rcNoneButton.top);
+		MoveToEx(ps.hdc, rcNoneButton.left + m_parent->scaleSize(1), rcNoneButton.bottom - m_parent->scaleSize(2), NULL);
+		LineTo(ps.hdc, rcNoneButton.right - m_parent->scaleSize(1), rcNoneButton.top);
 		DeleteObject(redPen);
 	}
 
@@ -119,8 +120,8 @@ void CXUIColorPicker::Create(HWND hWndParent, COLORREF color, HINSTANCE hInst)
 	int y = rcWindow.bottom;
 	int x = rcWindow.left;
 
-	int width = COLORS_H * COLOR_BOX_SIZE + 5;
-	int height = COLORS_V * COLOR_BOX_SIZE + 24;
+	int width = COLORS_H * m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(5);
+	int height = COLORS_V * m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(24);
 
 	RECT rcDesktop;
 	GetDesktopRect(&rcDesktop, m_hWndParent);
@@ -149,15 +150,15 @@ void CXUIColorPicker::OnMouseMove(DWORD keys, int x, int y)
 	RECT rcClient;
 	GetClientRect(m_hWnd, &rcClient);
 	{
-		rcClient.top += 20;
-		rcClient.bottom -= 2;
-		rcClient.left += 2;
-		rcClient.right += 2;
+		rcClient.top += m_parent->scaleSize(20);
+		rcClient.bottom -= m_parent->scaleSize(2);
+		rcClient.left += m_parent->scaleSize(2);
+		rcClient.right += m_parent->scaleSize(2);
 		if(PtInRect(&rcClient, pt))
 		{
-			int xx = (x - rcClient.left) / COLOR_BOX_SIZE;
-			int yy = (y - rcClient.top) / COLOR_BOX_SIZE;
-			if(xx >=0 && xx < COLORS_H && yy >=0 && yy < COLORS_V)
+			int xx = (x - rcClient.left) / m_parent->scaleSize(COLOR_BOX_SIZE);
+			int yy = (y - rcClient.top) / m_parent->scaleSize(COLOR_BOX_SIZE);
+			if (xx >= 0 && xx < COLORS_H && yy >= 0 && yy < COLORS_V)
 			{
 				m_color = m_colors[yy][xx];
 				DrawColorBar(NULL);
@@ -179,12 +180,12 @@ void CXUIColorPicker::DrawColorBar(HDC hdc)
 	HBRUSH br = CreateSolidBrush(m_color);
 
 	RECT rc;
-	rc.top = 2;
-	rc.bottom = 18;
-	rc.left = 2;
-	rc.right = 50;
+	rc.top = m_parent->scaleSize(2);
+	rc.bottom = m_parent->scaleSize(18);
+	rc.left = m_parent->scaleSize(2);
+	rc.right = m_parent->scaleSize(50);
 
-	HPEN pen = CreatePen(PS_SOLID, 1, 0);
+	HPEN pen = CreatePen(PS_SOLID, m_parent->scaleSize(1), 0);
 	HPEN   oldPen = (HPEN) SelectObject(hdc, pen);
 	HBRUSH oldBrush = (HBRUSH) SelectObject(hdc, br);
 
@@ -208,10 +209,10 @@ void CXUIColorPicker::DrawSelectedColor(HDC hdc, BOOL remove)
 	HPEN pen;
 	if(remove)
 	{
-		pen = CreatePen(PS_SOLID, 1, 0); 
+		pen = CreatePen(PS_SOLID, m_parent->scaleSize(1), 0);
 	} else
 	{
-		pen = CreatePen(PS_SOLID, 1, RGB(0xFF, 0xFF, 0xFF));
+		pen = CreatePen(PS_SOLID, m_parent->scaleSize(1), RGB(0xFF, 0xFF, 0xFF));
 	}
 	HBRUSH br = CreateSolidBrush(m_colors[selectedY][selectedX]);
 
@@ -219,11 +220,12 @@ void CXUIColorPicker::DrawSelectedColor(HDC hdc, BOOL remove)
 	HBRUSH oldBrush = (HBRUSH) SelectObject(hdc, br);
 
 	RECT rc;
-	rc.top = selectedY * COLOR_BOX_SIZE + 20; rc.left = selectedX * COLOR_BOX_SIZE + 1;
-	rc.bottom = rc.top + COLOR_BOX_SIZE + 1;
-	rc.right = rc.left + COLOR_BOX_SIZE + 1;
+	rc.top = selectedY * m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(20); 
+	rc.left = selectedX * m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(1);
+	rc.bottom = rc.top + m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(1);
+	rc.right = rc.left + m_parent->scaleSize(COLOR_BOX_SIZE) + m_parent->scaleSize(1);
 
-	Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
+	Rectangle(hdc, rc.left, rc.top, rc.right - m_parent->scaleSize(1) / 2, rc.bottom - m_parent->scaleSize(1) / 2);
 
 	SelectObject(hdc, oldPen);
 	SelectObject(hdc, oldBrush);
@@ -249,12 +251,12 @@ void CXUIColorPicker::OnLButtonDown(int x, int y)
 {
 	RECT rcButton;
 	GetClientRect(m_hWnd, &rcButton);
-	rcButton.top += 2; rcButton.bottom = rcButton.top + 16;
-	rcButton.right -= 2; rcButton.left = rcButton.right - 16;
+	rcButton.top += m_parent->scaleSize(2); rcButton.bottom = rcButton.top + m_parent->scaleSize(16);
+	rcButton.right -= m_parent->scaleSize(2); rcButton.left = rcButton.right - m_parent->scaleSize(16);
 
 	RECT rcNoneButton = rcButton;
-	rcNoneButton.right -= 18;
-	rcNoneButton.left  -= 18;
+	rcNoneButton.right -= m_parent->scaleSize(18);
+	rcNoneButton.left -= m_parent->scaleSize(18);
 
 	POINT pt;
 	pt.x = x, pt.y = y;
@@ -279,10 +281,10 @@ void CXUIColorPicker::OnLButtonDown(int x, int y)
 			{
 				destroy = TRUE;
 			}
-			rcColors.top += 20;
-			rcColors.bottom -= 2;
-			rcColors.left += 2;
-			rcColors.right += 2;
+			rcColors.top += m_parent->scaleSize(20);
+			rcColors.bottom -= m_parent->scaleSize(2);
+			rcColors.left += m_parent->scaleSize(2);
+			rcColors.right += m_parent->scaleSize(2);
 			if(PtInRect(&rcColors, pt))
 			{
 				destroy = TRUE;
@@ -316,8 +318,9 @@ void CXUIColorPicker::GetDesktopRect(RECT* rcDsk, HWND hWnd)
 	}
 }
 
-CXUIColorPicker::CXUIColorPicker()
+CXUIColorPicker::CXUIColorPicker(CXUIColor* parent)
 {
+	m_parent = parent;
 	m_enableNone = TRUE;
 	m_color = 0;
 	m_hWnd = NULL;
@@ -508,7 +511,7 @@ CXUIColor::CXUIColor(CXUIElement* parent, CXUIEngine* engine) : CXUIElement(pare
 
 		RegisterClass(&wc);
 	}
-	m_picker		= new CXUIColorPicker;
+	m_picker		= new CXUIColorPicker(this);
 	m_color			= 0xFFFFFFFF;
 	m_enableNone	= FALSE;
 }
@@ -574,15 +577,8 @@ void CXUIColor::OnPaint(void)
 	PAINTSTRUCT ps;
 	BeginPaint(m_hWnd, &ps);
 
-	COLORREF dkShadow = GetSysColor(COLOR_3DDKSHADOW);
-	COLORREF Shadow = GetSysColor(COLOR_3DFACE);
-	COLORREF ltShadow = GetSysColor(COLOR_3DHILIGHT);
-	COLORREF arrow = GetSysColor(COLOR_BTNTEXT);
-
-	HPEN penDkShadow = CreatePen(PS_SOLID, 1, dkShadow);
-	HPEN penShadow = CreatePen(PS_SOLID, 1, Shadow);
-	HPEN penLtShadow = CreatePen(PS_SOLID, 1, ltShadow);
-	HPEN penArrow = CreatePen(PS_SOLID, 1, arrow);
+	// Erase background
+	SendMessage(GetParent(m_hWnd), WM_ERASEBKGND, (WPARAM)ps.hdc, NULL);
 
 	HBRUSH brColor = NULL;
 	if(m_color != 0xFFFFFFFF) 
@@ -592,96 +588,78 @@ void CXUIColor::OnPaint(void)
 	{
 		brColor = CreateSolidBrush(RGB(0xCC, 0xCC, 0xCC));
 	}
-	HBRUSH brShadow = CreateSolidBrush(Shadow);
 
 	RECT rcClient;
 	GetClientRect(m_hWnd, &rcClient);
 	rcClient.right--;
 	rcClient.bottom--;
 
-	if(rcClient.right != rcClient.top) 
+	int btn_size = min(rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
+	int border_size = scaleSize(1);
+
+	// Make button square
+	rcClient.left = rcClient.left + (rcClient.right - rcClient.left) / 2 - btn_size / 2;
+	rcClient.top = rcClient.top + (rcClient.bottom - rcClient.top) / 2 - btn_size / 2;
+	rcClient.right = rcClient.left + btn_size;
+	rcClient.bottom = rcClient.top + btn_size;
+
+	// Draw border
 	{
-		int w = min(rcClient.right, rcClient.bottom);
-		rcClient.right = rcClient.bottom = w;
+		RECT rcBorder = rcClient;
+		FillRect(ps.hdc, &rcBorder, (HBRUSH)(COLOR_3DDKSHADOW+ 1));
+		rcBorder.left += border_size;
+		rcBorder.top += border_size;
+		rcBorder.right -= border_size;
+		rcBorder.bottom -= border_size;
+		FillRect(ps.hdc, &rcBorder, (HBRUSH)(COLOR_3DFACE + 1));
 	}
 
-	FillRect(ps.hdc, &rcClient, brColor);
-
-	if(m_color == 0xFFFFFFFF)
+	// Draw color inside
 	{
-		HPEN redPen = CreatePen(PS_SOLID, 1, RGB(0xFF, 0, 0));
-		HPEN oldPen = (HPEN) SelectObject(ps.hdc, redPen);
-		MoveToEx(ps.hdc, rcClient.left, rcClient.bottom, NULL);
-		LineTo(ps.hdc, rcClient.right, rcClient.top);
+		RECT rcDraw = rcClient;
+		rcDraw.left += border_size * 2;
+		rcDraw.top += border_size * 2;
+		rcDraw.right -= border_size * 2;
+		rcDraw.bottom -= border_size * 2;
+		FillRect(ps.hdc, &rcDraw, brColor);
+		if (m_color == 0xFFFFFFFF)
+		{
+			HPEN redPen = CreatePen(PS_SOLID, border_size, RGB(0xFF, 0, 0));
+			HPEN oldPen = (HPEN)SelectObject(ps.hdc, redPen);
+			MoveToEx(ps.hdc, rcDraw.left, rcDraw.bottom, NULL);
+			LineTo(ps.hdc, rcDraw.right, rcDraw.top);
+			SelectObject(ps.hdc, oldPen);
+			DeleteObject(redPen);
+		}
+	}
+
+	// Draw arrow
+	{
+		int arrow_height = scaleSize(3);
+		int arrow_width = arrow_height * 2 - 1;
+		RECT rcArrow;
+		rcArrow.right = rcClient.right - border_size * 2;
+		rcArrow.bottom = rcClient.bottom - border_size * 2;
+		rcArrow.left = rcArrow.right - arrow_width - border_size;
+		rcArrow.top = rcArrow.bottom - arrow_height - border_size;
+		FillRect(ps.hdc, &rcArrow, (HBRUSH)(COLOR_3DFACE + 1));
+
+		HPEN penArrow = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_BTNTEXT));
+		HPEN oldPen = (HPEN)SelectObject(ps.hdc, penArrow);
+		int x_center = rcArrow.left + border_size + arrow_width / 2;
+		for (int i = 0; i < arrow_height; i++)
+		{
+			int y = rcArrow.bottom - i - 1;
+			int x1 = x_center - i;
+			int x2 = x_center + i;
+			MoveToEx(ps.hdc, x1, y, NULL);
+			LineTo(ps.hdc, x2 + 1, y);
+		}
 		SelectObject(ps.hdc, oldPen);
-		DeleteObject(redPen);
+		DeleteObject(penArrow);
 	}
 
-
-	HPEN oldPen = (HPEN) SelectObject(ps.hdc, penLtShadow);
-	MoveToEx(ps.hdc, rcClient.left, rcClient.bottom, NULL);
-	LineTo(ps.hdc, rcClient.left, rcClient.top);
-	LineTo(ps.hdc, rcClient.right, rcClient.top);
-
-	SelectObject(ps.hdc, penDkShadow);
-	LineTo(ps.hdc, rcClient.right, rcClient.bottom);
-	LineTo(ps.hdc, rcClient.left, rcClient.bottom);
-
-	rcClient.left++; rcClient.right--;
-	rcClient.top++;  rcClient.bottom--;
-
-	SelectObject(ps.hdc, penShadow);
-	MoveToEx(ps.hdc, rcClient.left, rcClient.bottom, NULL);
-	LineTo(ps.hdc, rcClient.left, rcClient.top);
-	LineTo(ps.hdc, rcClient.right, rcClient.top);
-	LineTo(ps.hdc, rcClient.right, rcClient.bottom);
-	LineTo(ps.hdc, rcClient.left, rcClient.bottom);
-
-	rcClient.left++; rcClient.right--;
-	rcClient.top++;  rcClient.bottom--;
-
-	SelectObject(ps.hdc, penDkShadow);
-	MoveToEx(ps.hdc, rcClient.left, rcClient.bottom, NULL);
-	LineTo(ps.hdc, rcClient.left, rcClient.top);
-	LineTo(ps.hdc, rcClient.right, rcClient.top);
-
-	SelectObject(ps.hdc, penLtShadow);
-	LineTo(ps.hdc, rcClient.right, rcClient.bottom);
-	LineTo(ps.hdc, rcClient.left, rcClient.bottom);
-
-	rcClient.top = rcClient.bottom - 4;
-	rcClient.left = rcClient.right - 6;
-	SelectObject(ps.hdc, penLtShadow);
-	MoveToEx(ps.hdc, rcClient.left, rcClient.bottom, NULL);
-	LineTo(ps.hdc, rcClient.left, rcClient.top);
-	LineTo(ps.hdc, rcClient.right, rcClient.top);
-
-	rcClient.left++; rcClient.right++;
-	rcClient.top++;  rcClient.bottom++;
-
-	FillRect(ps.hdc, &rcClient, brShadow);
-
-	int x = rcClient.left + 1;
-	int y = rcClient.top + 1;
-	SelectObject(ps.hdc, penArrow);
-
-	MoveToEx(ps.hdc, x, y, NULL);
-	LineTo(ps.hdc, x + 5, y);
-
-	MoveToEx(ps.hdc, x + 1, y + 1, NULL);
-	LineTo(ps.hdc, x + 4, y + 1);
-
-	MoveToEx(ps.hdc, x + 2, y + 2, NULL);
-	LineTo(ps.hdc, x + 3, y + 2);
-
-	SelectObject(ps.hdc, oldPen);
-
-	DeleteObject(penDkShadow);
-	DeleteObject(penShadow);
-	DeleteObject(penLtShadow);
-	DeleteObject(brShadow);
 	DeleteObject(brColor);
-	DeleteObject(penArrow);
 
 	EndPaint(m_hWnd, &ps);
 }
